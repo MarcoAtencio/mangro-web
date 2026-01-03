@@ -56,7 +56,7 @@ import {
 } from "~/lib/services";
 import { subscribeToUsuarios, type Usuario } from "~/lib/firestore";
 // We need clients too, assuming we have a fetch function or just subscribing
-import { subscribeToClientes, type Cliente } from "~/lib/firestore";
+import { subscribeToClientes, type Cliente, subscribeToEquipos, type Equipo } from "~/lib/firestore";
 
 // Helper for Priority Badge
 function getPriorityBadge(priority: string | undefined) {
@@ -131,6 +131,12 @@ function NuevoServicioDialog({
 }) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [clientEquipment, setClientEquipment] = useState<Equipo[]>([]);
+    const [loadingEquipment, setLoadingEquipment] = useState(false);
+
+    // Track selected equipment (multiple selection)
+    const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
+
     const [formData, setFormData] = useState({
         clientId: "",
         technicianId: "",
@@ -139,9 +145,27 @@ function NuevoServicioDialog({
         endTime: "10:00",
         priority: "MEDIA" as Task["priority"],
         description: "",
-        equipment: "",
         contactName: "",
     });
+
+    // Load equipment when client changes
+    useEffect(() => {
+        if (!formData.clientId) {
+            setClientEquipment([]);
+            setSelectedEquipment([]);
+            return;
+        }
+
+        setLoadingEquipment(true);
+        const unsubscribe = subscribeToEquipos(formData.clientId, (equipos) => {
+            setClientEquipment(equipos);
+            setLoadingEquipment(false);
+            // Reset equipment selection when client changes
+            setSelectedEquipment([]);
+        });
+
+        return () => unsubscribe();
+    }, [formData.clientId]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -165,7 +189,7 @@ function NuevoServicioDialog({
                 endTime: formData.endTime,
                 priority: formData.priority,
                 description: formData.description,
-                equipment: formData.equipment,
+                equipment: selectedEquipment.join(", "), // Join multiple equipment as comma-separated string
             });
 
             setOpen(false);
@@ -178,9 +202,9 @@ function NuevoServicioDialog({
                 endTime: "10:00",
                 priority: "MEDIA",
                 description: "",
-                equipment: "",
                 contactName: "",
             });
+            setSelectedEquipment([]);
         } catch (error) {
             console.error("Error creating service:", error);
         } finally {
@@ -301,12 +325,52 @@ function NuevoServicioDialog({
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Equipo / Activo</Label>
-                            <Input
-                                placeholder="Ej: XR-500 Industrial"
-                                value={formData.equipment}
-                                onChange={(e) => setFormData({ ...formData, equipment: e.target.value })}
-                            />
+                            <Label>Equipos / Activos <span className="text-muted-foreground font-normal">(opcional)</span></Label>
+                            {!formData.clientId ? (
+                                <p className="text-sm text-muted-foreground border rounded-md p-3 bg-slate-50">
+                                    Primero seleccione un cliente
+                                </p>
+                            ) : loadingEquipment ? (
+                                <p className="text-sm text-muted-foreground border rounded-md p-3 bg-slate-50">
+                                    Cargando equipos...
+                                </p>
+                            ) : clientEquipment.length === 0 ? (
+                                <p className="text-sm text-muted-foreground border rounded-md p-3 bg-slate-50">
+                                    Este cliente no tiene equipos registrados.
+                                </p>
+                            ) : (
+                                <div className="border rounded-md p-2 max-h-32 overflow-y-auto space-y-1 bg-white">
+                                    {clientEquipment.map(eq => {
+                                        const equipmentLabel = `${eq.nombre} - ${eq.modelo}`;
+                                        const isChecked = selectedEquipment.includes(equipmentLabel);
+                                        return (
+                                            <label
+                                                key={eq.id}
+                                                className={`flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-slate-50 transition-colors ${isChecked ? 'bg-primary/5' : ''}`}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isChecked}
+                                                    onChange={() => {
+                                                        if (isChecked) {
+                                                            setSelectedEquipment(prev => prev.filter(e => e !== equipmentLabel));
+                                                        } else {
+                                                            setSelectedEquipment(prev => [...prev, equipmentLabel]);
+                                                        }
+                                                    }}
+                                                    className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
+                                                />
+                                                <span className="text-sm">{equipmentLabel}</span>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                            {selectedEquipment.length > 0 && (
+                                <p className="text-xs text-primary font-medium">
+                                    {selectedEquipment.length} equipo(s) seleccionado(s)
+                                </p>
+                            )}
                         </div>
 
                         <div className="space-y-2">

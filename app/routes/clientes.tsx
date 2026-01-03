@@ -56,15 +56,17 @@ import { AddressPicker } from "~/components/ui/address-picker";
 
 
 function getEstadoBadge(estado: string) {
+    const baseClasses = "min-w-20 justify-center text-center font-medium";
+
     switch (estado) {
         case "activo":
-            return <Badge variant="success">Activo</Badge>;
+            return <Badge className={`${baseClasses} bg-green-600 text-white hover:bg-green-700 shadow-sm`}>Activo</Badge>;
         case "mantenimiento":
-            return <Badge variant="warning">En Mantenimiento</Badge>;
+            return <Badge className={`${baseClasses} bg-amber-500 text-white hover:bg-amber-600 shadow-sm`}>Mantenimiento</Badge>;
         case "inactivo":
-            return <Badge variant="secondary">Inactivo</Badge>;
+            return <Badge variant="secondary" className={`${baseClasses}`}>Inactivo</Badge>;
         default:
-            return <Badge variant="outline">{estado}</Badge>;
+            return <Badge variant="outline" className={baseClasses}>{estado}</Badge>;
     }
 }
 
@@ -81,14 +83,13 @@ function ClienteRow({ cliente }: { cliente: Cliente }) {
     const [expanded, setExpanded] = useState(false);
     const [equipos, setEquipos] = useState<Equipo[]>([]);
 
+    // Always subscribe to equipos to show correct count
     useEffect(() => {
-        if (expanded) {
-            const unsubscribe = subscribeToEquipos(cliente.id, (data) => {
-                setEquipos(data);
-            });
-            return () => unsubscribe();
-        }
-    }, [expanded, cliente.id]);
+        const unsubscribe = subscribeToEquipos(cliente.id, (data) => {
+            setEquipos(data);
+        });
+        return () => unsubscribe();
+    }, [cliente.id]);
 
     return (
         <>
@@ -119,14 +120,21 @@ function ClienteRow({ cliente }: { cliente: Cliente }) {
                 <TableCell className="hidden md:table-cell">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <MapPin className="h-4 w-4" />
-                        {cliente.address || "Sin dirección"}
+                        <span className={cliente.address ? "" : "italic"}>
+                            {cliente.address || "Sin dirección"}
+                        </span>
                     </div>
                 </TableCell>
                 <TableCell className="hidden lg:table-cell">
-                    {cliente.contact_name || "Sin contacto"}
+                    <span className={cliente.contact_name ? "text-foreground" : "text-muted-foreground text-sm italic"}>
+                        {cliente.contact_name || "Sin contacto"}
+                    </span>
                 </TableCell>
                 <TableCell>
-                    <Badge variant="outline" className="gap-1">
+                    <Badge
+                        variant="outline"
+                        className="gap-1.5 min-w-20 justify-center bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20 text-primary font-medium"
+                    >
                         <Wrench className="h-3 w-3" />
                         {equipos.length} equipos
                     </Badge>
@@ -958,6 +966,12 @@ export default function ClientesPage() {
     const [clientes, setClientes] = useState<Cliente[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // Equipment stats state - aggregated from all clients
+    const [equipmentStats, setEquipmentStats] = useState<{
+        total: number;
+        enMantenimiento: number;
+    }>({ total: 0, enMantenimiento: 0 });
+
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -969,16 +983,67 @@ export default function ClientesPage() {
         return () => unsubscribe();
     }, []);
 
-    const filteredClientes = clientes.filter(
-        (cliente) =>
-            cliente.name.toLowerCase().includes(search.toLowerCase()) ||
-            (cliente.ruc && cliente.ruc.includes(search))
-    );
+    // Filter type for stats cards
+    const [statsFilter, setStatsFilter] = useState<"all" | "withEquipment" | "inMaintenance">("all");
 
-    // Reset pagination when search changes
+    // Track equipment per client for filtering
+    const [equipmentByClient, setEquipmentByClient] = useState<Record<string, Equipo[]>>({});
+
+    // Subscribe to all equipment to calculate stats
+    useEffect(() => {
+        if (clientes.length === 0) return;
+
+        const unsubscribers: (() => void)[] = [];
+        const equipment: Record<string, Equipo[]> = {};
+
+        clientes.forEach(cliente => {
+            const unsub = subscribeToEquipos(cliente.id, (equipos) => {
+                equipment[cliente.id] = equipos;
+
+                // Update state with current equipment map
+                setEquipmentByClient({ ...equipment });
+
+                // Recalculate totals
+                let total = 0;
+                let enMantenimiento = 0;
+                Object.values(equipment).forEach(eqs => {
+                    total += eqs.length;
+                    enMantenimiento += eqs.filter(e => e.estado === "mantenimiento").length;
+                });
+
+                setEquipmentStats({ total, enMantenimiento });
+            });
+            unsubscribers.push(unsub);
+        });
+
+        return () => {
+            unsubscribers.forEach(unsub => unsub());
+        };
+    }, [clientes]);
+
+    const filteredClientes = clientes.filter((cliente) => {
+        // Search filter
+        const matchesSearch =
+            cliente.name.toLowerCase().includes(search.toLowerCase()) ||
+            (cliente.ruc && cliente.ruc.includes(search));
+
+        // Stats card filter
+        const clientEquipment = equipmentByClient[cliente.id] || [];
+        let matchesStatsFilter = true;
+
+        if (statsFilter === "withEquipment") {
+            matchesStatsFilter = clientEquipment.length > 0;
+        } else if (statsFilter === "inMaintenance") {
+            matchesStatsFilter = clientEquipment.some(e => e.estado === "mantenimiento");
+        }
+
+        return matchesSearch && matchesStatsFilter;
+    });
+
+    // Reset pagination when search or filter changes
     useEffect(() => {
         setCurrentPage(1);
-    }, [search]);
+    }, [search, statsFilter]);
 
     const totalPages = Math.ceil(filteredClientes.length / itemsPerPage);
     const paginatedClientes = filteredClientes.slice(
@@ -989,7 +1054,53 @@ export default function ClientesPage() {
     return (
         <AdminLayout title="Gestión de Clientes">
             <div className="space-y-6">
-                {/* Header Actions */}
+                {/* Stats Cards - Now at the top */}
+                <div className="grid gap-4 md:grid-cols-3">
+                    <Card
+                        onClick={() => setStatsFilter("all")}
+                        className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 bg-gradient-to-br from-blue-50 to-primary/5 border-primary/20 shadow-sm ${statsFilter === "all" ? "ring-2 ring-primary ring-offset-2" : ""}`}
+                    >
+                        <CardContent className="flex items-center gap-4 p-5">
+                            <div className="p-3 bg-gradient-to-br from-primary/10 to-primary/20 rounded-xl shadow-sm">
+                                <Building2 className="h-6 w-6 text-primary" />
+                            </div>
+                            <div>
+                                <p className="text-3xl font-bold text-primary">{clientes.length}</p>
+                                <p className="text-sm text-muted-foreground font-medium">Clientes Totales</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card
+                        onClick={() => setStatsFilter(statsFilter === "withEquipment" ? "all" : "withEquipment")}
+                        className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200/50 shadow-sm ${statsFilter === "withEquipment" ? "ring-2 ring-green-500 ring-offset-2" : ""}`}
+                    >
+                        <CardContent className="flex items-center gap-4 p-5">
+                            <div className="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
+                                <Wrench className="h-6 w-6 text-green-600" />
+                            </div>
+                            <div>
+                                <p className="text-3xl font-bold text-green-600">{equipmentStats.total}</p>
+                                <p className="text-sm text-green-700/80 font-medium">Equipos Registrados</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card
+                        onClick={() => setStatsFilter(statsFilter === "inMaintenance" ? "all" : "inMaintenance")}
+                        className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200/50 shadow-sm ${statsFilter === "inMaintenance" ? "ring-2 ring-amber-500 ring-offset-2" : ""}`}
+                    >
+                        <CardContent className="flex items-center gap-4 p-5">
+                            <div className="p-3 bg-gradient-to-br from-amber-100 to-amber-200 rounded-xl shadow-sm">
+                                <Settings className="h-6 w-6 text-amber-600" />
+                            </div>
+                            <div>
+                                <p className="text-3xl font-bold text-amber-600">{equipmentStats.enMantenimiento}</p>
+                                <p className="text-sm text-amber-700/80 font-medium">En Mantenimiento</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Header Actions - Search and New Client button */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div className="relative w-full sm:w-72">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -1001,50 +1112,6 @@ export default function ClientesPage() {
                         />
                     </div>
                     <NuevoClienteDialog />
-                </div>
-                {/* Stats */}
-                <div className="grid gap-4 md:grid-cols-3">
-                    <Card className="border-l-4 border-l-primary shadow-sm hover:shadow-md transition-shadow">
-                        <CardContent className="flex items-center gap-4 py-4">
-                            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                                <Building2 className="h-5 w-5 text-primary" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold">{clientes.length}</p>
-                                <p className="text-sm text-muted-foreground">Clientes Totales</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="border-l-4 border-l-green-600 shadow-sm hover:shadow-md transition-shadow">
-                        <CardContent className="flex items-center gap-4 py-4">
-                            <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-                                <Wrench className="h-5 w-5 text-green-600" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold">
-                                    {clientes.reduce((acc, c) => acc + ((c as any).equipos?.length || 0), 0)}
-                                </p>
-                                <p className="text-sm text-muted-foreground">Equipos Registrados</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="border-l-4 border-l-amber-600 shadow-sm hover:shadow-md transition-shadow">
-                        <CardContent className="flex items-center gap-4 py-4">
-                            <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                                <Settings className="h-5 w-5 text-amber-600" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold">
-                                    {clientes.reduce(
-                                        (acc, c) =>
-                                            acc + ((c as any).equipos?.filter((e: any) => e.estado === "mantenimiento").length || 0),
-                                        0
-                                    )}
-                                </p>
-                                <p className="text-sm text-muted-foreground">En Mantenimiento</p>
-                            </div>
-                        </CardContent>
-                    </Card>
                 </div>
 
                 {/* Desktop Clients Table - Visible on md and up */}
@@ -1096,62 +1163,66 @@ export default function ClientesPage() {
                             </Table>
                         </div>
                     </CardContent>
-                </Card>
+                </Card >
 
                 {/* Mobile Clients List - Visible on small screens */}
-                <div className="md:hidden space-y-4">
+                < div className="md:hidden space-y-4" >
                     <div className="flex items-center justify-between pb-2">
                         <h2 className="text-lg font-semibold">Lista de Clientes</h2>
                         <span className="text-sm text-muted-foreground">{filteredClientes.length} resultados</span>
                     </div>
 
-                    {loading ? (
-                        <div className="text-center py-8">
-                            <Spinner className="h-8 w-8 mx-auto" />
-                            <p className="text-sm text-muted-foreground mt-2">Cargando clientes...</p>
-                        </div>
-                    ) : paginatedClientes.length > 0 ? (
-                        paginatedClientes.map((cliente) => (
-                            <ClienteCardMobile key={cliente.id} cliente={cliente} />
-                        ))
-                    ) : (
-                        <div className="text-center py-8 bg-slate-50 rounded-lg border border-dashed">
-                            <p className="text-muted-foreground">No se encontraron clientes</p>
-                        </div>
-                    )}
-                </div>
+                    {
+                        loading ? (
+                            <div className="text-center py-8">
+                                <Spinner className="h-8 w-8 mx-auto" />
+                                <p className="text-sm text-muted-foreground mt-2">Cargando clientes...</p>
+                            </div>
+                        ) : paginatedClientes.length > 0 ? (
+                            paginatedClientes.map((cliente) => (
+                                <ClienteCardMobile key={cliente.id} cliente={cliente} />
+                            ))
+                        ) : (
+                            <div className="text-center py-8 bg-slate-50 rounded-lg border border-dashed">
+                                <p className="text-muted-foreground">No se encontraron clientes</p>
+                            </div>
+                        )
+                    }
+                </div >
 
                 {/* Pagination Controls */}
-                {!loading && filteredClientes.length > 0 && (
-                    <div className="flex items-center justify-between border-t border-slate-200 pt-4">
-                        <div className="text-sm text-muted-foreground">
-                            Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredClientes.length)} de {filteredClientes.length} clientes
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                disabled={currentPage === 1}
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                                <span className="sr-only">Anterior</span>
-                            </Button>
-                            <div className="text-sm font-medium">
-                                Página {currentPage} de {totalPages}
+                {
+                    !loading && filteredClientes.length > 0 && (
+                        <div className="flex items-center justify-between border-t border-slate-200 pt-4">
+                            <div className="text-sm text-muted-foreground">
+                                Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredClientes.length)} de {filteredClientes.length} clientes
                             </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                disabled={currentPage === totalPages}
-                            >
-                                <ChevronRight className="h-4 w-4" />
-                                <span className="sr-only">Siguiente</span>
-                            </Button>
+                            <div className="flex items-center space-x-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                    <span className="sr-only">Anterior</span>
+                                </Button>
+                                <div className="text-sm font-medium">
+                                    Página {currentPage} de {totalPages}
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    <ChevronRight className="h-4 w-4" />
+                                    <span className="sr-only">Siguiente</span>
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )
+                }
             </div >
         </AdminLayout >
     );
