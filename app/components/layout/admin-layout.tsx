@@ -5,9 +5,11 @@ import { cn } from "~/lib/utils";
 interface AdminLayoutProps {
     children: React.ReactNode;
     title?: string;
+    subtitle?: string;
+    headerActions?: React.ReactNode;
 }
 
-export function AdminLayout({ children, title }: AdminLayoutProps) {
+export function AdminLayout({ children, title, subtitle, headerActions }: AdminLayoutProps) {
     const [collapsed, setCollapsed] = useState(false);
 
     return (
@@ -22,29 +24,36 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
             {/* Main Content */}
             <main
                 className={cn(
-                    "min-h-screen transition-all duration-300",
+                    "min-h-screen flex flex-col transition-all duration-300",
                     collapsed ? "md:ml-16" : "md:ml-64"
                 )}
             >
                 {/* Header */}
-                <header className="sticky top-0 z-30 h-16 border-b border-border bg-card/80 backdrop-blur-sm lg:px-4">
-                    <div className="flex h-full items-center justify-between px-4 md:px-0">
+                <header className="sticky top-0 z-30 py-6 bg-background lg:px-4">
+                    <div className="flex items-center justify-between px-4 md:px-0">
                         <div className="flex items-center gap-4">
                             <MobileSidebar />
                             {title && (
-                                <h1 className="text-xl font-semibold text-foreground tracking-tight">
-                                    {title}
-                                </h1>
+                                <div className="flex flex-col gap-1">
+                                    <h1 className="text-2xl font-bold text-foreground tracking-tight">
+                                        {title}
+                                    </h1>
+                                    {subtitle && (
+                                        <p className="text-sm text-muted-foreground hidden sm:block">
+                                            {subtitle}
+                                        </p>
+                                    )}
+                                </div>
                             )}
                         </div>
                         <div className="flex items-center gap-4">
-                            {/* User info or actions could go here */}
+                            {headerActions}
                         </div>
                     </div>
                 </header>
 
                 {/* Page Content */}
-                <div className="p-4 md:p-6">{children}</div>
+                <div className="px-4 md:px-8 pt-4 md:pt-6 flex flex-col flex-1">{children}</div>
             </main>
         </div>
     );

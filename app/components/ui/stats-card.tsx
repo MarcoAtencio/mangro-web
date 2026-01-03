@@ -84,18 +84,18 @@ export function StatsCard({
             )}
             onClick={onClick}
         >
-            <CardContent className="p-5">
+            <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className={cn("text-sm font-medium", styles.textTitle)}>{title}</p>
-                        <p className={cn("text-3xl font-bold mt-1", styles.textValue)}>{value}</p>
+                        <p className={cn("text-xs font-medium", styles.textTitle)}>{title}</p>
+                        <p className={cn("text-2xl font-bold mt-0.5", styles.textValue)}>{value}</p>
                     </div>
-                    <div className={cn("p-3 bg-gradient-to-br rounded-xl shadow-sm", styles.iconBg)}>
-                        <Icon className={cn("h-6 w-6", styles.iconColor)} />
+                    <div className={cn("p-2 bg-gradient-to-br rounded-lg", styles.iconBg)}>
+                        <Icon className={cn("h-5 w-5", styles.iconColor)} />
                     </div>
                 </div>
                 {(description || trend) && (
-                    <div className="mt-4 flex items-center gap-2 text-xs">
+                    <div className="mt-3 flex items-center gap-2 text-xs">
                          {trend && (
                             <div className={cn("flex items-center gap-1 font-medium", trend.positive !== false ? "text-green-600" : "text-red-600")}>
                                 <TrendingUp className={cn("h-3 w-3", trend.positive === false && "rotate-180")} />

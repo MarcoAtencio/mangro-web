@@ -1,10 +1,12 @@
 import { useAuth } from "~/lib/auth";
+import { USER_ROLE_LABELS, type UserRole } from "~/lib/constants";
 
 interface UserDisplayInfo {
     displayName: string;
     displayEmail: string;
     initials: string;
     photoUrl: string | undefined;
+    roleName: string | undefined;
 }
 
 /**
@@ -24,11 +26,13 @@ export function useUserDisplay(): UserDisplayInfo {
         .toUpperCase()
         .slice(0, 2);
     const photoUrl = userProfile?.photo_url;
+    const roleName = userProfile?.role ? USER_ROLE_LABELS[userProfile.role as UserRole] : undefined;
 
     return {
         displayName,
         displayEmail,
         initials,
         photoUrl,
+        roleName,
     };
 }

@@ -17,6 +17,8 @@ import {
     Search,
     Settings,
     Wrench,
+    Filter,
+    ArrowUpDown,
 } from "lucide-react";
 
 import { useClientes } from "~/hooks/use-clientes";
@@ -156,8 +158,12 @@ export default function ClientesPage() {
     const paginatedClientes = filteredClientes.slice(startIndex, endIndex);
 
     return (
-        <AdminLayout title="Gestión de Clientes">
-            <div className="flex flex-col gap-6">
+        <AdminLayout 
+            title="Gestión de Clientes"
+            subtitle="Administra tu cartera de clientes y equipos"
+            headerActions={<NuevoClienteDialog />}
+        >
+            <div className="flex flex-col gap-8 min-h-full">
                 {/* Stats Cards */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <StatsCard
@@ -196,88 +202,102 @@ export default function ClientesPage() {
                 {/* Filters Section */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     {/* Search Input */}
-                    <div className="relative w-full sm:w-52">
+                    <div className="relative w-full sm:w-72">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            placeholder="Buscar..."
+                            placeholder="Buscar por nombre o RUC..."
                             value={search}
                             onChange={(e) => handleSearchChange(e.target.value)}
                             className="pl-9 h-9 bg-white border-slate-200 focus:border-primary transition-colors shadow-sm"
                         />
                     </div>
-                    <NuevoClienteDialog />
+                    {/* Filter Buttons */}
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" className="h-9">
+                            <Filter className="h-4 w-4 mr-2" />
+                            Filtros
+                        </Button>
+                        <Button variant="outline" size="sm" className="h-9">
+                            <ArrowUpDown className="h-4 w-4 mr-2" />
+                            Ordenar
+                        </Button>
+                    </div>
                 </div>
 
-                {/* Desktop Clients Table */}
-                <Card className="hidden md:block border-slate-200 shadow-sm">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="text-lg">Lista de Clientes</CardTitle>
-                        <CardDescription>
-                            Haga clic en un cliente para ver su catálogo de equipos
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0 sm:p-6 pt-0">
-                        <div className="overflow-x-auto rounded-md border border-slate-200">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-slate-50/50">
-                                        <TableHead className="w-[350px] lg:w-[450px]">
-                                            Cliente
-                                        </TableHead>
-                                        <TableHead className="hidden sm:table-cell w-[200px]">
-                                            Contacto
-                                        </TableHead>
-                                        <TableHead className="hidden md:table-cell text-center w-[100px]">
-                                            Equipos
-                                        </TableHead>
-                                        <TableHead className="hidden md:table-cell text-center w-[100px]">
-                                            Servicios
-                                        </TableHead>
-                                        <TableHead className="text-right w-[100px]">
-                                            Acciones
-                                        </TableHead>
+                {/* Desktop Clients Table - With gray background section */}
+                <div className="hidden md:flex md:flex-col -mx-8 px-8 py-6 pb-8 bg-slate-100/70 flex-1">
+                    <div className="overflow-x-auto rounded-md border border-slate-200 bg-white">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="bg-slate-50/50">
+                                    <TableHead className="w-[350px] lg:w-[450px]">
+                                        Cliente
+                                    </TableHead>
+                                    <TableHead className="hidden sm:table-cell w-[200px]">
+                                        Contacto
+                                    </TableHead>
+                                    <TableHead className="hidden md:table-cell text-center w-[100px]">
+                                        Equipos
+                                    </TableHead>
+                                    <TableHead className="hidden md:table-cell text-center w-[100px]">
+                                        Servicios
+                                    </TableHead>
+                                    <TableHead className="text-right w-[100px]">
+                                        Acciones
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {loadingClientes ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center py-8">
+                                            <Spinner className="h-8 w-8 mx-auto" />
+                                            <p className="text-sm text-muted-foreground mt-2">
+                                                Cargando clientes...
+                                            </p>
+                                        </TableCell>
                                     </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {loadingClientes ? (
-                                        <TableRow>
-                                            <TableCell colSpan={5} className="text-center py-8">
-                                                <Spinner className="h-8 w-8 mx-auto" />
-                                                <p className="text-sm text-muted-foreground mt-2">
-                                                    Cargando clientes...
-                                                </p>
-                                            </TableCell>
-                                        </TableRow>
-                                    ) : (
-                                        <>
-                                            {paginatedClientes.map((cliente) => (
-                                                <ClienteRow
-                                                    key={cliente.id}
-                                                    cliente={cliente}
-                                                    serviciosCount={
-                                                        servicesByClient[cliente.id] || 0
-                                                    }
-                                                />
-                                            ))}
-                                            {paginatedClientes.length === 0 && (
-                                                <TableRow>
-                                                    <TableCell
-                                                        colSpan={5}
-                                                        className="text-center py-8"
-                                                    >
-                                                        <p className="text-muted-foreground">
-                                                            No se encontraron clientes
-                                                        </p>
-                                                    </TableCell>
-                                                </TableRow>
-                                            )}
-                                        </>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </CardContent>
-                </Card>
+                                ) : (
+                                    <>
+                                        {paginatedClientes.map((cliente) => (
+                                            <ClienteRow
+                                                key={cliente.id}
+                                                cliente={cliente}
+                                                serviciosCount={
+                                                    servicesByClient[cliente.id] || 0
+                                                }
+                                            />
+                                        ))}
+                                        {paginatedClientes.length === 0 && (
+                                            <TableRow>
+                                                <TableCell
+                                                    colSpan={5}
+                                                    className="text-center py-8"
+                                                >
+                                                    <p className="text-muted-foreground">
+                                                        No se encontraron clientes
+                                                    </p>
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    
+                    {/* Pagination inside gray section */}
+                    {!loadingClientes && filteredClientes.length > 0 && (
+                        <PaginationControls
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setPage}
+                            totalItems={filteredClientes.length}
+                            itemsPerPage={10}
+                            itemName="clientes"
+                        />
+                    )}
+                </div>
 
                 {/* Mobile Clients List */}
                 <div className="md:hidden space-y-4">
@@ -305,17 +325,12 @@ export default function ClientesPage() {
                         </div>
                     )}
                 </div>
-
-                {/* Pagination Controls */}
+                
+                {/* Mobile Pagination */}
                 {!loadingClientes && filteredClientes.length > 0 && (
-                    <PaginationControls
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        totalItems={filteredClientes.length}
-                        itemsPerPage={10}
-                        onPageChange={setPage}
-                        itemName="clientes"
-                    />
+                    <div className="md:hidden text-center py-4 text-sm text-muted-foreground">
+                        Mostrando {paginatedClientes.length} de {filteredClientes.length} clientes
+                    </div>
                 )}
             </div>
         </AdminLayout>
