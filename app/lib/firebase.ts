@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getFirestore, enableIndexedDbPersistence } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
@@ -13,8 +13,10 @@ export const firebaseConfig = {
   measurementId: "G-QDY0NFV8EB"
 };
 
-// Initialize Firebase
-export const app = initializeApp(firebaseConfig);
+export const googleMapsApiKey = "AIzaSyAhT8aTmSj9SMEjHnEZ5Rza4XRtWpOvuDs";
+
+// Initialize Firebase safely for HMR
+export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
 // Initialize Analytics (only in browser)
 export const analytics = typeof window !== 'undefined'
@@ -35,7 +37,6 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Initialize Auth
 // Initialize Auth
 export const auth = getAuth(app);
 

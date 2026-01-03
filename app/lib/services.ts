@@ -64,19 +64,19 @@ export const createService = async (taskData: any) => {
     // taskData will come from the form. We need to map it to the screenshot structure.
     try {
         const docRef = await addDoc(collection(db, "tasks"), {
+            companyId: taskData.companyId || "", // Link to company/client
             address: taskData.clientAddress,
             clientName: taskData.clientName,
-            contactName: taskData.contactName || "", // New field
+            contactName: taskData.contactName || "",
             scheduledTime: `${taskData.startTime} - ${taskData.endTime}`,
             technicianId: taskData.technicianId,
             description: taskData.description || "",
+            equipmentSummary: taskData.equipment || "",
+            priority: taskData.priority || "MEDIA",
+            status: "PENDIENTE",
 
             createAt: Timestamp.now(),
             updatedAt: Timestamp.now(),
-
-            // We might want to save the raw date too if we want to query by day later
-            // adding 'scheduledDate' or just 'date' as a helper if schema permits.
-            // Screenshot didn't explicitly forbid other fields.
             date: Timestamp.fromDate(taskData.date),
         });
         return docRef.id;

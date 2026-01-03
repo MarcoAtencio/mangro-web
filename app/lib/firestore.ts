@@ -11,6 +11,7 @@ import {
     orderBy,
     onSnapshot,
     Timestamp,
+    GeoPoint,
     type DocumentData,
     type QuerySnapshot
 } from "firebase/firestore";
@@ -36,6 +37,7 @@ export interface Cliente {
     phone?: string;
     email?: string;
     contact_name?: string;
+    location?: GeoPoint;
 }
 
 export interface Equipo {
@@ -167,7 +169,50 @@ export function subscribeToClientes(
     return unsubscribe;
 }
 
+export async function createCliente(data: any): Promise<string> {
+    try {
+        const { lat, lng, ...rest } = data;
+        const docRef = await addDoc(collection(db, "companies"), {
+            ...rest,
+            location: new GeoPoint(lat, lng),
+            created_at: Timestamp.now(),
+        });
+        return docRef.id;
+    } catch (error) {
+        console.error("Error creating company:", error);
+        throw error;
+    }
+}
+
 // ============ ESTADÍSTICAS ============
+
+export async function updateCliente(id: string, data: any): Promise<void> {
+    try {
+        const { lat, lng, ...rest } = data;
+        const updateData: any = { ...rest };
+
+        // Only update location if lat/lng are provided
+        if (lat !== undefined && lng !== undefined) {
+            updateData.location = new GeoPoint(lat, lng);
+        }
+
+        const docRef = doc(db, "companies", id);
+        await updateDoc(docRef, updateData);
+    } catch (error) {
+        console.error("Error updating company:", error);
+        throw error;
+    }
+}
+
+export async function deleteCliente(id: string): Promise<void> {
+    try {
+        const docRef = doc(db, "companies", id);
+        await deleteDoc(docRef);
+    } catch (error) {
+        console.error("Error deleting company:", error);
+        throw error;
+    }
+}
 
 export async function getDashboardStats() {
     const [usuariosSnap, clientesSnap] = await Promise.all([
@@ -184,6 +229,60 @@ export async function getDashboardStats() {
         clientesTotal: clientesSnap.size,
         usuariosTotal: usuariosSnap.size,
     };
+}
+
+// ============ EQUIPOS ============
+
+export async function createEquipo(clienteId: string, data: any): Promise<string> {
+    try {
+        const docRef = await addDoc(collection(db, "companies", clienteId, "equipments"), {
+            ...data,
+            created_at: Timestamp.now(),
+        });
+        return docRef.id;
+    } catch (error) {
+        console.error("Error creating equipment:", error);
+        throw error;
+    }
+}
+
+export async function updateEquipo(clienteId: string, equipoId: string, data: any): Promise<void> {
+    try {
+        const docRef = doc(db, "companies", clienteId, "equipments", equipoId);
+        await updateDoc(docRef, data);
+    } catch (error) {
+        console.error("Error updating equipment:", error);
+        throw error;
+    }
+}
+
+export async function deleteEquipo(clienteId: string, equipoId: string): Promise<void> {
+    try {
+        const docRef = doc(db, "companies", clienteId, "equipments", equipoId);
+        await deleteDoc(docRef);
+    } catch (error) {
+        console.error("Error deleting equipment:", error);
+        throw error;
+    }
+}
+
+export function subscribeToEquipos(
+    clienteId: string,
+    callback: (equipos: Equipo[]) => void
+): () => void {
+    const q = query(collection(db, "companies", clienteId, "equipments"), orderBy("created_at", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const equipos = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+            // Handle timestamps safely
+            ultimo_mantenimiento: doc.data().ultimo_mantenimiento instanceof Timestamp
+                ? doc.data().ultimo_mantenimiento.toDate()
+                : doc.data().ultimo_mantenimiento,
+        })) as Equipo[];
+        callback(equipos);
+    });
+    return unsubscribe;
 }
 
 // Helper to format Firestore Timestamp
