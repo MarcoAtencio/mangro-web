@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { AdminLayout } from "~/components/layout/admin-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "~/components/ui/card";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+    CardFooter,
+} from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -9,14 +16,7 @@ import { Spinner } from "~/components/ui/spinner";
 import { useAuth } from "~/lib/auth";
 import { updateUsuario } from "~/lib/firestore";
 import { uploadProfileImage } from "~/lib/storage";
-import {
-    UserCircle,
-    Camera,
-    Shield,
-    Mail,
-    Phone,
-    Save,
-} from "lucide-react";
+import { UserCircle, Camera, Shield, Mail, Phone, Save } from "lucide-react";
 export default function ConfiguracionPage() {
     const { user, userProfile } = useAuth();
     const [loading, setLoading] = useState(false);
@@ -79,10 +79,14 @@ export default function ConfiguracionPage() {
     // Role Badge Logic (reused)
     const getRoleLabel = (role: string) => {
         switch (role) {
-            case "ADMIN": return "Administrador";
-            case "SUPERVISOR": return "Supervisor";
-            case "TECNICO": return "Técnico";
-            default: return role;
+            case "ADMIN":
+                return "Administrador";
+            case "SUPERVISOR":
+                return "Supervisor";
+            case "TECNICO":
+                return "Técnico";
+            default:
+                return role;
         }
     };
 
@@ -128,10 +132,14 @@ export default function ConfiguracionPage() {
                                             />
                                         </div>
                                         <div className="flex-1 space-y-1">
-                                            <CardTitle className="text-2xl font-bold tracking-tight">{userProfile?.full_name || "Usuario"}</CardTitle>
+                                            <CardTitle className="text-2xl font-bold tracking-tight">
+                                                {userProfile?.full_name || "Usuario"}
+                                            </CardTitle>
                                             <CardDescription className="flex items-center justify-center sm:justify-start gap-2 mt-1">
                                                 <Shield className="h-3.5 w-3.5 text-primary" />
-                                                <span className="font-medium text-primary/80">{getRoleLabel(userProfile?.role || "TECNICO")}</span>
+                                                <span className="font-medium text-primary/80">
+                                                    {getRoleLabel(userProfile?.role || "TECNICO")}
+                                                </span>
                                             </CardDescription>
                                         </div>
                                     </div>
@@ -142,7 +150,9 @@ export default function ConfiguracionPage() {
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Datos Personales</CardTitle>
-                                    <CardDescription>gestiona tu información pública y de contacto</CardDescription>
+                                    <CardDescription>
+                                        gestiona tu información pública y de contacto
+                                    </CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -164,7 +174,12 @@ export default function ConfiguracionPage() {
                                                 <Input
                                                     id="full_name"
                                                     value={formData.full_name}
-                                                    onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setFormData({
+                                                            ...formData,
+                                                            full_name: e.target.value,
+                                                        })
+                                                    }
                                                     placeholder="Tu nombre completo"
                                                 />
                                             </div>
@@ -175,7 +190,12 @@ export default function ConfiguracionPage() {
                                                     <Input
                                                         id="phone"
                                                         value={formData.phone}
-                                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                                        onChange={(e) =>
+                                                            setFormData({
+                                                                ...formData,
+                                                                phone: e.target.value,
+                                                            })
+                                                        }
                                                         placeholder="+51 ..."
                                                         className="pl-9"
                                                     />
@@ -195,7 +215,11 @@ export default function ConfiguracionPage() {
                                                 disabled={loading}
                                                 className="w-full md:w-auto ml-auto bg-gradient-to-r from-secondary to-primary hover:from-secondary/90 hover:to-primary/90 shadow-lg shadow-primary/20 transition-all active:scale-95"
                                             >
-                                                {loading ? <Spinner className="mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
+                                                {loading ? (
+                                                    <Spinner className="mr-2 h-4 w-4" />
+                                                ) : (
+                                                    <Save className="mr-2 h-4 w-4" />
+                                                )}
                                                 Guardar Cambios
                                             </Button>
                                         </div>
@@ -209,7 +233,9 @@ export default function ConfiguracionPage() {
                         <Card>
                             <CardHeader>
                                 <CardTitle>Preferencias del Sistema</CardTitle>
-                                <CardDescription>Personaliza tu experiencia en MANGRO</CardDescription>
+                                <CardDescription>
+                                    Personaliza tu experiencia en MANGRO
+                                </CardDescription>
                             </CardHeader>
                             <CardContent className="py-8 text-center text-muted-foreground">
                                 <p>Más opciones de configuración estarán disponibles pronto.</p>

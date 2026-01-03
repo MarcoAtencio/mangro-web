@@ -6,7 +6,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Spinner } from "~/components/ui/spinner";
 import { useAuth } from "~/lib/auth";
-import { Eye, EyeOff, LogIn, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, LogIn, AlertCircle, Mail, Lock } from "lucide-react";
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -37,67 +37,72 @@ export default function LoginPage() {
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden">
             {/* Branded Background Patterns */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_center,rgba(0,86,150,0.08)_0%,transparent_70%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f080_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f080_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#0069B40d_0%,transparent_40%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,#00A39B0d_0%,transparent_40%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f080_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f080_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-60" />
 
-            <div className="relative w-full max-w-md">
-                {/* Glow effect */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-secondary/40 to-primary/40 rounded-2xl blur-xl opacity-40 animate-pulse" />
-
-                <Card className="relative border-slate-200 bg-white/95 backdrop-blur-xl shadow-2xl">
+            <div className="relative w-full max-w-[400px] animate-in fade-in zoom-in-95 duration-500 will-change-transform">
+                <Card className="relative border-slate-200/60 bg-white/90 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-shadow duration-300">
                     <CardHeader className="text-center pb-2 pt-8">
                         {/* Logo */}
                         <div className="flex justify-center mb-6">
-                            <div className="p-3 bg-white rounded-xl shadow-sm border border-slate-100">
+                            <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-100 ring-1 ring-slate-50">
                                 <img
                                     src="/logo-mangro.jpg"
                                     alt="MANGRO"
-                                    className="h-12 w-auto object-contain"
+                                    className="h-10 w-auto object-contain"
                                 />
                             </div>
                         </div>
-                        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+                        <CardTitle className="text-xl font-bold text-primary tracking-tight">
                             Panel de Administración
                         </CardTitle>
-                        <CardDescription className="text-slate-500">
-                            Bienvenido, ingresa tus credenciales
+                        <CardDescription className="text-slate-500 text-sm mt-1">
+                            Ingresa tus credenciales para continuar
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="pb-8 px-8">
                         <form onSubmit={handleSubmit} className="space-y-5">
                             {/* Error message */}
                             {displayError && (
-                                <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 text-sm font-medium animate-in fade-in slide-in-from-top-1">
+                                <div className="flex items-center gap-3 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium animate-in fade-in slide-in-from-top-1 border border-red-100">
                                     <AlertCircle className="h-4 w-4 shrink-0" />
                                     <span>{displayError}</span>
                                 </div>
                             )}
 
                             <div className="space-y-2">
-                                <Label htmlFor="email" className="text-slate-700 font-medium">
-                                    Email
+                                <Label
+                                    htmlFor="email"
+                                    className="text-slate-700 text-xs font-semibold uppercase tracking-wider"
+                                >
+                                    Email Corporativo
                                 </Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="ejemplo@mangro.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    className="bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-secondary focus:ring-secondary/20 transition-all duration-200 h-11"
-                                />
+                                <div className="relative group">
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="ejemplo@mangro.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                        className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-primary focus:ring-primary/20 transition-all duration-200 h-11"
+                                    />
+                                </div>
                             </div>
 
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <Label htmlFor="password" className="text-slate-700 font-medium">
+                                    <Label
+                                        htmlFor="password"
+                                        className="text-slate-700 text-xs font-semibold uppercase tracking-wider"
+                                    >
                                         Contraseña
                                     </Label>
-                                    <a href="#" className="text-xs text-primary hover:text-primary/80 font-medium transition-colors">
-                                        ¿Olvidaste tu contraseña?
-                                    </a>
                                 </div>
-                                <div className="relative">
+                                <div className="relative group">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
                                     <Input
                                         id="password"
                                         type={showPassword ? "text" : "password"}
@@ -105,12 +110,12 @@ export default function LoginPage() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        className="bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-secondary focus:ring-secondary/20 pr-10 transition-all duration-200 h-11"
+                                        className="pl-10 pr-10 bg-slate-50/50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-primary focus:ring-primary/20 transition-all duration-200 h-11"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-md hover:bg-slate-100"
                                     >
                                         {showPassword ? (
                                             <EyeOff className="h-4 w-4" />
@@ -119,17 +124,25 @@ export default function LoginPage() {
                                         )}
                                     </button>
                                 </div>
+                                <div className="flex justify-end pt-1">
+                                    <a
+                                        href="#"
+                                        className="text-xs text-primary/80 hover:text-primary font-medium transition-colors hover:underline underline-offset-4"
+                                    >
+                                        ¿Olvidaste tu contraseña?
+                                    </a>
+                                </div>
                             </div>
 
                             <Button
                                 type="submit"
                                 disabled={isSubmitting || loading}
-                                className="w-full bg-gradient-to-r from-secondary to-primary hover:from-secondary/90 hover:to-primary/90 text-white font-medium h-11 mt-4 shadow-lg shadow-primary/25 transition-all duration-200 active:scale-[0.98]"
+                                className="w-full bg-primary hover:bg-primary/90 text-white font-medium h-11 mt-6 shadow-lg shadow-primary/20 transition-all duration-200 active:scale-[0.98] rounded-lg"
                             >
                                 {isSubmitting ? (
                                     <>
                                         <Spinner className="mr-2 h-4 w-4" />
-                                        Iniciando sesión...
+                                        Iniciando...
                                     </>
                                 ) : (
                                     <>
@@ -141,9 +154,12 @@ export default function LoginPage() {
                         </form>
 
                         {/* Footer */}
-                        <div className="mt-8 pt-6 border-t border-slate-100">
-                            <p className="text-center text-xs text-slate-400">
-                                MANGRO S.A.C. © 2026<br />Sistema de Gestión de Informes Técnicos
+                        <div className="mt-8 pt-6 border-t border-slate-100/60 text-center">
+                            <p className="text-xs text-slate-400">
+                                MANGRO S.A.C. © {new Date().getFullYear()}
+                            </p>
+                            <p className="text-[10px] text-slate-300 mt-1">
+                                Sistema de Gestión de Informes Técnicos
                             </p>
                         </div>
                     </CardContent>

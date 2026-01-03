@@ -1,10 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AdminLayout } from "~/components/layout/admin-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import { Badge } from "~/components/ui/badge";
 import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
 import { Spinner } from "~/components/ui/spinner";
 import {
     Table,
@@ -15,36 +13,6 @@ import {
     TableRow,
 } from "~/components/ui/table";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "~/components/ui/dialog";
-import {
-    Users,
-    Plus,
-    Search,
-    Settings,
-    Phone,
-    Mail,
-    Shield,
-    UserCircle,
-    MoreHorizontal,
-    Pencil,
-    Trash2,
-} from "lucide-react";
-import { cn } from "~/lib/utils";
-import {
-    subscribeToUsuarios,
-    createUsuario,
-    updateUsuario,
-    formatFirestoreDate,
-    type Usuario
-} from "~/lib/firestore";
-import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -52,356 +20,80 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import {
+    Users,
+    Search,
+    Shield,
+    UserCircle,
+    MoreHorizontal,
+    Pencil,
+    Mail,
+    Phone,
+} from "lucide-react";
 
-import { uploadProfileImage } from "~/lib/storage";
-import { useAuth } from "~/lib/auth";
+import { useUsuarios } from "~/hooks/use-usuarios";
+import { usePagination } from "~/hooks/use-pagination";
+import { type Usuario } from "~/lib/firestore";
 
-function getRoleBadge(role: string) {
-    switch (role) {
-        case "ADMIN":
-            return <Badge variant="default" className="gap-1"><Shield className="h-3 w-3" />Admin</Badge>;
-        case "TECNICO":
-            return <Badge variant="success" className="gap-1"><Users className="h-3 w-3" />Técnico</Badge>;
-        case "SUPERVISOR":
-            return <Badge variant="warning" className="gap-1"><Shield className="h-3 w-3" />Supervisor</Badge>;
-        default:
-            return <Badge variant="outline">{role}</Badge>;
-    }
-}
-
-function NuevoTecnicoDialog({ onSuccess }: { onSuccess?: () => void }) {
-    const [open, setOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const { registerUser } = useAuth();
-    const [formData, setFormData] = useState({
-        full_name: "",
-        email: "",
-        phone: "",
-        password: "",
-        role: "TECNICO" as const,
-    });
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            // 1. Create user in Firebase Auth (getting the UID)
-            const uid = await registerUser(formData.email, formData.password);
-
-            // 2. Upload photo if selected
-            let photoUrl = "";
-            if (selectedFile) {
-                try {
-                    photoUrl = await uploadProfileImage(selectedFile, uid);
-                } catch (uploadError) {
-                    console.error("Failed to upload photo:", uploadError);
-                    // Continue without photo or handle error
-                }
-            }
-
-            // 3. Create user document in Firestore with the same UID
-            await createUsuario({
-                full_name: formData.full_name,
-                email: formData.email,
-                phone: formData.phone,
-                role: formData.role,
-                photo_url: photoUrl,
-                created_at: new Date(),
-            }, uid);
-
-
-            setOpen(false);
-
-            setFormData({ full_name: "", email: "", phone: "", password: "", role: "TECNICO" });
-            setSelectedFile(null);
-            onSuccess?.();
-        } catch (error) {
-            console.error("Error creating user:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button className="gap-2 bg-gradient-to-r from-secondary to-primary hover:from-secondary/90 hover:to-primary/90 shadow-md transition-all active:scale-95">
-                    <Plus className="h-4 w-4" />
-                    Nuevo Técnico
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[450px]">
-                <form onSubmit={handleSubmit}>
-                    <DialogHeader>
-                        <DialogTitle>Registrar Nuevo Técnico</DialogTitle>
-                        <DialogDescription>
-                            Ingrese los datos del técnico para registrarlo en el sistema.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="photo">Foto de Perfil</Label>
-                            <Input
-                                id="photo"
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => {
-                                    if (e.target.files?.[0]) {
-                                        setSelectedFile(e.target.files[0]);
-                                    }
-                                }}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="full_name">Nombre Completo</Label>
-                            <Input
-                                id="full_name"
-                                placeholder="Juan Pérez García"
-                                value={formData.full_name}
-                                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="tecnico@mangro.com"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="phone">Teléfono</Label>
-                            <Input
-                                id="phone"
-                                placeholder="+51 999 999 999"
-                                value={formData.phone}
-                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Contraseña Temporal</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="******"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                required
-                                minLength={6}
-                            />
-                            <p className="text-xs text-muted-foreground">Mínimo 6 caracteres</p>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="role">Rol</Label>
-                            <select
-                                id="role"
-                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                value={formData.role}
-                                onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-                            >
-                                <option value="TECNICO">Técnico</option>
-                                <option value="SUPERVISOR">Supervisor</option>
-                                <option value="ADMIN">Admin</option>
-                            </select>
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                            Cancelar
-                        </Button>
-                        <Button type="submit" disabled={loading}>
-                            {loading && <Spinner className="mr-2 h-4 w-4" />}
-                            {loading ? "Guardando..." : "Registrar"}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog >
-    );
-}
-
-function EditarTecnicoDialog({ usuario, open, onOpenChange, onSuccess }: {
-    usuario: Usuario;
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onSuccess?: () => void;
-}) {
-    const [loading, setLoading] = useState(false);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [formData, setFormData] = useState({
-        full_name: usuario.full_name || "",
-        phone: usuario.phone || "",
-        role: usuario.role || "TECNICO",
-    });
-
-    useEffect(() => {
-        setFormData({
-            full_name: usuario.full_name || "",
-            phone: usuario.phone || "",
-            role: usuario.role || "TECNICO",
-        });
-        setSelectedFile(null);
-    }, [usuario]);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            let photoUrl = usuario.photo_url;
-            if (selectedFile) {
-                photoUrl = await uploadProfileImage(selectedFile, usuario.id);
-            }
-
-            await updateUsuario(usuario.id, {
-                full_name: formData.full_name,
-                phone: formData.phone,
-                role: formData.role as any,
-                photo_url: photoUrl,
-            });
-            onOpenChange(false);
-            onSuccess?.();
-        } catch (error) {
-            console.error("Error updating user:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[450px]">
-                <form onSubmit={handleSubmit}>
-                    <DialogHeader>
-                        <DialogTitle>Editar Técnico</DialogTitle>
-                        <DialogDescription>
-                            Modifica los datos del usuario. El email no se puede cambiar aquí.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="edit_photo">Foto de Perfil</Label>
-                            <div className="flex items-center gap-4">
-                                {usuario.photo_url && !selectedFile && (
-                                    <img src={usuario.photo_url} alt="Current" className="h-10 w-10 rounded-full object-cover" />
-                                )}
-                                <Input
-                                    id="edit_photo"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                        if (e.target.files?.[0]) {
-                                            setSelectedFile(e.target.files[0]);
-                                        }
-                                    }}
-                                />
-                            </div>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="edit_email">Email</Label>
-                            <Input
-                                id="edit_email"
-                                value={usuario.email}
-                                disabled
-                                className="bg-muted"
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="edit_full_name">Nombre Completo</Label>
-                            <Input
-                                id="edit_full_name"
-                                value={formData.full_name}
-                                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="edit_phone">Teléfono</Label>
-                            <Input
-                                id="edit_phone"
-                                value={formData.phone}
-                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="edit_role">Rol</Label>
-                            <select
-                                id="edit_role"
-                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                value={formData.role}
-                                onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-                            >
-                                <option value="TECNICO">Técnico</option>
-                                <option value="SUPERVISOR">Supervisor</option>
-                                <option value="ADMIN">Admin</option>
-                            </select>
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                            Cancelar
-                        </Button>
-                        <Button type="submit" disabled={loading}>
-                            {loading && <Spinner className="mr-2 h-4 w-4" />}
-                            {loading ? "Guardando..." : "Guardar Cambios"}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
-    );
-}
+import { StatsCard } from "~/components/ui/stats-card";
+import { RoleBadge } from "~/components/users/role-badge";
+import { PaginationControls } from "~/components/ui/pagination-controls";
+import { NuevoTecnicoDialog } from "~/components/tecnicos/nuevo-tecnico-dialog";
+import { EditarTecnicoDialog } from "~/components/tecnicos/editar-tecnico-dialog";
 
 export default function TecnicosPage() {
+    const { usuarios, loading, error } = useUsuarios();
+    
+    // Local state
     const [search, setSearch] = useState("");
-    const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [filterRole, setFilterRole] = useState<string>("all");
     const [editingUser, setEditingUser] = useState<Usuario | null>(null);
 
-    useEffect(() => {
-        // Subscribe to real-time updates
-        let unsubscribe: (() => void) | undefined;
+    // Derived state
+    const tecnicos = usuarios.filter((u) => u.role === "TECNICO");
+    const admins = usuarios.filter((u) => u.role === "ADMIN");
+    const supervisores = usuarios.filter((u) => u.role === "SUPERVISOR");
 
-        try {
-            unsubscribe = subscribeToUsuarios(
-                (data) => {
-                    setUsuarios(data);
-                    setLoading(false);
-                    setError(null);
-                },
-                (err) => {
-                    console.error("Firestore error:", err);
-                    setLoading(false);
-                    if (err.code === 'permission-denied') {
-                        setError("Permisos insuficientes. Necesitas iniciar sesión para ver los usuarios.");
-                    } else {
-                        setError("Error al cargar usuarios: " + err.message);
-                    }
-                }
-            );
-        } catch (err: any) {
-            setLoading(false);
-            setError("Error de conexión con Firebase");
-        }
-
-        return () => unsubscribe?.();
-    }, []);
-
-    const filteredUsuarios = usuarios.filter(
-        (usuario) =>
+    // Filtering
+    const filteredUsuarios = usuarios.filter((usuario) => {
+        const matchesSearch =
             usuario.full_name?.toLowerCase().includes(search.toLowerCase()) ||
             usuario.email?.toLowerCase().includes(search.toLowerCase()) ||
-            usuario.role?.toLowerCase().includes(search.toLowerCase())
-    );
+            usuario.role?.toLowerCase().includes(search.toLowerCase());
 
-    const tecnicos = filteredUsuarios.filter((u) => u.role === "TECNICO");
-    const admins = filteredUsuarios.filter((u) => u.role === "ADMIN");
-    const supervisores = filteredUsuarios.filter((u) => u.role === "SUPERVISOR");
+        const matchesRole = filterRole === "all" || usuario.role === filterRole;
+
+        return matchesSearch && matchesRole;
+    });
+
+    // Pagination
+    const {
+        currentPage,
+        totalPages,
+        setPage,
+        nextPage,
+        prevPage,
+        startIndex,
+        endIndex
+    } = usePagination({ 
+        totalItems: filteredUsuarios.length,
+        itemsPerPage: 10,
+        initialPage: 1 
+    });
+
+    const handleSearchChange = (value: string) => {
+        setSearch(value);
+        setPage(1);
+    };
+
+    const handleFilterRoleChange = (role: string) => {
+        // Toggle logic
+        const newRole = filterRole === role && role !== "all" ? "all" : role;
+        setFilterRole(newRole);
+        setPage(1);
+    };
+
+    const paginatedUsuarios = filteredUsuarios.slice(startIndex, endIndex);
 
     if (loading) {
         return (
@@ -440,6 +132,41 @@ export default function TecnicosPage() {
     return (
         <AdminLayout title="Gestión de Técnicos">
             <div className="space-y-6">
+                {/* Stats */}
+                <div className="grid gap-4 md:grid-cols-4">
+                    <StatsCard
+                        title="Total Usuarios"
+                        value={usuarios.length}
+                        icon={Users}
+                        active={filterRole === "all"}
+                        onClick={() => handleFilterRoleChange("all")}
+                    />
+                    <StatsCard
+                        title="Técnicos"
+                        value={tecnicos.length}
+                        icon={Users}
+                        variant="green"
+                        active={filterRole === "TECNICO"}
+                        onClick={() => handleFilterRoleChange("TECNICO")}
+                    />
+                    <StatsCard
+                        title="Supervisores"
+                        value={supervisores.length}
+                        icon={Shield}
+                        variant="amber"
+                        active={filterRole === "SUPERVISOR"}
+                        onClick={() => handleFilterRoleChange("SUPERVISOR")}
+                    />
+                    <StatsCard
+                        title="Administradores"
+                        value={admins.length}
+                        icon={Shield}
+                        variant="blue"
+                        active={filterRole === "ADMIN"}
+                        onClick={() => handleFilterRoleChange("ADMIN")}
+                    />
+                </div>
+
                 {/* Header Actions */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div className="relative w-full sm:w-72">
@@ -448,58 +175,10 @@ export default function TecnicosPage() {
                             placeholder="Buscar técnicos..."
                             className="pl-9 bg-white border-slate-200 focus:border-secondary transition-colors shadow-sm w-full"
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={(e) => handleSearchChange(e.target.value)}
                         />
                     </div>
-                    <NuevoTecnicoDialog onSuccess={() => { }} />
-                </div>
-
-                {/* Stats */}
-                <div className="grid gap-4 md:grid-cols-4">
-                    <Card className="border-l-4 border-l-primary shadow-sm hover:shadow-md transition-shadow">
-                        <CardContent className="flex items-center gap-4 py-4">
-                            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                                <Users className="h-5 w-5 text-primary" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold">{usuarios.length}</p>
-                                <p className="text-sm text-muted-foreground">Total Usuarios</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="border-l-4 border-l-green-600 shadow-sm hover:shadow-md transition-shadow">
-                        <CardContent className="flex items-center gap-4 py-4">
-                            <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-                                <Users className="h-5 w-5 text-green-600" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold">{tecnicos.length}</p>
-                                <p className="text-sm text-muted-foreground">Técnicos</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="border-l-4 border-l-amber-600 shadow-sm hover:shadow-md transition-shadow">
-                        <CardContent className="flex items-center gap-4 py-4">
-                            <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                                <Shield className="h-5 w-5 text-amber-600" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold">{supervisores.length}</p>
-                                <p className="text-sm text-muted-foreground">Supervisores</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="border-l-4 border-l-blue-600 shadow-sm hover:shadow-md transition-shadow">
-                        <CardContent className="flex items-center gap-4 py-4">
-                            <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                                <Shield className="h-5 w-5 text-blue-600" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold">{admins.length}</p>
-                                <p className="text-sm text-muted-foreground">Administradores</p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <NuevoTecnicoDialog onSuccess={() => {}} />
                 </div>
 
                 {/* Users Table */}
@@ -511,21 +190,28 @@ export default function TecnicosPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 sm:p-6 pb-0">
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto rounded-md border border-slate-200">
                             <Table>
                                 <TableHeader>
                                     <TableRow className="bg-slate-50/50">
                                         <TableHead className="w-[80px]">Personal</TableHead>
                                         <TableHead>Nombre</TableHead>
-                                        <TableHead className="hidden md:table-cell">Email</TableHead>
-                                        <TableHead className="hidden sm:table-cell">Teléfono</TableHead>
+                                        <TableHead className="hidden md:table-cell">
+                                            Email
+                                        </TableHead>
+                                        <TableHead className="hidden sm:table-cell">
+                                            Teléfono
+                                        </TableHead>
                                         <TableHead>Rol</TableHead>
                                         <TableHead className="text-right">Acciones</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredUsuarios.map((usuario) => (
-                                        <TableRow key={usuario.id} className="hover:bg-slate-50/50 transition-colors">
+                                    {paginatedUsuarios.map((usuario) => (
+                                        <TableRow
+                                            key={usuario.id}
+                                            className="hover:bg-slate-50/50 transition-colors"
+                                        >
                                             <TableCell>
                                                 <div className="flex items-center gap-3">
                                                     {usuario.photo_url ? (
@@ -541,7 +227,9 @@ export default function TecnicosPage() {
                                                     )}
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="font-medium">{usuario.full_name || "Sin nombre"}</TableCell>
+                                            <TableCell className="font-medium">
+                                                {usuario.full_name || "Sin nombre"}
+                                            </TableCell>
                                             <TableCell className="hidden md:table-cell">
                                                 <div className="flex items-center gap-2 text-sm">
                                                     <Mail className="h-4 w-4 text-muted-foreground" />
@@ -551,12 +239,14 @@ export default function TecnicosPage() {
                                             <TableCell className="hidden sm:table-cell">
                                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                                     <Phone className="h-4 w-4" />
-                                                    {usuario.phone || <span className="text-muted-foreground/50 italic">Sin teléfono</span>}
+                                                    {usuario.phone || (
+                                                        <span className="text-muted-foreground/50 italic">
+                                                            Sin teléfono
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </TableCell>
-                                            <TableCell>
-                                                {getRoleBadge(usuario.role)}
-                                            </TableCell>
+                                            <TableCell><RoleBadge role={usuario.role} /></TableCell>
                                             <TableCell className="text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -565,21 +255,26 @@ export default function TecnicosPage() {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                                                        <DropdownMenuLabel>
+                                                            Acciones
+                                                        </DropdownMenuLabel>
                                                         <DropdownMenuSeparator />
-                                                        <DropdownMenuItem onClick={() => setEditingUser(usuario)}>
-                                                            <Pencil className="mr-2 h-4 w-4" /> Editar
+                                                        <DropdownMenuItem
+                                                            onClick={() => setEditingUser(usuario)}
+                                                        >
+                                                            <Pencil className="mr-2 h-4 w-4" />{" "}
+                                                            Editar
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </TableCell>
                                         </TableRow>
                                     ))}
-                                    {filteredUsuarios.length === 0 && (
+                                    {paginatedUsuarios.length === 0 && (
                                         <TableRow>
                                             <TableCell colSpan={6} className="text-center py-8">
                                                 <p className="text-muted-foreground">
-                                                    {loading ? "Cargando usuarios..." : "No se encontraron usuarios"}
+                                                    No se encontraron usuarios
                                                 </p>
                                             </TableCell>
                                         </TableRow>
@@ -587,6 +282,16 @@ export default function TecnicosPage() {
                                 </TableBody>
                             </Table>
                         </div>
+
+                        {/* Pagination Controls */}
+                        <PaginationControls
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            totalItems={filteredUsuarios.length}
+                            itemsPerPage={10}
+                            onPageChange={setPage}
+                            itemName="resultados"
+                        />
                     </CardContent>
                 </Card>
             </div>
@@ -600,4 +305,3 @@ export default function TecnicosPage() {
         </AdminLayout>
     );
 }
-

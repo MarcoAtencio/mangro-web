@@ -14,12 +14,13 @@ import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "~/lib/auth";
+import { useUserDisplay } from "~/hooks/use-user-display";
 
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Técnicos", href: "/tecnicos", icon: Users },
-    { name: "Servicios", href: "/servicios", icon: Calendar },
     { name: "Clientes", href: "/clientes", icon: Building2 },
+    { name: "Servicios", href: "/servicios", icon: Calendar },
+    { name: "Usuarios", href: "/tecnicos", icon: Users },
     { name: "Informes", href: "/informes", icon: FileText },
     { name: "Configuración", href: "/configuracion", icon: Settings },
 ];
@@ -30,19 +31,14 @@ interface SidebarProps {
 }
 
 export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
-    const { user, userProfile, signOut } = useAuth();
+    const { signOut } = useAuth();
     const navigate = useNavigate();
+    const { displayName, displayEmail, initials, photoUrl } = useUserDisplay();
 
     const handleSignOut = async () => {
         await signOut();
         navigate("/login", { replace: true });
     };
-
-    // Get user display info
-    const displayName = userProfile?.full_name || user?.email?.split("@")[0] || "Usuario";
-    const displayEmail = user?.email || "";
-    const initials = displayName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
-    const photoUrl = userProfile?.photo_url;
 
     return (
         <aside
@@ -96,7 +92,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                             cn(
                                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                                 isActive
-                                    ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-md"
+                                    ? "bg-primary text-primary-foreground shadow-md"
                                     : "text-muted-foreground hover:bg-muted hover:text-foreground",
                                 collapsed && "justify-center px-2"
                             )
@@ -110,12 +106,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
 
             {/* User Footer */}
             <div className="p-4 border-t border-sidebar-muted">
-                <div
-                    className={cn(
-                        "flex items-center gap-3",
-                        collapsed && "justify-center"
-                    )}
-                >
+                <div className={cn("flex items-center gap-3", collapsed && "justify-center")}>
                     {photoUrl ? (
                         <img
                             src={photoUrl}
@@ -165,18 +156,14 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
 
 export function MobileSidebar() {
     const [open, setOpen] = useState(false);
-    const { user, userProfile, signOut } = useAuth();
+    const { signOut } = useAuth();
     const navigate = useNavigate();
+    const { displayName, displayEmail, initials, photoUrl } = useUserDisplay();
 
     const handleSignOut = async () => {
         await signOut();
         navigate("/login", { replace: true });
     };
-
-    const displayName = userProfile?.full_name || user?.email?.split("@")[0] || "Usuario";
-    const displayEmail = user?.email || "";
-    const initials = displayName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
-    const photoUrl = userProfile?.photo_url;
 
     return (
         <>

@@ -13,7 +13,8 @@ import {
     Timestamp,
     GeoPoint,
     type DocumentData,
-    type QuerySnapshot
+    type QuerySnapshot,
+    setDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -62,6 +63,31 @@ export interface Informe {
     descripcion: string;
 }
 
+// DTOs
+export interface CreateClienteDTO {
+    name: string;
+    ruc?: string;
+    address: string;
+    phone?: string;
+    email?: string;
+    contact_name?: string;
+    lat?: number;
+    lng?: number;
+}
+
+export type UpdateClienteDTO = Partial<CreateClienteDTO>;
+
+export interface CreateEquipoDTO {
+    nombre: string;
+    modelo: string;
+    serie: string;
+    ultimo_mantenimiento: Date;
+    estado: string;
+}
+
+export type UpdateEquipoDTO = Partial<CreateEquipoDTO>;
+
+
 // ============ USUARIOS ============
 
 export async function getUsuarios(): Promise<Usuario[]> {
@@ -90,11 +116,10 @@ export async function getTecnicos(): Promise<Usuario[]> {
     })) as Usuario[];
 }
 
-import { setDoc } from "firebase/firestore";
-
-// ... (imports remain the same, just adding setDoc)
-
-export async function createUsuario(data: Omit<Usuario, "id">, customUid?: string): Promise<string> {
+export async function createUsuario(
+    data: Omit<Usuario, "id">,
+    customUid?: string
+): Promise<string> {
     if (customUid) {
         // If a custom UID is provided (from Auth), use it as the document ID
         const docRef = doc(db, "users", customUid);
@@ -156,9 +181,7 @@ export async function getClientes(): Promise<Cliente[]> {
     })) as Cliente[];
 }
 
-export function subscribeToClientes(
-    callback: (clientes: Cliente[]) => void
-): () => void {
+export function subscribeToClientes(callback: (clientes: Cliente[]) => void): () => void {
     const unsubscribe = onSnapshot(collection(db, "companies"), (snapshot) => {
         const clientes = snapshot.docs.map((doc) => ({
             id: doc.id,
@@ -169,12 +192,27 @@ export function subscribeToClientes(
     return unsubscribe;
 }
 
-export async function createCliente(data: any): Promise<string> {
+export function subscribeToCliente(
+    id: string,
+    callback: (cliente: Cliente | null) => void
+): () => void {
+    const docRef = doc(db, "companies", id);
+    const unsubscribe = onSnapshot(docRef, (doc) => {
+        if (doc.exists()) {
+            callback({ id: doc.id, ...doc.data() } as Cliente);
+        } else {
+            callback(null);
+        }
+    });
+    return unsubscribe;
+}
+
+export async function createCliente(data: CreateClienteDTO): Promise<string> {
     try {
         const { lat, lng, ...rest } = data;
         const docRef = await addDoc(collection(db, "companies"), {
             ...rest,
-            location: new GeoPoint(lat, lng),
+            location: (lat !== undefined && lng !== undefined) ? new GeoPoint(lat, lng) : null,
             created_at: Timestamp.now(),
         });
         return docRef.id;
@@ -186,10 +224,10 @@ export async function createCliente(data: any): Promise<string> {
 
 // ============ ESTADÍSTICAS ============
 
-export async function updateCliente(id: string, data: any): Promise<void> {
+export async function updateCliente(id: string, data: UpdateClienteDTO): Promise<void> {
     try {
         const { lat, lng, ...rest } = data;
-        const updateData: any = { ...rest };
+        const updateData: Record<string, unknown> = { ...rest };
 
         // Only update location if lat/lng are provided
         if (lat !== undefined && lng !== undefined) {
@@ -233,7 +271,7 @@ export async function getDashboardStats() {
 
 // ============ EQUIPOS ============
 
-export async function createEquipo(clienteId: string, data: any): Promise<string> {
+export async function createEquipo(clienteId: string, data: CreateEquipoDTO): Promise<string> {
     try {
         const docRef = await addDoc(collection(db, "companies", clienteId, "equipments"), {
             ...data,
@@ -246,7 +284,7 @@ export async function createEquipo(clienteId: string, data: any): Promise<string
     }
 }
 
-export async function updateEquipo(clienteId: string, equipoId: string, data: any): Promise<void> {
+export async function updateEquipo(clienteId: string, equipoId: string, data: UpdateEquipoDTO): Promise<void> {
     try {
         const docRef = doc(db, "companies", clienteId, "equipments", equipoId);
         await updateDoc(docRef, data);
@@ -270,15 +308,19 @@ export function subscribeToEquipos(
     clienteId: string,
     callback: (equipos: Equipo[]) => void
 ): () => void {
-    const q = query(collection(db, "companies", clienteId, "equipments"), orderBy("created_at", "desc"));
+    const q = query(
+        collection(db, "companies", clienteId, "equipments"),
+        orderBy("created_at", "desc")
+    );
     const unsubscribe = onSnapshot(q, (snapshot) => {
         const equipos = snapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
             // Handle timestamps safely
-            ultimo_mantenimiento: doc.data().ultimo_mantenimiento instanceof Timestamp
-                ? doc.data().ultimo_mantenimiento.toDate()
-                : doc.data().ultimo_mantenimiento,
+            ultimo_mantenimiento:
+                doc.data().ultimo_mantenimiento instanceof Timestamp
+                    ? doc.data().ultimo_mantenimiento.toDate()
+                    : doc.data().ultimo_mantenimiento,
         })) as Equipo[];
         callback(equipos);
     });

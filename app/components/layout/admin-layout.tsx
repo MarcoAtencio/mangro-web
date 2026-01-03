@@ -32,7 +32,9 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
                         <div className="flex items-center gap-4">
                             <MobileSidebar />
                             {title && (
-                                <h1 className="text-xl font-semibold text-foreground tracking-tight">{title}</h1>
+                                <h1 className="text-xl font-semibold text-foreground tracking-tight">
+                                    {title}
+                                </h1>
                             )}
                         </div>
                         <div className="flex items-center gap-4">
@@ -42,9 +44,7 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
                 </header>
 
                 {/* Page Content */}
-                <div className="p-4 md:p-6">
-                    {children}
-                </div>
+                <div className="p-4 md:p-6">{children}</div>
             </main>
         </div>
     );

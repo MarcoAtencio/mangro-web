@@ -14,7 +14,7 @@ export async function uploadProfileImage(file: File, userId: string): Promise<st
     // Let's use userId + extension to be safe with types, or just userId.
 
     // Extract extension or default to nothing (browser handles mime type usually)
-    const extension = file.name.split('.').pop();
+    const extension = file.name.split(".").pop();
     const fileName = `${userId}.${extension}`;
     const storageRef = ref(storage, `profiles/${fileName}`);
 

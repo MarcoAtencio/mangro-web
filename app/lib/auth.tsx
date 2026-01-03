@@ -6,7 +6,8 @@ import {
     onAuthStateChanged,
     type User,
     getAuth,
-    type Auth
+    type Auth,
+    type AuthError,
 } from "firebase/auth";
 import { initializeApp, getApp, getApps, deleteApp } from "firebase/app";
 import { auth, firebaseConfig } from "./firebase";
@@ -58,18 +59,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(true);
         try {
             await signInWithEmailAndPassword(auth, email, password);
-        } catch (err: any) {
-            console.error("Sign in error:", err);
-            if (err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
+        } catch (err) {
+            const authError = err as AuthError;
+            console.error("Sign in error:", authError);
+            if (authError.code === "auth/user-not-found" || authError.code === "auth/wrong-password") {
                 setError("Email o contraseña incorrectos");
-            } else if (err.code === "auth/invalid-credential") {
+            } else if (authError.code === "auth/invalid-credential") {
                 setError("Credenciales inválidas");
-            } else if (err.code === "auth/too-many-requests") {
+            } else if (authError.code === "auth/too-many-requests") {
                 setError("Demasiados intentos. Intente más tarde.");
             } else {
-                setError("Error al iniciar sesión: " + err.message);
+                setError("Error al iniciar sesión: " + authError.message);
             }
-            throw err;
+            throw authError;
         } finally {
             setLoading(false);
         }
@@ -87,14 +89,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const secondaryAuth = getAuth(secondaryApp);
 
             // Create user in the secondary app
-            const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(
+                secondaryAuth,
+                email,
+                password
+            );
             const uid = userCredential.user.uid;
 
             // Sign out from the secondary app immediately just in case
             await firebaseSignOut(secondaryAuth);
 
             return uid;
-        } catch (error: any) {
+        } catch (error) {
             console.error("Error creating user in secondary app:", error);
             throw error;
         } finally {
@@ -108,13 +114,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const signOut = async () => {
         try {
             await firebaseSignOut(auth);
-        } catch (err: any) {
+        } catch (err) {
             console.error("Sign out error:", err);
         }
     };
 
     return (
-        <AuthContext.Provider value={{ user, userProfile, loading, signIn, registerUser, signOut, error }}>
+        <AuthContext.Provider
+            value={{ user, userProfile, loading, signIn, registerUser, signOut, error }}
+        >
             {children}
         </AuthContext.Provider>
     );

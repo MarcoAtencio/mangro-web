@@ -7,12 +7,14 @@ import {
     onSnapshot,
     query,
     orderBy,
-    Timestamp
+    where,
+    Timestamp,
 } from "firebase/firestore";
 
 // Interface matching the provided screenshot "tasks" collection
 export interface Task {
     id: string;
+    companyId: string; // Added to link back to Client
     address: string;
     clientName: string;
     contactName: string; // User who requested or contact person? Assuming contact person at client.
@@ -35,33 +37,94 @@ export interface Task {
 
 export const subscribeToServices = (
     onUpdate: (tasks: Task[]) => void,
-    onError: (error: any) => void
+    onError: (error: Error) => void
 ) => {
     // Querying 'tasks' collection
+    const q = query(collection(db, "tasks"), orderBy("createAt", "desc"));
+
+    return onSnapshot(
+        q,
+        (snapshot) => {
+            const tasks = snapshot.docs.map((doc) => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    ...data,
+                    // Ensure Timestamps are converted
+                    createAt: data.createAt?.toDate
+                        ? data.createAt.toDate()
+                        : new Date(data.createAt),
+                    updatedAt: data.updatedAt?.toDate
+                        ? data.updatedAt.toDate()
+                        : new Date(data.updatedAt),
+                    date: data.date?.toDate
+                        ? data.date.toDate()
+                        : data.date
+                          ? new Date(data.date)
+                          : undefined,
+                    status: data.status?.toUpperCase() || "PENDIENTE",
+                } as Task;
+            });
+            onUpdate(tasks);
+        },
+        onError
+    );
+};
+
+export const subscribeToClientServices = (
+    clientId: string,
+    onUpdate: (tasks: Task[]) => void,
+    onError: (error: Error) => void
+) => {
     const q = query(
         collection(db, "tasks"),
+        where("companyId", "==", clientId),
         orderBy("createAt", "desc")
     );
 
-    return onSnapshot(q, (snapshot) => {
-        const tasks = snapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-                id: doc.id,
-                ...data,
-                // Ensure Timestamps are converted
-                createAt: data.createAt?.toDate ? data.createAt.toDate() : new Date(data.createAt),
-                updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(data.updatedAt),
-                date: data.date?.toDate ? data.date.toDate() : (data.date ? new Date(data.date) : undefined),
-                status: data.status?.toUpperCase() || "PENDIENTE",
-            } as Task;
-        });
-        onUpdate(tasks);
-    }, onError);
+    return onSnapshot(
+        q,
+        (snapshot) => {
+            const tasks = snapshot.docs.map((doc) => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    ...data,
+                    createAt: data.createAt?.toDate
+                        ? data.createAt.toDate()
+                        : new Date(data.createAt),
+                    updatedAt: data.updatedAt?.toDate
+                        ? data.updatedAt.toDate()
+                        : new Date(data.updatedAt),
+                    date: data.date?.toDate
+                        ? data.date.toDate()
+                        : data.date
+                          ? new Date(data.date)
+                          : undefined,
+                    status: data.status?.toUpperCase() || "PENDIENTE",
+                } as Task;
+            });
+            onUpdate(tasks);
+        },
+        onError
+    );
 };
 
-export const createService = async (taskData: any) => {
-    // taskData will come from the form. We need to map it to the screenshot structure.
+export interface CreateTaskDTO {
+    companyId: string;
+    clientName: string;
+    clientAddress: string;
+    contactName: string;
+    technicianId: string;
+    date: Date;
+    startTime: string;
+    endTime: string;
+    priority: Task["priority"];
+    description: string;
+    equipment: string;
+}
+
+export const createService = async (taskData: CreateTaskDTO) => {
     try {
         const docRef = await addDoc(collection(db, "tasks"), {
             companyId: taskData.companyId || "", // Link to company/client
@@ -91,15 +154,10 @@ export const updateServiceStatus = async (taskId: string, status: string) => {
         const docRef = doc(db, "tasks", taskId);
         await updateDoc(docRef, {
             status: status,
-            updatedAt: Timestamp.now()
+            updatedAt: Timestamp.now(),
         });
     } catch (error) {
         console.error("Error updating task status:", error);
         throw error;
     }
 };
-
-function capitalizeFirst(str: string) {
-    if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
