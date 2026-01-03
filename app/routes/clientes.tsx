@@ -276,19 +276,13 @@ export default function ClientesPage() {
         <AdminLayout title="Gestión de Clientes">
             <div className="space-y-6">
                 {/* Header Actions */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-between">
-                    <div className="relative flex-1 max-w-md">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="relative w-full sm:w-72">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            placeholder="Buscar por nombre o RUC..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="pl-9 bg-white border-slate-200 focus:border-secondary transition-colors shadow-sm"
-                        />
+                        <Input placeholder="Buscar clientes..." className="pl-9 bg-white border-slate-200 focus:border-secondary transition-colors shadow-sm w-full" />
                     </div>
                     <NuevoClienteDialog />
                 </div>
-
                 {/* Stats */}
                 <div className="grid gap-4 md:grid-cols-3">
                     <Card className="border-l-4 border-l-primary shadow-sm hover:shadow-md transition-shadow">
@@ -342,44 +336,46 @@ export default function ClientesPage() {
                             Haga clic en un cliente para ver su catálogo de equipos
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-10"></TableHead>
-                                    <TableHead>Cliente</TableHead>
-                                    <TableHead className="hidden md:table-cell">Dirección</TableHead>
-                                    <TableHead className="hidden lg:table-cell">Contacto</TableHead>
-                                    <TableHead>Equipos</TableHead>
-                                    <TableHead className="w-10"></TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {loading ? (
-                                    <TableRow>
-                                        <TableCell colSpan={6} className="text-center py-8">
-                                            <Spinner className="h-8 w-8 mx-auto" />
-                                            <p className="text-sm text-muted-foreground mt-2">Cargando clientes...</p>
-                                        </TableCell>
+                    <CardContent className="p-0 sm:p-6 pb-0">
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-slate-50/50">
+                                        <TableHead className="w-[50px]"></TableHead>
+                                        <TableHead>Cliente</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Dirección</TableHead>
+                                        <TableHead className="hidden md:table-cell text-center">Equipos</TableHead>
+                                        <TableHead className="hidden sm:table-cell">Estado</TableHead>
+                                        <TableHead className="text-right">Acciones</TableHead>
                                     </TableRow>
-                                ) : (
-                                    <>
-                                        {filteredClientes.map((cliente) => (
-                                            <ClienteRow key={cliente.id} cliente={cliente} />
-                                        ))}
-                                        {filteredClientes.length === 0 && (
-                                            <TableRow>
-                                                <TableCell colSpan={6} className="text-center py-8">
-                                                    <p className="text-muted-foreground">
-                                                        No se encontraron clientes
-                                                    </p>
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </>
-                                )}
-                            </TableBody>
-                        </Table>
+                                </TableHeader>
+                                <TableBody>
+                                    {loading ? (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="text-center py-8">
+                                                <Spinner className="h-8 w-8 mx-auto" />
+                                                <p className="text-sm text-muted-foreground mt-2">Cargando clientes...</p>
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : (
+                                        <>
+                                            {filteredClientes.map((cliente) => (
+                                                <ClienteRow key={cliente.id} cliente={cliente} />
+                                            ))}
+                                            {filteredClientes.length === 0 && (
+                                                <TableRow>
+                                                    <TableCell colSpan={6} className="text-center py-8">
+                                                        <p className="text-muted-foreground">
+                                                            No se encontraron clientes
+                                                        </p>
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                        </>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
                     </CardContent>
                 </Card>
             </div>

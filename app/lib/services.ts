@@ -21,6 +21,7 @@ export interface Task {
     status: "PENDIENTE" | "EN_PROGRESO" | "COMPLETADO" | "CANCELADO"; // Mapping standard statuses to capitalize as in screenshot? Screenshot shows "Completado", "Urgente"
     scheduledTime: string; // "09:00 - 10:30"
     technicianId: string;
+    description: string;
 
     // Timestamps
     createAt: Timestamp | Date;
@@ -51,18 +52,8 @@ export const subscribeToServices = (
                 // Ensure Timestamps are converted
                 createAt: data.createAt?.toDate ? data.createAt.toDate() : new Date(data.createAt),
                 updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(data.updatedAt),
-                // Parse date from createAt or if we decide to add a specific date field later.
-                // For now, let's assume the task date is primarily driven by created/scheduled.
-                // NOTE: The previous UI had a date picker. We might want to store 'scheduledDate' if needed.
-                // But following the screenshot strictly, there is no 'scheduledDate'.
-                // We will rely on 'createAt' or 'scheduledTime' context for now, 
-                // OR add 'date' field implicitly if the user allows deviations. 
-                // Given the screenshot is "THE data", I will respect it but maybe add 'date' 
-                // as a hidden field if allowed, otherwise I'll stick to the list.
-                // Actually, for a scheduler, you NEED a date. The screenshot might just default to "today" 
-                // or have a field scrolled out of view? I'll assume 'date' is useful to keep for our UI 
-                // even if not in the minimal screenshot, OR I will store it as a Timestamp in `scheduledDate` if I can.
-                // Let's stick to the screenshot's `tasks` collection name.
+                date: data.date?.toDate ? data.date.toDate() : (data.date ? new Date(data.date) : undefined),
+                status: data.status?.toUpperCase() || "PENDIENTE",
             } as Task;
         });
         onUpdate(tasks);
@@ -76,11 +67,9 @@ export const createService = async (taskData: any) => {
             address: taskData.clientAddress,
             clientName: taskData.clientName,
             contactName: taskData.contactName || "", // New field
-            equipmentSummary: taskData.equipment,
-            priority: capitalizeFirst(taskData.priority), // "Urgente"
-            status: "Pendiente", // Title case as in screenshot "Completado"
             scheduledTime: `${taskData.startTime} - ${taskData.endTime}`,
             technicianId: taskData.technicianId,
+            description: taskData.description || "",
 
             createAt: Timestamp.now(),
             updatedAt: Timestamp.now(),

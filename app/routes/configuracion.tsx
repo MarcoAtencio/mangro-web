@@ -17,7 +17,6 @@ import {
     Phone,
     Save,
 } from "lucide-react";
-
 export default function ConfiguracionPage() {
     const { user, userProfile } = useAuth();
     const [loading, setLoading] = useState(false);
@@ -101,22 +100,22 @@ export default function ConfiguracionPage() {
                             {/* Profile Header Card */}
                             <Card>
                                 <CardHeader>
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
                                         <div className="relative group">
                                             {previewUrl || userProfile?.photo_url ? (
                                                 <img
                                                     src={previewUrl || userProfile?.photo_url}
                                                     alt="Avatar"
-                                                    className="h-20 w-20 rounded-full object-cover border-2 border-primary/20"
+                                                    className="h-24 w-24 sm:h-20 sm:w-20 rounded-full object-cover border-4 border-white sm:border-2 sm:border-primary/20 shadow-md"
                                                 />
                                             ) : (
-                                                <div className="h-20 w-20 rounded-full bg-secondary flex items-center justify-center border-2 border-dashed border-muted-foreground/30">
-                                                    <UserCircle className="h-10 w-10 text-muted-foreground" />
+                                                <div className="h-24 w-24 sm:h-20 sm:w-20 rounded-full bg-secondary flex items-center justify-center border-2 border-dashed border-muted-foreground/30 shadow-inner">
+                                                    <UserCircle className="h-12 w-12 sm:h-10 sm:w-10 text-muted-foreground" />
                                                 </div>
                                             )}
                                             <label
                                                 htmlFor="photo-upload"
-                                                className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-1.5 rounded-full cursor-pointer hover:bg-primary/90 shadow-sm transition-colors"
+                                                className="absolute bottom-1 right-1 bg-primary text-primary-foreground p-1.5 sm:p-2 rounded-full cursor-pointer hover:bg-primary/90 shadow-lg transition-transform active:scale-90"
                                             >
                                                 <Camera className="h-4 w-4" />
                                             </label>
@@ -128,11 +127,11 @@ export default function ConfiguracionPage() {
                                                 onChange={handleFileChange}
                                             />
                                         </div>
-                                        <div>
-                                            <CardTitle className="text-2xl">{userProfile?.full_name || "Usuario"}</CardTitle>
-                                            <CardDescription className="flex items-center gap-2 mt-1">
-                                                <Shield className="h-3 w-3 text-primary" />
-                                                {getRoleLabel(userProfile?.role || "TECNICO")}
+                                        <div className="flex-1 space-y-1">
+                                            <CardTitle className="text-2xl font-bold tracking-tight">{userProfile?.full_name || "Usuario"}</CardTitle>
+                                            <CardDescription className="flex items-center justify-center sm:justify-start gap-2 mt-1">
+                                                <Shield className="h-3.5 w-3.5 text-primary" />
+                                                <span className="font-medium text-primary/80">{getRoleLabel(userProfile?.role || "TECNICO")}</span>
                                             </CardDescription>
                                         </div>
                                     </div>

@@ -17,8 +17,7 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
                 <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
             </div>
 
-            {/* Mobile Sidebar */}
-            <MobileSidebar />
+            {/* Mobile Sidebar is now handled via trigger in Header */}
 
             {/* Main Content */}
             <main
@@ -28,16 +27,16 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
                 )}
             >
                 {/* Header */}
-                <header className="sticky top-0 z-30 h-16 border-b border-border bg-card/80 backdrop-blur-sm">
-                    <div className="flex h-full items-center justify-between px-4 md:px-6">
+                <header className="sticky top-0 z-30 h-16 border-b border-border bg-card/80 backdrop-blur-sm lg:px-4">
+                    <div className="flex h-full items-center justify-between px-4 md:px-0">
                         <div className="flex items-center gap-4">
-                            <div className="md:hidden w-10" /> {/* Spacer for mobile menu button */}
+                            <MobileSidebar />
                             {title && (
-                                <h1 className="text-xl font-semibold text-foreground">{title}</h1>
+                                <h1 className="text-xl font-semibold text-foreground tracking-tight">{title}</h1>
                             )}
                         </div>
                         <div className="flex items-center gap-4">
-                            {/* Optional: Add notifications, search, etc. */}
+                            {/* User info or actions could go here */}
                         </div>
                     </div>
                 </header>

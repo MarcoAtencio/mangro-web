@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { AdminLayout } from "~/components/layout/admin-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { Spinner } from "~/components/ui/spinner";
 import {
@@ -12,6 +13,14 @@ import {
     CheckCircle2,
     AlertCircle,
 } from "lucide-react";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "~/components/ui/table";
 
 // Mock data - Replace with Firestore queries
 const mockStats = {
@@ -170,93 +179,88 @@ export default function DashboardPage() {
                     />
                 </div>
 
-                {/* Recent Reports */}
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle>Últimos Informes</CardTitle>
-                                <CardDescription>
-                                    Reportes técnicos recientes del equipo
-                                </CardDescription>
+                {/* Content Grid */}
+                <div className="grid gap-6 lg:grid-cols-3">
+                    {/* Recent Reports Table */}
+                    <Card className="shadow-md border-slate-200 lg:col-span-2">
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle>Servicios Recientes</CardTitle>
+                                    <CardDescription>Últimas tareas completadas o en revisión</CardDescription>
+                                </div>
+                                <Button variant="outline" size="sm" className="hidden sm:flex h-8">Ver todos</Button>
                             </div>
-                            <Badge variant="outline" className="gap-1">
-                                <Clock className="h-3 w-3" />
-                                Actualizado hace 5 min
-                            </Badge>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {mockRecentReports.map((report) => (
-                                <div
-                                    key={report.id}
-                                    className="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                            <FileText className="h-5 w-5 text-primary" />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">{report.cliente}</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {report.equipo}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <div className="text-right hidden sm:block">
-                                            <p className="text-sm font-medium">{report.tecnico}</p>
-                                            <p className="text-xs text-muted-foreground">
-                                                {report.fecha}
-                                            </p>
-                                        </div>
-                                        {getStatusBadge(report.estado)}
+                        </CardHeader>
+                        <CardContent className="p-0 sm:p-6 pb-0">
+                            <div className="overflow-x-auto overflow-y-hidden">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-slate-50/50">
+                                            <TableHead className="min-w-[150px]">Cliente</TableHead>
+                                            <TableHead className="hidden md:table-cell min-w-[200px]">Equipo</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-[120px]">Técnico</TableHead>
+                                            <TableHead className="text-right">Estado</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {mockRecentReports.map((report) => (
+                                            <TableRow key={report.id} className="hover:bg-slate-50/50 transition-colors">
+                                                <TableCell className="font-medium">{report.cliente}</TableCell>
+                                                <TableCell className="hidden md:table-cell text-muted-foreground">{report.equipo}</TableCell>
+                                                <TableCell className="hidden sm:table-cell text-muted-foreground">{report.tecnico}</TableCell>
+                                                <TableCell className="text-right">
+                                                    {getStatusBadge(report.estado)}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Performance Card */}
+                    <Card className="shadow-md border-slate-200">
+                        <CardHeader>
+                            <CardTitle>Resumen Mensual</CardTitle>
+                            <CardDescription>Rendimiento del mes actual</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-muted-foreground font-medium">Cumplimiento de Metas</span>
+                                    <span className="font-bold text-primary">85%</span>
+                                </div>
+                                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                    <div className="h-full bg-gradient-to-r from-secondary to-primary w-[85%] rounded-full shadow-sm" />
+                                </div>
+                            </div>
+
+                            <div className="grid gap-4">
+                                <div className="flex items-center gap-3 p-3 rounded-xl bg-green-50/50 border border-green-100/50">
+                                    <TrendingUp className="h-5 w-5 text-green-600" />
+                                    <div className="flex flex-col">
+                                        <span className="text-xs text-green-700/70 font-medium">Incremento mensual</span>
+                                        <span className="text-sm font-bold text-green-700">+15% servicios</span>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
 
-                {/* Quick Actions */}
-                <div className="grid gap-4 md:grid-cols-3">
-                    <Card className="hover:shadow-md transition-shadow cursor-pointer hover:border-primary/50">
-                        <CardContent className="flex items-center gap-4 py-6">
-                            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                                <Users className="h-6 w-6 text-primary" />
-                            </div>
-                            <div>
-                                <p className="font-semibold">Gestionar Técnicos</p>
-                                <p className="text-sm text-muted-foreground">
-                                    Agregar o editar personal
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="hover:shadow-md transition-shadow cursor-pointer hover:border-primary/50">
-                        <CardContent className="flex items-center gap-4 py-6">
-                            <div className="h-12 w-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                                <Building2 className="h-6 w-6 text-green-600" />
-                            </div>
-                            <div>
-                                <p className="font-semibold">Ver Clientes</p>
-                                <p className="text-sm text-muted-foreground">
-                                    Catálogo de equipos
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="hover:shadow-md transition-shadow cursor-pointer hover:border-primary/50">
-                        <CardContent className="flex items-center gap-4 py-6">
-                            <div className="h-12 w-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                                <AlertCircle className="h-6 w-6 text-amber-600" />
-                            </div>
-                            <div>
-                                <p className="font-semibold">Informes Pendientes</p>
-                                <p className="text-sm text-muted-foreground">
-                                    {mockStats.informesPendientes} por revisar
-                                </p>
+                                <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-50/50 border border-amber-100/50">
+                                    <Clock className="h-5 w-5 text-amber-600" />
+                                    <div className="flex flex-col">
+                                        <span className="text-xs text-amber-700/70 font-medium">Tiempo promedio</span>
+                                        <span className="text-sm font-bold text-amber-700">1.8 hrs / tarea</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50/50 border border-blue-100/50 cursor-pointer hover:bg-blue-100/50 transition-colors group">
+                                    <AlertCircle className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform" />
+                                    <div className="flex flex-col">
+                                        <span className="text-xs text-blue-700/70 font-medium">Tareas por revisar</span>
+                                        <span className="text-sm font-bold text-blue-700">{mockStats.informesPendientes} pendientes</span>
+                                    </div>
+                                </div>
                             </div>
                         </CardContent>
                     </Card>

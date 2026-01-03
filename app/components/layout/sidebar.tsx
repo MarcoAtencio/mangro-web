@@ -184,9 +184,10 @@ export function MobileSidebar() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setOpen(true)}
-                className="md:hidden fixed top-4 left-4 z-40"
+                className="md:hidden -ml-2 text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Open menu"
             >
-                <Menu className="h-5 w-5" />
+                <Menu className="h-6 w-6" />
             </Button>
 
             {/* Overlay */}

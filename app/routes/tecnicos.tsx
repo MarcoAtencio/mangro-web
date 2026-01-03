@@ -441,17 +441,17 @@ export default function TecnicosPage() {
         <AdminLayout title="Gestión de Técnicos">
             <div className="space-y-6">
                 {/* Header Actions */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-between">
-                    <div className="relative flex-1 max-w-md">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="relative w-full sm:w-72">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            placeholder="Buscar por nombre, email o rol..."
+                            placeholder="Buscar técnicos..."
+                            className="pl-9 bg-white border-slate-200 focus:border-secondary transition-colors shadow-sm w-full"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="pl-9 bg-white border-slate-200 focus:border-secondary transition-colors shadow-sm"
                         />
                     </div>
-                    <NuevoTecnicoDialog />
+                    <NuevoTecnicoDialog onSuccess={() => { }} />
                 </div>
 
                 {/* Stats */}
@@ -510,89 +510,83 @@ export default function TecnicosPage() {
                             Gestiona los técnicos y usuarios del sistema
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Usuario</TableHead>
-                                    <TableHead className="hidden md:table-cell">Email</TableHead>
-                                    <TableHead className="hidden lg:table-cell">Teléfono</TableHead>
-                                    <TableHead>Rol</TableHead>
-                                    <TableHead className="hidden sm:table-cell">Registro</TableHead>
-                                    <TableHead className="w-10"></TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {filteredUsuarios.map((usuario) => (
-                                    <TableRow key={usuario.id} className="hover:bg-slate-50/50 transition-colors">
-                                        <TableCell>
-                                            <div className="flex items-center gap-3">
-                                                {usuario.photo_url ? (
-                                                    <img
-                                                        src={usuario.photo_url}
-                                                        alt={usuario.full_name}
-                                                        className="h-10 w-10 rounded-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                                        <UserCircle className="h-6 w-6 text-primary" />
-                                                    </div>
-                                                )}
-                                                <div>
-                                                    <p className="font-medium">{usuario.full_name || "Sin nombre"}</p>
-                                                    <p className="text-sm text-muted-foreground md:hidden">
-                                                        {usuario.email}
-                                                    </p>
+                    <CardContent className="p-0 sm:p-6 pb-0">
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-slate-50/50">
+                                        <TableHead className="w-[80px]">Personal</TableHead>
+                                        <TableHead>Nombre</TableHead>
+                                        <TableHead className="hidden md:table-cell">Email</TableHead>
+                                        <TableHead className="hidden sm:table-cell">Teléfono</TableHead>
+                                        <TableHead>Rol</TableHead>
+                                        <TableHead className="text-right">Acciones</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredUsuarios.map((usuario) => (
+                                        <TableRow key={usuario.id} className="hover:bg-slate-50/50 transition-colors">
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    {usuario.photo_url ? (
+                                                        <img
+                                                            src={usuario.photo_url}
+                                                            alt={usuario.full_name}
+                                                            className="h-10 w-10 rounded-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                            <UserCircle className="h-6 w-6 text-primary" />
+                                                        </div>
+                                                    )}
                                                 </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="hidden md:table-cell">
-                                            <div className="flex items-center gap-2 text-sm">
-                                                <Mail className="h-4 w-4 text-muted-foreground" />
-                                                {usuario.email}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="hidden lg:table-cell">
-                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <Phone className="h-4 w-4" />
-                                                {usuario.phone || <span className="text-muted-foreground/50 italic">Sin teléfono</span>}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            {getRoleBadge(usuario.role)}
-                                        </TableCell>
-                                        <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
-                                            {formatFirestoreDate(usuario.created_at)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon">
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem onClick={() => setEditingUser(usuario)}>
-                                                        <Pencil className="mr-2 h-4 w-4" /> Editar
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                                {filteredUsuarios.length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={6} className="text-center py-8">
-                                            <p className="text-muted-foreground">
-                                                {loading ? "Cargando usuarios..." : "No se encontraron usuarios"}
-                                            </p>
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
+                                            </TableCell>
+                                            <TableCell className="font-medium">{usuario.full_name || "Sin nombre"}</TableCell>
+                                            <TableCell className="hidden md:table-cell">
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <Mail className="h-4 w-4 text-muted-foreground" />
+                                                    {usuario.email}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="hidden sm:table-cell">
+                                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                    <Phone className="h-4 w-4" />
+                                                    {usuario.phone || <span className="text-muted-foreground/50 italic">Sin teléfono</span>}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                {getRoleBadge(usuario.role)}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem onClick={() => setEditingUser(usuario)}>
+                                                            <Pencil className="mr-2 h-4 w-4" /> Editar
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                    {filteredUsuarios.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="text-center py-8">
+                                                <p className="text-muted-foreground">
+                                                    {loading ? "Cargando usuarios..." : "No se encontraron usuarios"}
+                                                </p>
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
