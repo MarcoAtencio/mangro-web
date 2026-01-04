@@ -24,61 +24,60 @@ export function ClienteRow({ cliente, serviciosCount = 0 }: ClienteRowProps) {
 
     return (
         <TableRow
-            className="cursor-pointer hover:bg-slate-50 transition-all duration-300 hover:shadow-sm group border-b border-slate-100/50"
+            className="hover:bg-slate-50 cursor-pointer transition-all duration-300 hover:shadow-sm group"
             onClick={() => navigate(`/clientes/${cliente.id}`)}
         >
-            <TableCell className="py-5">
-                <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 mt-1 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 group-hover:scale-105 transition-transform duration-200 shadow-sm shrink-0">
-                        <Building2 className="h-5 w-5 text-slate-500 group-hover:text-primary transition-colors" />
+            <TableCell className="transition-all duration-300 group-hover:pl-5">
+                <div className="flex items-center gap-3">
+                    <div className="h-9 w-9 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                        <Building2 className="h-4 w-4 text-slate-500" />
                     </div>
-                    <div className="flex flex-col gap-1">
-                        <p className="font-semibold text-slate-900 text-base leading-tight">
-                            {cliente.name}
-                        </p>
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono pl-0.5">
-                            <span className="font-semibold text-slate-400">RUC:</span>
-                            {cliente.ruc || "N/A"}
-                        </div>
-                        <div className="flex items-center gap-1.5 text-sm text-slate-500">
-                            <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                            <span className="truncate max-w-[280px]">
-                                {cliente.address || "Sin dirección"}
-                            </span>
-                        </div>
+                    <div className="flex flex-col max-w-[250px]">
+                        <span className="font-medium text-sm truncate">{cliente.name}</span>
+                        <span className="text-xs text-muted-foreground">RUC: {cliente.ruc || "N/A"}</span>
                     </div>
                 </div>
             </TableCell>
-            <TableCell className="hidden sm:table-cell py-4">
-                <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-medium text-slate-700">
+            <TableCell className="hidden sm:table-cell">
+                <div className="flex items-center gap-1.5 max-w-[200px]">
+                    <MapPin className="h-3.5 w-3.5 text-red-500 shrink-0" />
+                    <span className="text-sm text-muted-foreground truncate">
+                        {cliente.address || "Sin dirección"}
+                    </span>
+                </div>
+            </TableCell>
+            <TableCell className="hidden md:table-cell">
+                <div className="flex flex-col max-w-[150px]">
+                    <span className="font-medium text-sm truncate">
                         {cliente.contact_name || "Sin contacto"}
                     </span>
-                    {cliente.phone && (
+                    {cliente.phone ? (
                         <span className="text-xs text-muted-foreground flex items-center gap-1">
                             <Phone className="h-3 w-3" />
                             {cliente.phone}
                         </span>
+                    ) : (
+                        <span className="text-xs text-muted-foreground">No registrado</span>
                     )}
                 </div>
             </TableCell>
-            <TableCell className="hidden md:table-cell text-center py-4">
-                <div className="inline-flex flex-col items-center justify-center">
-                    <span className="text-lg font-bold text-slate-700">{equipos.length}</span>
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+            <TableCell className="hidden lg:table-cell text-center">
+                <div className="inline-flex flex-col items-center">
+                    <span className="text-lg font-semibold text-slate-700">{equipos.length}</span>
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
                         Equipos
                     </span>
                 </div>
             </TableCell>
-            <TableCell className="hidden md:table-cell text-center py-4">
-                <div className="inline-flex flex-col items-center justify-center">
-                    <span className="text-lg font-bold text-slate-700">{serviciosCount}</span>
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+            <TableCell className="hidden lg:table-cell text-center">
+                <div className="inline-flex flex-col items-center">
+                    <span className="text-lg font-semibold text-slate-700">{serviciosCount}</span>
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
                         Servicios
                     </span>
                 </div>
             </TableCell>
-            <TableCell className="text-right py-4">
+            <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-1">
                     <div onClick={(e) => e.stopPropagation()}>
                         <EditarClienteDialog
@@ -87,7 +86,7 @@ export function ClienteRow({ cliente, serviciosCount = 0 }: ClienteRowProps) {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-8 w-8 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-full"
+                                    className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full"
                                 >
                                     <Settings className="h-4 w-4" />
                                 </Button>
@@ -97,7 +96,7 @@ export function ClienteRow({ cliente, serviciosCount = 0 }: ClienteRowProps) {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-full"
+                        className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full"
                     >
                         <ChevronRight className="h-4 w-4" />
                     </Button>

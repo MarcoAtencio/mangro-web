@@ -170,7 +170,6 @@ export default function ClientesPage() {
             title="Gestión de Clientes"
             subtitle="Administra tu cartera de clientes y equipos"
             headerActions={<NuevoClienteDialog />}
-            breadcrumb={[{ label: "MANGRO" }, { label: "Clientes" }]}
         >
             <div className="flex flex-col gap-4 sm:gap-6 lg:gap-8 flex-1">
                 {/* Stats Cards */}
@@ -239,16 +238,19 @@ export default function ClientesPage() {
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-slate-50/50">
-                                    <TableHead className="w-[350px] lg:w-[450px]">
+                                    <TableHead className="w-[250px] lg:w-[300px]">
                                         Cliente
                                     </TableHead>
-                                    <TableHead className="hidden sm:table-cell w-[200px]">
+                                    <TableHead className="hidden sm:table-cell min-w-[180px]">
+                                        Dirección
+                                    </TableHead>
+                                    <TableHead className="hidden md:table-cell min-w-[150px]">
                                         Contacto
                                     </TableHead>
-                                    <TableHead className="hidden md:table-cell text-center w-[100px]">
+                                    <TableHead className="hidden lg:table-cell text-center w-[80px]">
                                         Equipos
                                     </TableHead>
-                                    <TableHead className="hidden md:table-cell text-center w-[100px]">
+                                    <TableHead className="hidden lg:table-cell text-center w-[80px]">
                                         Servicios
                                     </TableHead>
                                     <TableHead className="text-right w-[100px]">

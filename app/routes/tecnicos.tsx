@@ -144,7 +144,6 @@ export default function TecnicosPage() {
             title="Gestión de Usuarios"
             subtitle="Administra el personal técnico y roles del sistema"
             headerActions={<NuevoTecnicoDialog onSuccess={() => {}} />}
-            breadcrumb={[{ label: "MANGRO" }, { label: "Usuarios" }]}
         >
             <div className="flex flex-col gap-4 sm:gap-6 lg:gap-8 flex-1">
                 {/* Stats */}

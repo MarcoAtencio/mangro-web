@@ -136,7 +136,6 @@ export default function ServiciosPage() {
             title="Gestión de Servicios"
             subtitle="Administra y programa servicios técnicos de mantenimiento"
             headerActions={<NuevoServicioDialog tecnicos={tecnicos} clientes={clientes} />}
-            breadcrumb={[{ label: "MANGRO" }, { label: "Servicios" }]}
         >
             <div className="flex flex-col gap-4 sm:gap-6 lg:gap-8 flex-1">
                 {/* Stats Cards */}

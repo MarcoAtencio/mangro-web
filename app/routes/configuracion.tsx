@@ -102,7 +102,6 @@ export default function ConfiguracionPage() {
         <AdminLayout 
             title="Configuración" 
             subtitle="Administra tu perfil personal y preferencias del sistema"
-            breadcrumb={[{ label: "MANGRO" }, { label: "Configuración" }]}
         >
             <div className="max-w-4xl mx-auto w-full">
                 <Tabs defaultValue="perfil" className="w-full">

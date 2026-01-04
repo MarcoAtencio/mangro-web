@@ -15,7 +15,7 @@ import {
 import { Plus, Calendar } from "lucide-react";
 import { createEquipo } from "~/lib/firestore";
 
-export function NuevoEquipoDialog({ clienteId }: { clienteId: string }) {
+export function NuevoEquipoDialog({ clienteId, buttonText = "Agregar Equipo" }: { clienteId: string; buttonText?: string }) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -56,7 +56,7 @@ export function NuevoEquipoDialog({ clienteId }: { clienteId: string }) {
             <DialogTrigger asChild>
                 <Button size="sm" className="gap-1 shadow-sm">
                     <Plus className="h-4 w-4" />
-                    Agregar Equipo
+                    {buttonText}
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto">

@@ -50,7 +50,6 @@ export default function DashboardPage() {
         <AdminLayout 
             title="Dashboard" 
             subtitle="Resumen general de operaciones y métricas clave"
-            breadcrumb={[{ label: "MANGRO" }, { label: "Dashboard" }]}
         >
             <div className="space-y-8">
                 {/* Stats Grid */}

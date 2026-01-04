@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { Sidebar, MobileSidebar } from "./sidebar";
 import { cn } from "~/lib/utils";
 
+import { Link } from "react-router";
+import { ArrowLeft } from "lucide-react";
+
 interface AdminLayoutProps {
     children: React.ReactNode;
-    title?: string;
-    subtitle?: string;
+    title?: React.ReactNode;
+    subtitle?: React.ReactNode;
     headerActions?: React.ReactNode;
     breadcrumb?: { label: string; href?: string }[];
+    backButton?: { href: string; label?: string };
 }
 
 export function AdminLayout({
@@ -15,7 +19,8 @@ export function AdminLayout({
     title,
     subtitle,
     headerActions,
-    breadcrumb
+    breadcrumb,
+    backButton
 }: AdminLayoutProps) {
     const [collapsed, setCollapsed] = useState(false);
 
@@ -33,10 +38,20 @@ export function AdminLayout({
                 )}
             >
                 {/* Header */}
-                <header className="sticky top-0 z-30 py-3 md:py-4 bg-white/80 backdrop-blur-md px-4 md:px-6 lg:px-8">
+                <header className="sticky top-0 z-30 py-3 md:py-4 bg-slate-50 px-4 md:px-6 lg:px-8">
                     <div className="max-w-[1600px] mx-auto flex items-center justify-between w-full">
                         <div className="flex items-center gap-4">
                             <MobileSidebar />
+                            
+                            {backButton && (
+                                <Link 
+                                    to={backButton.href} 
+                                    className="group flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
+                                >
+                                    <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                                    {backButton.label && <span>{backButton.label}</span>}
+                                </Link>
+                            )}
                             
                             <div className="flex flex-col gap-0.5">
                                 {/* Breadcrumbs */}
@@ -45,9 +60,9 @@ export function AdminLayout({
                                         {breadcrumb.map((item, idx) => (
                                             <React.Fragment key={idx}>
                                                 {item.href ? (
-                                                    <a href={item.href} className="hover:text-primary transition-colors">
+                                                    <Link to={item.href} className="hover:text-primary transition-colors">
                                                         {item.label}
-                                                    </a>
+                                                    </Link>
                                                 ) : (
                                                     <span>{item.label}</span>
                                                 )}
@@ -61,13 +76,15 @@ export function AdminLayout({
 
                                 {title && (
                                     <div className="flex flex-col gap-0.5">
-                                        <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
-                                            {title}
-                                        </h1>
+                                        <div className="flex items-center gap-3">
+                                            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                                                {title}
+                                            </h1>
+                                        </div>
                                         {subtitle && (
-                                            <p className="text-xs sm:text-sm text-slate-500 hidden sm:block">
+                                            <div className="text-xs sm:text-sm text-slate-500 hidden sm:block font-medium">
                                                 {subtitle}
-                                            </p>
+                                            </div>
                                         )}
                                     </div>
                                 )}
