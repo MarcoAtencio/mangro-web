@@ -10,6 +10,8 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import { AuthProvider } from "~/lib/auth";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -31,6 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <title>MANGRO Admin</title>
+                <link rel="icon" href="/favicon.jpg" />
                 <Meta />
                 <Links />
             </head>
@@ -38,6 +41,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 {children}
                 <ScrollRestoration />
                 <Scripts />
+                <Analytics />
+                <SpeedInsights />
             </body>
         </html>
     );

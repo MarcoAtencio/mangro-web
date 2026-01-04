@@ -24,7 +24,7 @@ export function ClienteRow({ cliente, serviciosCount = 0 }: ClienteRowProps) {
 
     return (
         <TableRow
-            className="cursor-pointer hover:bg-slate-50/80 transition-all duration-200 group"
+            className="cursor-pointer hover:bg-slate-50 transition-all duration-300 hover:shadow-sm group border-b border-slate-100/50"
             onClick={() => navigate(`/clientes/${cliente.id}`)}
         >
             <TableCell className="py-5">

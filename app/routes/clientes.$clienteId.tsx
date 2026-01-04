@@ -1,4 +1,12 @@
+import type { MetaFunction } from "react-router";
 import { useState, useEffect } from "react";
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Detalle de Cliente | MANGRO Admin" },
+        { name: "description", content: "Información detallada, equipos e historial del cliente." },
+    ];
+};
 import { useParams, useNavigate } from "react-router";
 import { AdminLayout } from "~/components/layout/admin-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -114,34 +122,43 @@ export default function ClienteDetalle() {
     }
 
     return (
-        <AdminLayout>
-            <div className="flex flex-col gap-6 p-6">
-                {/* Header */}
-                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                    <div className="flex items-start gap-4">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="mt-1"
-                            onClick={() => navigate("/clientes")}
-                        >
-                            <ArrowLeft className="h-5 w-5 text-muted-foreground" />
-                        </Button>
-                        <div>
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                                    <Building2 className="h-6 w-6 text-primary" />
-                                </div>
-                                <div>
-                                    <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-                                        {cliente.name}
-                                    </h1>
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                        <Badge variant="outline" className="font-mono text-xs">
-                                            RUC: {cliente.ruc || "N/A"}
-                                        </Badge>
-                                    </div>
-                                </div>
+        <AdminLayout 
+            title={cliente.name} 
+            subtitle={`RUC: ${cliente.ruc || "N/A"}`}
+            breadcrumb={[
+                { label: "MANGRO", href: "/dashboard" }, 
+                { label: "Clientes", href: "/clientes" },
+                { label: cliente.name }
+            ]}
+            headerActions={
+                <div className="flex gap-2">
+                    <EditarClienteDialog 
+                        cliente={cliente}
+                        trigger={
+                            <Button variant="outline" size="sm">
+                                <Settings className="mr-2 h-4 w-4" />
+                                Editar Cliente
+                            </Button>
+                        }
+                    />
+                </div>
+            }
+        >
+            <div className="flex flex-col gap-8">
+                {/* Header Information Card */}
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between bg-white p-6 rounded-2xl border border-slate-100 shadow-sm/5">
+                    <div className="flex items-start gap-5">
+                        <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shadow-inner">
+                            <Building2 className="h-8 w-8 text-slate-400" />
+                        </div>
+                        <div className="flex flex-col gap-3">
+                            <div>
+                                <h1 className="text-2xl font-bold tracking-tight text-slate-800">
+                                    {cliente.name}
+                                </h1>
+                                <p className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                                    RUC: {cliente.ruc || "N/A"}
+                                </p>
                             </div>
 
                             <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground mt-4 ml-1">

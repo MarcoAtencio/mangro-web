@@ -11,6 +11,7 @@ import { PriorityBadge } from "~/components/ui/priority-badge";
 import { StatusBadge } from "~/components/ui/status-badge";
 import { Spinner } from "~/components/ui/spinner";
 import { User } from "lucide-react";
+import { cn } from "~/lib/utils";
 import type { Task } from "~/lib/services";
 import type { Usuario } from "~/lib/firestore";
 
@@ -62,102 +63,91 @@ export function ServicesTable({
     }
 
     return (
-        <div className="flex flex-col gap-4">
-            <div className="overflow-x-auto rounded-md border border-slate-200">
-                <Table>
-                    <TableHeader>
-                        <TableRow className="bg-slate-50/50">
-                            <TableHead className="w-[120px]">Fecha</TableHead>
-                            <TableHead>Cliente</TableHead>
-                            <TableHead className="hidden md:table-cell">Descripción</TableHead>
-                            <TableHead className="hidden sm:table-cell">Técnico</TableHead>
-                            <TableHead className="hidden lg:table-cell">Prioridad</TableHead>
-                            <TableHead className="text-right sm:text-left">Estado</TableHead>
+        <div className="overflow-x-auto">
+        <Table className="min-w-[600px]">
+            <TableHeader>
+                <TableRow className="bg-slate-50/50">
+                    <TableHead className="w-[90px] sm:w-[120px]">Fecha</TableHead>
+                    <TableHead className="min-w-[120px]">Cliente</TableHead>
+                    <TableHead className="hidden md:table-cell min-w-[150px]">Descripción</TableHead>
+                    <TableHead className="hidden sm:table-cell min-w-[100px]">Técnico</TableHead>
+                    <TableHead className="hidden lg:table-cell w-[80px]">Prioridad</TableHead>
+                    <TableHead className="text-right sm:text-left w-[80px] sm:w-[100px]">Estado</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {services.length > 0 ? (
+                    services.map((service) => (
+                        <TableRow
+                            key={service.id}
+                            className="hover:bg-slate-50 cursor-pointer transition-all duration-300 hover:shadow-sm group"
+                            onClick={() => onSelectService(service)}
+                        >
+                            <TableCell
+                                className={cn(
+                                    "font-medium border-l-4 transition-all duration-300 group-hover:pl-5",
+                                    service.status === "COMPLETADO"
+                                        ? "border-l-emerald-500"
+                                        : service.status === "EN_PROGRESO"
+                                            ? "border-l-blue-500"
+                                            : service.status === "CANCELADO"
+                                                ? "border-l-red-500"
+                                                : "border-l-amber-500"
+                                )}
+                            >
+                                <div className="flex flex-col">
+                                    <span>{formatDate(service.date)}</span>
+                                    <span className="text-xs text-muted-foreground">
+                                        {service.scheduledTime}
+                                    </span>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="flex flex-col max-w-[150px]">
+                                    <span className="font-medium text-sm truncate">{service.clientName}</span>
+                                    <span className="text-xs text-muted-foreground truncate">{service.address}</span>
+                                </div>
+                            </TableCell>
+                            <TableCell className="hidden md:table-cell">
+                                <div className="flex flex-col max-w-[180px] lg:max-w-[200px]">
+                                    <span className="font-medium truncate">
+                                        {service.equipmentSummary}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground truncate">
+                                        {service.contactName}
+                                    </span>
+                                </div>
+                            </TableCell>
+                            <TableCell className="hidden sm:table-cell">
+                                <div className="flex items-center gap-2">
+                                    <User className="h-4 w-4 text-muted-foreground" />
+                                    <span className="truncate">
+                                        {tecnicos.find((t) => t.id === service.technicianId)?.full_name || "Técnico"}
+                                    </span>
+                                </div>
+                            </TableCell>
+                            <TableCell className="hidden lg:table-cell">
+                                <PriorityBadge priority={service.priority} />
+                            </TableCell>
+                            <TableCell className="text-right sm:text-left">
+                                <StatusBadge status={service.status} />
+                            </TableCell>
                         </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {services.length > 0 ? (
-                            services.map((service) => (
-                                <TableRow
-                                    key={service.id}
-                                    className="hover:bg-muted/50 cursor-pointer transition-colors"
-                                    onClick={() => onSelectService(service)}
-                                >
-                                    <TableCell
-                                        className={`font-medium border-l-4 ${
-                                            service.status === "COMPLETADO"
-                                                ? "border-l-green-500"
-                                                : service.status === "EN_PROGRESO"
-                                                    ? "border-l-blue-500"
-                                                    : service.status === "CANCELADO"
-                                                        ? "border-l-red-500"
-                                                        : "border-l-amber-500"
-                                        }`}
-                                    >
-                                        <div className="flex flex-col">
-                                            <span>{formatDate(service.date)}</span>
-                                            <span className="text-xs text-muted-foreground">
-                                                {service.scheduledTime}
-                                            </span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex flex-col">
-                                            <span className="font-medium">{service.clientName}</span>
-                                            <span className="text-xs text-muted-foreground">{service.address}</span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="hidden md:table-cell">
-                                        <div className="flex flex-col max-w-[200px]">
-                                            <span className="font-medium truncate">
-                                                {service.equipmentSummary}
-                                            </span>
-                                            <span className="text-xs text-muted-foreground truncate">
-                                                {service.contactName}
-                                            </span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="hidden sm:table-cell">
-                                        <div className="flex items-center gap-2">
-                                            <User className="h-4 w-4 text-muted-foreground" />
-                                            <span className="truncate">
-                                                {tecnicos.find((t) => t.id === service.technicianId)?.full_name || "Técnico"}
-                                            </span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="hidden lg:table-cell">
-                                        <PriorityBadge priority={service.priority} />
-                                    </TableCell>
-                                    <TableCell className="text-right sm:text-left">
-                                        <StatusBadge status={service.status} />
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={6}
-                                    className="text-center py-8 text-muted-foreground"
-                                >
-                                    {isEmpty
-                                        ? "No hay servicios programados"
-                                        : "No se encontraron servicios con los filtros seleccionados"}
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-
-            <PaginationControls
-                currentPage={currentPage}
-                totalPages={totalPages}
-                totalItems={totalItems}
-                itemsPerPage={itemsPerPage}
-                onPageChange={onPageChange}
-                itemName="servicios"
-                className="border-t pt-2"
-            />
+                    ))
+                ) : (
+                    <TableRow>
+                        <TableCell
+                            colSpan={6}
+                            className="text-center py-8 text-muted-foreground"
+                        >
+                            {isEmpty
+                                ? "No hay servicios programados"
+                                : "No se encontraron servicios con los filtros seleccionados"}
+                        </TableCell>
+                    </TableRow>
+                )}
+            </TableBody>
+        </Table>
         </div>
     );
 }

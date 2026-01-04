@@ -1,4 +1,12 @@
+import type { MetaFunction } from "react-router";
 import { useState } from "react";
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Gestión de Técnicos | MANGRO Admin" },
+        { name: "description", content: "Administra el personal técnico y roles del sistema." },
+    ];
+};
 import { AdminLayout } from "~/components/layout/admin-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
@@ -29,6 +37,8 @@ import {
     Pencil,
     Mail,
     Phone,
+    Filter,
+    ArrowUpDown,
 } from "lucide-react";
 
 import { useUsuarios } from "~/hooks/use-usuarios";
@@ -130,10 +140,15 @@ export default function TecnicosPage() {
     }
 
     return (
-        <AdminLayout title="Gestión de Técnicos">
-            <div className="space-y-6">
+        <AdminLayout 
+            title="Gestión de Usuarios"
+            subtitle="Administra el personal técnico y roles del sistema"
+            headerActions={<NuevoTecnicoDialog onSuccess={() => {}} />}
+            breadcrumb={[{ label: "MANGRO" }, { label: "Usuarios" }]}
+        >
+            <div className="flex flex-col gap-4 sm:gap-6 lg:gap-8 flex-1">
                 {/* Stats */}
-                <div className="grid gap-4 md:grid-cols-4">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4 lg:gap-4">
                     <StatsCard
                         title="Total Usuarios"
                         value={usuarios.length}
@@ -167,133 +182,141 @@ export default function TecnicosPage() {
                     />
                 </div>
 
-                {/* Header Actions */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div className="relative w-full sm:w-72">
+                {/* Filters Section */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+                    {/* Search - Left side */}
+                    <div className="relative w-full sm:w-64 lg:w-80">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            placeholder="Buscar técnicos..."
-                            className="pl-9 bg-white border-slate-200 focus:border-secondary transition-colors shadow-sm w-full"
+                            placeholder="Buscar usuarios por nombre, email o rol..."
+                            className="pl-9 h-9 bg-white border-slate-200 focus:border-primary transition-colors shadow-sm w-full"
                             value={search}
                             onChange={(e) => handleSearchChange(e.target.value)}
                         />
                     </div>
-                    <NuevoTecnicoDialog onSuccess={() => {}} />
+
+                    {/* Filters - Right side */}
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" className="h-9">
+                            <Filter className="h-4 w-4 mr-2" />
+                            Filtros
+                        </Button>
+                        <Button variant="outline" size="sm" className="h-9">
+                            <ArrowUpDown className="h-4 w-4 mr-2" />
+                            Ordenar
+                        </Button>
+                    </div>
                 </div>
 
-                {/* Users Table */}
-                <Card className="border-slate-200 shadow-md">
-                    <CardHeader>
-                        <CardTitle>Lista de Usuarios</CardTitle>
-                        <CardDescription>
-                            Gestiona los técnicos y usuarios del sistema
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0 sm:p-6 pb-0">
-                        <div className="overflow-x-auto rounded-md border border-slate-200">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-slate-50/50">
-                                        <TableHead className="w-[80px]">Personal</TableHead>
-                                        <TableHead>Nombre</TableHead>
-                                        <TableHead className="hidden md:table-cell">
-                                            Email
-                                        </TableHead>
-                                        <TableHead className="hidden sm:table-cell">
-                                            Teléfono
-                                        </TableHead>
-                                        <TableHead>Rol</TableHead>
-                                        <TableHead className="text-right">Acciones</TableHead>
+                {/* Users Table - With gray background section */}
+                <div className="flex flex-col -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 py-4 md:py-5 lg:py-6 pb-6 lg:pb-8 bg-slate-100/70 flex-1 -mb-4 md:-mb-6 lg:-mb-8 border-t border-slate-200">
+                    <div className="overflow-x-auto rounded-md border border-slate-200 bg-white shadow-sm">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="bg-slate-50/50">
+                                    <TableHead className="w-[80px]">Personal</TableHead>
+                                    <TableHead>Nombre</TableHead>
+                                    <TableHead className="hidden md:table-cell">
+                                        Email
+                                    </TableHead>
+                                    <TableHead className="hidden sm:table-cell">
+                                        Teléfono
+                                    </TableHead>
+                                    <TableHead>Rol</TableHead>
+                                    <TableHead className="text-right">Acciones</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {paginatedUsuarios.map((usuario) => (
+                                    <TableRow
+                                        key={usuario.id}
+                                        className="hover:bg-slate-50 transition-all duration-300 hover:shadow-sm"
+                                    >
+                                        <TableCell>
+                                            <div className="flex items-center gap-3">
+                                                {usuario.photo_url ? (
+                                                    <img
+                                                        src={usuario.photo_url}
+                                                        alt={usuario.full_name}
+                                                        className="h-10 w-10 rounded-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                        <UserCircle className="h-6 w-6 text-primary" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="font-medium">
+                                            {usuario.full_name || "Sin nombre"}
+                                        </TableCell>
+                                        <TableCell className="hidden md:table-cell">
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <Mail className="h-4 w-4 text-muted-foreground" />
+                                                {usuario.email}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="hidden sm:table-cell">
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                <Phone className="h-4 w-4" />
+                                                {usuario.phone || (
+                                                    <span className="text-muted-foreground/50 italic">
+                                                        Sin teléfono
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell><RoleBadge role={usuario.role} /></TableCell>
+                                        <TableCell className="text-right">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon">
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel>
+                                                        Acciones
+                                                    </DropdownMenuLabel>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem
+                                                        onClick={() => setEditingUser(usuario)}
+                                                    >
+                                                        <Pencil className="mr-2 h-4 w-4" />{" "}
+                                                        Editar
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </TableCell>
                                     </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {paginatedUsuarios.map((usuario) => (
-                                        <TableRow
-                                            key={usuario.id}
-                                            className="hover:bg-slate-50/50 transition-colors"
-                                        >
-                                            <TableCell>
-                                                <div className="flex items-center gap-3">
-                                                    {usuario.photo_url ? (
-                                                        <img
-                                                            src={usuario.photo_url}
-                                                            alt={usuario.full_name}
-                                                            className="h-10 w-10 rounded-full object-cover"
-                                                        />
-                                                    ) : (
-                                                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                                            <UserCircle className="h-6 w-6 text-primary" />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="font-medium">
-                                                {usuario.full_name || "Sin nombre"}
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                <div className="flex items-center gap-2 text-sm">
-                                                    <Mail className="h-4 w-4 text-muted-foreground" />
-                                                    {usuario.email}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="hidden sm:table-cell">
-                                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                    <Phone className="h-4 w-4" />
-                                                    {usuario.phone || (
-                                                        <span className="text-muted-foreground/50 italic">
-                                                            Sin teléfono
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell><RoleBadge role={usuario.role} /></TableCell>
-                                            <TableCell className="text-right">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon">
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuLabel>
-                                                            Acciones
-                                                        </DropdownMenuLabel>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem
-                                                            onClick={() => setEditingUser(usuario)}
-                                                        >
-                                                            <Pencil className="mr-2 h-4 w-4" />{" "}
-                                                            Editar
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                    {paginatedUsuarios.length === 0 && (
-                                        <TableRow>
-                                            <TableCell colSpan={6} className="text-center py-8">
-                                                <p className="text-muted-foreground">
-                                                    No se encontraron usuarios
-                                                </p>
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </div>
+                                ))}
+                                {paginatedUsuarios.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center py-8">
+                                            <p className="text-muted-foreground">
+                                                No se encontraron usuarios
+                                            </p>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
 
-                        {/* Pagination Controls */}
-                        <PaginationControls
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            totalItems={filteredUsuarios.length}
-                            itemsPerPage={10}
-                            onPageChange={setPage}
-                            itemName="resultados"
-                        />
-                    </CardContent>
-                </Card>
+                    {/* Pagination inside gray section */}
+                    {filteredUsuarios.length > 0 && (
+                        <div className="mt-6">
+                            <PaginationControls
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                totalItems={filteredUsuarios.length}
+                                itemsPerPage={10}
+                                onPageChange={setPage}
+                                itemName="usuarios"
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
             {editingUser && (
                 <EditarTecnicoDialog

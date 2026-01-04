@@ -1,4 +1,12 @@
+import type { MetaFunction } from "react-router";
 import { useState, useEffect } from "react";
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Gestión de Clientes | MANGRO Admin" },
+        { name: "description", content: "Administra la cartera de clientes y equipos industriales." },
+    ];
+};
 import { AdminLayout } from "~/components/layout/admin-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
@@ -162,10 +170,11 @@ export default function ClientesPage() {
             title="Gestión de Clientes"
             subtitle="Administra tu cartera de clientes y equipos"
             headerActions={<NuevoClienteDialog />}
+            breadcrumb={[{ label: "MANGRO" }, { label: "Clientes" }]}
         >
-            <div className="flex flex-col gap-8 min-h-full">
+            <div className="flex flex-col gap-4 sm:gap-6 lg:gap-8 flex-1">
                 {/* Stats Cards */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4 lg:gap-4">
                     <StatsCard
                         title="Clientes"
                         value={clientes.length}
@@ -200,9 +209,9 @@ export default function ClientesPage() {
                 </div>
 
                 {/* Filters Section */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
                     {/* Search Input */}
-                    <div className="relative w-full sm:w-72">
+                    <div className="relative w-full sm:w-64 lg:w-72">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Buscar por nombre o RUC..."
@@ -225,7 +234,7 @@ export default function ClientesPage() {
                 </div>
 
                 {/* Desktop Clients Table - With gray background section */}
-                <div className="hidden md:flex md:flex-col -mx-8 px-8 py-6 pb-8 bg-slate-100/70 flex-1">
+                <div className="hidden sm:flex sm:flex-col -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 py-4 sm:py-5 lg:py-6 pb-6 lg:pb-8 bg-slate-100/70 flex-1 -mb-4 md:-mb-6 lg:-mb-8 border-t border-slate-200">
                     <div className="overflow-x-auto rounded-md border border-slate-200 bg-white">
                         <Table>
                             <TableHeader>
@@ -300,7 +309,7 @@ export default function ClientesPage() {
                 </div>
 
                 {/* Mobile Clients List */}
-                <div className="md:hidden space-y-4">
+                <div className="sm:hidden space-y-4">
                     <div className="flex items-center justify-between pb-2">
                         <h2 className="text-lg font-semibold">Lista de Clientes</h2>
                         <span className="text-sm text-muted-foreground">
@@ -328,7 +337,7 @@ export default function ClientesPage() {
                 
                 {/* Mobile Pagination */}
                 {!loadingClientes && filteredClientes.length > 0 && (
-                    <div className="md:hidden text-center py-4 text-sm text-muted-foreground">
+                    <div className="sm:hidden text-center py-4 text-sm text-muted-foreground">
                         Mostrando {paginatedClientes.length} de {filteredClientes.length} clientes
                     </div>
                 )}

@@ -1,4 +1,12 @@
+import type { MetaFunction } from "react-router";
 import { useState, useEffect } from "react";
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Configuración | MANGRO Admin" },
+        { name: "description", content: "Ajustes de perfil y preferencias del sistema." },
+    ];
+};
 import { AdminLayout } from "~/components/layout/admin-layout";
 import {
     Card,
@@ -91,8 +99,12 @@ export default function ConfiguracionPage() {
     };
 
     return (
-        <AdminLayout title="Configuración">
-            <div className="max-w-4xl mx-auto">
+        <AdminLayout 
+            title="Configuración" 
+            subtitle="Administra tu perfil personal y preferencias del sistema"
+            breadcrumb={[{ label: "MANGRO" }, { label: "Configuración" }]}
+        >
+            <div className="max-w-4xl mx-auto w-full">
                 <Tabs defaultValue="perfil" className="w-full">
                     <TabsList className="mb-8">
                         <TabsTrigger value="perfil">Mi Perfil</TabsTrigger>

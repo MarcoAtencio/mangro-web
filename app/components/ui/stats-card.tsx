@@ -28,45 +28,45 @@ export function StatsCard({
 }: StatsCardProps) {
     const variants = {
         default: {
-            card: "from-white to-slate-50 border-slate-200/60 ring-slate-400",
-            textTitle: "text-slate-500",
+            card: "from-white to-slate-50 border-slate-200/60 shadow-sm",
+            textTitle: "text-slate-500 uppercase tracking-wider font-semibold",
             textValue: "text-slate-900",
-            iconBg: "from-slate-100 to-slate-200",
+            iconBg: "bg-slate-100 text-slate-500 shadow-inner",
             iconColor: "text-slate-600",
         },
         green: {
-            card: "from-green-50 to-emerald-50 border-green-100/50 ring-green-500",
-            textTitle: "text-green-700/80",
-            textValue: "text-green-600",
-            iconBg: "from-green-100 to-green-200",
-            iconColor: "text-green-600",
+            card: "from-white to-emerald-50/30 border-emerald-100 shadow-sm",
+            textTitle: "text-emerald-700/70 uppercase tracking-wider font-semibold",
+            textValue: "text-emerald-900",
+            iconBg: "bg-emerald-100 text-emerald-600 shadow-inner",
+            iconColor: "text-emerald-600",
         },
         amber: {
-            card: "from-amber-50 to-orange-50 border-amber-100/50 ring-amber-500",
-            textTitle: "text-amber-700/80",
-            textValue: "text-amber-600",
-            iconBg: "from-amber-100 to-amber-200",
+            card: "from-white to-amber-50/30 border-amber-100 shadow-sm",
+            textTitle: "text-amber-700/70 uppercase tracking-wider font-semibold",
+            textValue: "text-amber-900",
+            iconBg: "bg-amber-100 text-amber-600 shadow-inner",
             iconColor: "text-amber-600",
         },
         blue: {
-            card: "from-blue-50 to-indigo-50 border-blue-100/50 ring-blue-500",
-            textTitle: "text-blue-700/80",
-            textValue: "text-blue-600",
-            iconBg: "from-blue-100 to-blue-200",
+            card: "from-white to-blue-50/30 border-blue-100 shadow-sm",
+            textTitle: "text-blue-700/70 uppercase tracking-wider font-semibold",
+            textValue: "text-blue-900",
+            iconBg: "bg-blue-100 text-blue-600 shadow-inner",
             iconColor: "text-blue-600",
         },
         indigo: { 
-             card: "from-indigo-50 to-violet-50 border-indigo-100/50 ring-indigo-500",
-             textTitle: "text-indigo-700/80",
-             textValue: "text-indigo-600",
-             iconBg: "from-indigo-100 to-indigo-200",
+             card: "from-white to-indigo-50/30 border-indigo-100 shadow-sm",
+             textTitle: "text-indigo-700/70 uppercase tracking-wider font-semibold",
+             textValue: "text-indigo-900",
+             iconBg: "bg-indigo-100 text-indigo-600 shadow-inner",
              iconColor: "text-indigo-600",
         },
         secondary: {
-             card: "from-slate-50 to-gray-50 border-slate-200/60 ring-slate-400",
-             textTitle: "text-slate-500",
+             card: "from-white to-slate-100/50 border-slate-200 shadow-sm",
+             textTitle: "text-slate-500 uppercase tracking-wider font-semibold",
              textValue: "text-slate-900",
-             iconBg: "from-slate-100 to-slate-200",
+             iconBg: "bg-slate-200/50 text-slate-600 shadow-inner",
              iconColor: "text-slate-600",
         }
     };
@@ -76,38 +76,47 @@ export function StatsCard({
     return (
         <Card
             className={cn(
-                "bg-gradient-to-br shadow-sm transition-all duration-200 hover:-translate-y-0.5",
+                "relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group",
+                "bg-gradient-to-br border",
                 styles.card,
-                onClick && "cursor-pointer hover:shadow-md",
-                active && "ring-2 shadow-lg",
+                onClick && "cursor-pointer",
+                active && "ring-2 ring-primary ring-offset-2",
                 className
             )}
             onClick={onClick}
         >
-            <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <p className={cn("text-xs font-medium", styles.textTitle)}>{title}</p>
-                        <p className={cn("text-2xl font-bold mt-0.5", styles.textValue)}>{value}</p>
+            {/* Subtle background decoration */}
+            <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-current opacity-[0.03] blur-2xl group-hover:scale-150 transition-transform duration-500" />
+            
+            <CardContent className="p-3 sm:p-4 lg:p-5">
+                <div className="flex items-start justify-between gap-2">
+                    <div className="space-y-0.5 sm:space-y-1 min-w-0 flex-1">
+                        <p className={cn("text-[9px] sm:text-[10px] lg:text-xs truncate", styles.textTitle)}>{title}</p>
+                        <div className="flex items-baseline gap-1">
+                            <p className={cn("text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight", styles.textValue)}>
+                                {value}
+                            </p>
+                            {trend && (
+                                <span className={cn(
+                                    "text-[9px] sm:text-[10px] font-bold px-1 sm:px-1.5 py-0.5 rounded-full",
+                                    trend.positive !== false ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                )}>
+                                    {trend.positive !== false ? "+" : ""}{trend.value}%
+                                </span>
+                            )}
+                        </div>
                     </div>
-                    <div className={cn("p-2 bg-gradient-to-br rounded-lg", styles.iconBg)}>
-                        <Icon className={cn("h-5 w-5", styles.iconColor)} />
+                    <div className={cn(
+                        "p-1.5 sm:p-2 lg:p-2.5 rounded-lg sm:rounded-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shrink-0",
+                        styles.iconBg
+                    )}>
+                        <Icon className={cn("h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6", styles.iconColor)} />
                     </div>
                 </div>
-                {(description || trend) && (
-                    <div className="mt-3 flex items-center gap-2 text-xs">
-                         {trend && (
-                            <div className={cn("flex items-center gap-1 font-medium", trend.positive !== false ? "text-green-600" : "text-red-600")}>
-                                <TrendingUp className={cn("h-3 w-3", trend.positive === false && "rotate-180")} />
-                                <span>{trend.value}% {trend.label}</span>
-                            </div>
-                         )}
-                         {description && (
-                             <p className={cn("text-muted-foreground", trend && "ml-1")}>
-                                {description}
-                             </p>
-                         )}
-                    </div>
+                {description && (
+                    <p className="mt-2 sm:mt-3 lg:mt-4 text-[10px] sm:text-xs text-muted-foreground line-clamp-1">
+                        {description}
+                    </p>
                 )}
             </CardContent>
         </Card>

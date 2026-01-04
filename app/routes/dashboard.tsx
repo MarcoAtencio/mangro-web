@@ -1,4 +1,12 @@
+import type { MetaFunction } from "react-router";
 import { useNavigate } from "react-router";
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Dashboard | MANGRO Admin" },
+        { name: "description", content: "Panel de administración principal de MANGRO S.A.C." },
+    ];
+};
 import { AdminLayout } from "~/components/layout/admin-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
@@ -39,8 +47,12 @@ export default function DashboardPage() {
     }
 
     return (
-        <AdminLayout title="Dashboard">
-            <div className="space-y-6">
+        <AdminLayout 
+            title="Dashboard" 
+            subtitle="Resumen general de operaciones y métricas clave"
+            breadcrumb={[{ label: "MANGRO" }, { label: "Dashboard" }]}
+        >
+            <div className="space-y-8">
                 {/* Stats Grid */}
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <StatsCard

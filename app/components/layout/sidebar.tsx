@@ -95,29 +95,37 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                             to={item.href}
                             className={({ isActive }) =>
                                 cn(
-                                    "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                                    "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300",
                                     isActive
-                                        ? "bg-[#0069B4] text-white shadow-md"
-                                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
-                                    collapsed && "justify-center px-2 border-l-0 ml-0"
+                                        ? "bg-primary text-white shadow-md shadow-primary/20"
+                                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
+                                    collapsed && "justify-center px-2"
                                 )
                             }
                         >
                             <item.icon className={cn(
-                                "h-5 w-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110",
+                                "h-5 w-5 flex-shrink-0 transition-all duration-300",
+                                "group-hover:scale-110 group-active:scale-95"
                             )} />
                             {!collapsed && <span>{item.name}</span>}
+                            {/* Active Indicator Dot */}
+                            <div className={cn(
+                                "absolute left-0 w-1 h-4 bg-white rounded-full transition-all duration-300 opacity-0 -translate-x-1",
+                                "group-[.active]:opacity-100 group-[.active]:translate-x-0"
+                            )} />
                         </NavLink>
                     ))}
                 </div>
 
                 {/* Divider */}
-                <div className="my-6 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+                <div className="my-6 px-3">
+                    <div className="h-px bg-slate-100" />
+                </div>
 
                 {/* Secondary Navigation */}
                 <div className="space-y-1">
                     {!collapsed && (
-                        <span className="px-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                        <span className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">
                             Sistema
                         </span>
                     )}
@@ -128,16 +136,17 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                                 to={item.href}
                                 className={({ isActive }) =>
                                     cn(
-                                        "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                                        "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300",
                                         isActive
-                                            ? "bg-[#0069B4] text-white shadow-md"
-                                            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
-                                        collapsed && "justify-center px-2 border-l-0 ml-0"
+                                            ? "bg-primary text-white shadow-md shadow-primary/20"
+                                            : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
+                                        collapsed && "justify-center px-2"
                                     )
                                 }
                             >
                                 <item.icon className={cn(
-                                    "h-5 w-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110",
+                                    "h-5 w-5 flex-shrink-0 transition-all duration-300",
+                                    "group-hover:scale-110 group-active:scale-95"
                                 )} />
                                 {!collapsed && <span>{item.name}</span>}
                             </NavLink>
@@ -149,7 +158,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
             {/* User Profile Section */}
             <div className="p-3 border-t border-slate-100">
                 <div className={cn(
-                    "flex items-center gap-3 p-2 rounded-xl bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer",
+                    "flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-all cursor-pointer",
                     collapsed && "justify-center p-2"
                 )}>
                     {photoUrl ? (
@@ -219,7 +228,7 @@ export function MobileSidebar() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setOpen(true)}
-                className="md:hidden -ml-2 text-muted-foreground hover:text-primary transition-colors"
+                className="xl:hidden -ml-2 text-muted-foreground hover:text-primary transition-colors"
                 aria-label="Open menu"
             >
                 <Menu className="h-6 w-6" />
@@ -228,7 +237,7 @@ export function MobileSidebar() {
             {/* Overlay */}
             {open && (
                 <div
-                    className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
+                    className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm xl:hidden"
                     onClick={() => setOpen(false)}
                 />
             )}
@@ -236,7 +245,7 @@ export function MobileSidebar() {
             {/* Mobile sidebar */}
             <aside
                 className={cn(
-                    "fixed inset-y-0 left-0 z-50 w-72 bg-white transition-transform duration-300 md:hidden shadow-2xl",
+                    "fixed inset-y-0 left-0 z-50 w-72 bg-white transition-transform duration-300 xl:hidden shadow-2xl",
                     open ? "translate-x-0" : "-translate-x-full"
                 )}
             >
@@ -273,25 +282,27 @@ export function MobileSidebar() {
                                 onClick={() => setOpen(false)}
                                 className={({ isActive }) =>
                                     cn(
-                                        "group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200",
+                                        "group relative flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-all duration-300",
                                         isActive
-                                            ? "bg-[#0069B4] text-white shadow-md"
-                                            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                                            ? "bg-primary text-white shadow-md shadow-primary/20"
+                                            : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                                     )
                                 }
                             >
-                                <item.icon className="h-5 w-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                                <item.icon className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" />
                                 <span>{item.name}</span>
                             </NavLink>
                         ))}
                     </div>
 
                     {/* Divider */}
-                    <div className="my-6 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+                    <div className="my-6 px-3">
+                        <div className="h-px bg-slate-100" />
+                    </div>
 
                     {/* Secondary Navigation */}
                     <div className="space-y-1">
-                        <span className="px-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                        <span className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">
                             Sistema
                         </span>
                         <div className="mt-2 space-y-1">
@@ -302,14 +313,14 @@ export function MobileSidebar() {
                                     onClick={() => setOpen(false)}
                                     className={({ isActive }) =>
                                         cn(
-                                            "group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200",
+                                            "group relative flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-all duration-300",
                                             isActive
-                                                ? "bg-[#0069B4] text-white shadow-md"
-                                                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                                                ? "bg-primary text-white shadow-md shadow-primary/20"
+                                                : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                                         )
                                     }
                                 >
-                                    <item.icon className="h-5 w-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                                    <item.icon className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" />
                                     <span>{item.name}</span>
                                 </NavLink>
                             ))}
@@ -318,8 +329,8 @@ export function MobileSidebar() {
                 </nav>
 
                 {/* User Profile */}
-                <div className="p-3 border-t border-slate-100">
-                    <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-50">
+                <div className="p-4 border-t border-slate-100">
+                    <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-50/50 border border-slate-100">
                         {photoUrl ? (
                             <img
                                 src={photoUrl}

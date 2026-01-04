@@ -72,7 +72,24 @@ body {
 
 /* Smooth transitions */
 * {
-    @apply transition-colors duration-150;
+    @apply transition-all duration-200;
+}
+
+/* Premium Utilities */
+.glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20;
+}
+
+.glass-dark {
+    @apply bg-slate-900/70 backdrop-blur-md border border-slate-700/30;
+}
+
+.premium-shadow {
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+}
+
+.premium-card {
+    @apply bg-white border border-slate-200/60 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300;
 }
 
 /* Focus ring utility */

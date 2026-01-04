@@ -1,4 +1,12 @@
+import type { MetaFunction } from "react-router";
 import { useState } from "react";
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Iniciar Sesión | MANGRO Admin" },
+        { name: "description", content: "Acceso al panel de administración de MANGRO S.A.C." },
+    ];
+};
 import { useNavigate } from "react-router";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
