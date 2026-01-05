@@ -430,8 +430,15 @@ function ClientsPageContent({
                 
                 {/* Mobile Pagination */}
                 {filteredClients.length > 0 && (
-                    <div className="sm:hidden text-center py-4 text-sm text-muted-foreground">
-                        Mostrando {paginatedClients.length} de {filteredClients.length} clientes
+                    <div className="sm:hidden">
+                        <PaginationControls
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setPage}
+                            totalItems={filteredClients.length}
+                            itemsPerPage={10}
+                            itemName="clientes"
+                        />
                     </div>
                 )}
             </div>

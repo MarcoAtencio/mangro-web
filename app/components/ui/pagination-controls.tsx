@@ -26,38 +26,42 @@ export function PaginationControls({
     const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
     return (
-        <div className={`flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 pt-3 sm:pt-4 pb-2 px-2 sm:px-0 border-t border-slate-100 mt-3 sm:mt-4 ${className || ""}`}>
-            <div className="text-xs sm:text-sm text-slate-600 text-center sm:text-left">
-                <span className="hidden sm:inline">Mostrando {startItem} a {endItem} de </span>
-                <span className="sm:hidden">{startItem}-{endItem} / </span>
-                {totalItems} {itemName}
+        <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 p-3 sm:p-4 bg-white border border-slate-200 rounded-lg shadow-sm mt-4 ${className || ""}`}>
+            {/* Info Text */}
+            <div className="text-sm text-slate-500 text-center sm:text-left order-2 sm:order-1 w-full sm:w-auto">
+                Mostrando <span className="font-medium text-slate-900">{startItem}-{endItem}</span> de <span className="font-medium text-slate-900">{totalItems}</span> {itemName}
             </div>
-            <div className="flex items-center gap-1 sm:gap-2">
+
+            {/* Controls */}
+            <div className="flex items-center justify-between sm:justify-end gap-2 order-1 sm:order-2 w-full sm:w-auto">
                 <Button
                     variant="outline"
                     size="sm"
                     onClick={() => onPageChange(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="gap-1 h-8 px-2 sm:px-3"
+                    className="h-9 sm:h-9 px-3 lg:px-4 gap-2 min-w-[32px] sm:min-w-[100px]"
                     aria-label="Página anterior"
                 >
                     <ChevronLeft className="h-4 w-4" />
-                    <span className="hidden sm:inline">Anterior</span>
+                    <span className="sr-only sm:not-sr-only">Anterior</span>
                 </Button>
-                <div className="flex items-center gap-1 px-1 sm:px-2">
-                    <span className="text-xs sm:text-sm font-medium">{currentPage}</span>
-                    <span className="text-slate-500 text-xs sm:text-sm">/</span>
-                    <span className="text-xs sm:text-sm font-medium">{totalPages}</span>
+
+                {/* Mobile Page Indicator */}
+                <div className="flex items-center gap-1.5 text-sm font-medium sm:hidden">
+                    <span>{currentPage}</span>
+                    <span className="text-slate-300">/</span>
+                    <span>{totalPages}</span>
                 </div>
+
                 <Button
                     variant="outline"
                     size="sm"
                     onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className="gap-1 h-8 px-2 sm:px-3"
+                    className="h-9 sm:h-9 px-3 lg:px-4 gap-2 min-w-[32px] sm:min-w-[100px]"
                     aria-label="Próxima página"
                 >
-                    <span className="hidden sm:inline">Siguiente</span>
+                    <span className="sr-only sm:not-sr-only">Siguiente</span>
                     <ChevronRight className="h-4 w-4" />
                 </Button>
             </div>
