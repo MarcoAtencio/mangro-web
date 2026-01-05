@@ -40,11 +40,11 @@ export const meta: MetaFunction = () => {
 
 // Predefined categories with Spanish keys matching legacy data
 const CATEGORIES = [
-    { value: "EQUIPOS CALIENTES", label: "Equipos Calientes", icon: Flame, color: "text-orange-600 bg-orange-50 border-orange-200" },
-    { value: "EQUIPOS DE REFRIGERACION", label: "Equipos de Refrigeración", icon: Snowflake, color: "text-blue-600 bg-blue-50 border-blue-200" },
-    { value: "EQUIPO ELECTRICO", label: "Equipos Eléctricos", icon: Zap, color: "text-yellow-600 bg-yellow-50 border-yellow-200" },
-    { value: "EQUIPO ELECTROMECANICO", label: "Equipos Electromecánicos", icon: Settings, color: "text-purple-600 bg-purple-50 border-purple-200" },
-    { value: "VENTILACION MECANICA", label: "Ventilación Mecánica", icon: Wind, color: "text-teal-600 bg-teal-50 border-teal-200" },
+    { value: "EQUIPOS CALIENTES", label: "Equipos Calientes", icon: Flame, color: "text-orange-700 bg-orange-50 border-orange-200" },
+    { value: "EQUIPOS DE REFRIGERACION", label: "Equipos de Refrigeración", icon: Snowflake, color: "text-blue-700 bg-blue-50 border-blue-200" },
+    { value: "EQUIPO ELECTRICO", label: "Equipos Eléctricos", icon: Zap, color: "text-yellow-800 bg-yellow-50 border-yellow-200" },
+    { value: "EQUIPO ELECTROMECANICO", label: "Equipos Electromecánicos", icon: Settings, color: "text-purple-700 bg-purple-50 border-purple-200" },
+    { value: "VENTILACION MECANICA", label: "Ventilación Mecánica", icon: Wind, color: "text-teal-700 bg-teal-50 border-teal-200" },
 ];
 
 function getCategoryInfo(category: string) {
@@ -163,6 +163,7 @@ export default function TemplatesPage() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-10"
+                            aria-label="Buscar protocolos o actividades"
                         />
                     </div>
                 </div>
@@ -201,10 +202,12 @@ export default function TemplatesPage() {
                                     <CardHeader className={cn("py-3 px-4 border-b", catInfo.color)}>
                                         <div className="flex items-center gap-3">
                                             <Icon className="h-5 w-5" />
-                                            <CardTitle className="text-base font-semibold">
-                                                {catInfo.label}
+                                            <CardTitle asChild className="text-base font-semibold">
+                                                <h2 className="text-base font-semibold leading-none">
+                                                    {catInfo.label}
+                                                </h2>
                                             </CardTitle>
-                                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/50">
+                                            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-white/90 shadow-sm border border-black/5 text-slate-700">
                                                 {items.length} protocolo{items.length !== 1 ? 's' : ''}
                                             </span>
                                         </div>
@@ -219,7 +222,11 @@ export default function TemplatesPage() {
                                                             className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 cursor-pointer transition-colors"
                                                             onClick={() => toggleExpand(template.id)}
                                                         >
-                                                            <button className="p-1 rounded hover:bg-slate-200 transition-colors">
+                                                            <button 
+                                                                className="p-1 rounded hover:bg-slate-200 transition-colors"
+                                                                aria-label={isExpanded ? "Contraer" : "Expandir"}
+                                                                aria-expanded={isExpanded}
+                                                            >
                                                                 {isExpanded ? (
                                                                     <ChevronDown className="h-4 w-4 text-slate-500" />
                                                                 ) : (
@@ -227,9 +234,9 @@ export default function TemplatesPage() {
                                                                 )}
                                                             </button>
                                                             <div className="flex-1 min-w-0">
-                                                                <h4 className="text-sm font-medium text-slate-900 truncate">
+                                                                <h3 className="text-sm font-medium text-slate-900 truncate">
                                                                     {template.name}
-                                                                </h4>
+                                                                </h3>
                                                                 <div className="flex items-center gap-2 mt-0.5">
                                                                     <span className={cn(
                                                                         "text-[10px] font-semibold px-1.5 py-0.5 rounded",
@@ -252,6 +259,7 @@ export default function TemplatesPage() {
                                                                         e.stopPropagation();
                                                                         openEditDialog(template);
                                                                     }}
+                                                                    aria-label={`Editar protocolo ${template.name}`}
                                                                 >
                                                                     <Pencil className="h-4 w-4" />
                                                                 </Button>
@@ -264,6 +272,7 @@ export default function TemplatesPage() {
                                                                         setTemplateToDelete(template);
                                                                         setDeleteDialogOpen(true);
                                                                     }}
+                                                                    aria-label={`Eliminar protocolo ${template.name}`}
                                                                 >
                                                                     <Trash2 className="h-4 w-4" />
                                                                 </Button>
@@ -274,7 +283,7 @@ export default function TemplatesPage() {
                                                                 <ul className="space-y-1.5 text-sm text-slate-600">
                                                                     {template.activities.map((activity, idx) => (
                                                                         <li key={idx} className="flex items-start gap-2">
-                                                                            <span className="text-slate-400 mt-1">•</span>
+                                                                            <span className="text-slate-500 mt-1" aria-hidden="true">•</span>
                                                                             <span>{activity}</span>
                                                                         </li>
                                                                     ))}
