@@ -230,7 +230,7 @@ export default function TechniciansPage() {
                                     <TableHead className="hidden sm:table-cell">
                                         Teléfono
                                     </TableHead>
-                                    <TableHead>Rol</TableHead>
+                                    <TableHead className="w-[120px]">Rol</TableHead>
                                     <TableHead className="text-right">Acciones</TableHead>
                                 </TableRow>
                             </TableHeader>

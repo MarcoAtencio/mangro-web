@@ -341,19 +341,19 @@ function ClientsPageContent({
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-slate-50/50">
-                                    <TableHead className="w-[250px] lg:w-[300px]">
+                                    <TableHead className="w-[200px] lg:w-[250px]">
                                         Cliente
                                     </TableHead>
-                                    <TableHead className="hidden sm:table-cell min-w-[180px]">
+                                    <TableHead className="hidden md:table-cell min-w-[150px]">
                                         Dirección
                                     </TableHead>
-                                    <TableHead className="hidden md:table-cell min-w-[150px]">
+                                    <TableHead className="hidden lg:table-cell min-w-[150px]">
                                         Contacto
                                     </TableHead>
-                                    <TableHead className="hidden lg:table-cell text-center w-[80px]">
+                                    <TableHead className="hidden md:table-cell text-center w-[80px]">
                                         Equipos
                                     </TableHead>
-                                    <TableHead className="hidden lg:table-cell text-center w-[80px]">
+                                    <TableHead className="hidden md:table-cell text-center w-[80px]">
                                         Servicios
                                     </TableHead>
                                     <TableHead className="text-right w-[100px]">
@@ -361,6 +361,7 @@ function ClientsPageContent({
                                     </TableHead>
                                 </TableRow>
                             </TableHeader>
+
                             <TableBody>
                                 {paginatedClients.map((client) => (
                                     <ClientRow

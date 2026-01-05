@@ -62,9 +62,9 @@ export function ServicesTable({
             <TableHeader>
                 <TableRow className="bg-slate-50/50">
                     <TableHead className="w-[90px] sm:w-[120px]">Fecha</TableHead>
-                    <TableHead className="min-w-[120px]">Cliente</TableHead>
+                    <TableHead className="min-w-[120px] lg:w-[180px]">Cliente</TableHead>
                     <TableHead className="hidden md:table-cell min-w-[150px]">Descripción</TableHead>
-                    <TableHead className="hidden sm:table-cell min-w-[100px]">Técnico</TableHead>
+                    <TableHead className="hidden md:table-cell min-w-[100px]">Técnico</TableHead>
                     <TableHead className="hidden lg:table-cell w-[80px]">Prioridad</TableHead>
                     <TableHead className="text-right sm:text-left w-[80px] sm:w-[100px]">Estado</TableHead>
                 </TableRow>
@@ -112,7 +112,7 @@ export function ServicesTable({
                                     </span>
                                 </div>
                             </TableCell>
-                            <TableCell className="hidden sm:table-cell">
+                            <TableCell className="hidden md:table-cell">
                                 <div className="flex items-center gap-2">
                                     <User className="h-4 w-4 text-muted-foreground" />
                                     <span className="truncate">

@@ -147,6 +147,7 @@ export function subscribeToUsers(
             callback(users);
         },
         (error) => {
+            if (error.code === "permission-denied") return;
             console.error("Firestore subscription error:", error);
             onError?.({ code: error.code, message: error.message });
         }
@@ -175,6 +176,9 @@ export function subscribeToClients(callback: (clients: Client[]) => void): () =>
             contactName: doc.data().contact_name || doc.data().contactName,
         })) as Client[];
         callback(clients);
+    }, (error) => {
+        if (error.code === "permission-denied") return;
+        console.error("Error subscribing to clients:", error);
     });
     return unsubscribe;
 }
@@ -194,6 +198,9 @@ export function subscribeToClient(
         } else {
             callback(null);
         }
+    }, (error) => {
+        if (error.code === "permission-denied") return;
+        console.error("Error subscribing to client:", error);
     });
     return unsubscribe;
 }
@@ -339,6 +346,9 @@ export function subscribeToEquipment(
         });
 
         callback(equipment);
+    }, (error) => {
+        if (error.code === "permission-denied") return;
+        console.error("Error subscribing to equipment:", error);
     });
     return unsubscribe;
 }
@@ -381,6 +391,7 @@ export function subscribeToTemplates(
             callback(templates);
         },
         (error) => {
+            if (error.code === "permission-denied") return;
             console.error("Firestore subscription error:", error);
             onError?.({ code: error.code, message: error.message });
         }

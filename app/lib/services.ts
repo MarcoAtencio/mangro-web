@@ -81,7 +81,10 @@ export const subscribeToServices = (
             });
             onUpdate(tasks);
         },
-        onError
+        (error) => {
+            if ((error as any).code === "permission-denied") return;
+            onError(error);
+        }
     );
 };
 
@@ -121,7 +124,10 @@ export const subscribeToClientServices = (
             tasks.sort((a, b) => new Date(b.createAt as Date).getTime() - new Date(a.createAt as Date).getTime());
             onUpdate(tasks);
         },
-        onError
+        (error) => {
+            if ((error as any).code === "permission-denied") return;
+            onError(error);
+        }
     );
 };
 
