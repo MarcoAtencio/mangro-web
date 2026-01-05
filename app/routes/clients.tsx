@@ -1,5 +1,12 @@
 import type { MetaFunction } from "react-router";
 import { useState, useEffect, lazy, Suspense } from "react";
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Gestión de Clientes | MANGRO Admin" },
+        { name: "description", content: "Administre su cartera de clientes, equipos y contratos en el panel de MANGRO S.A.C." },
+    ];
+};
 import { Plus } from "lucide-react";
 
 // Lazy loading the main action dialog to reduce initial bundle

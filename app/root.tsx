@@ -14,16 +14,14 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
 export const links: Route.LinksFunction = () => [
-    // DNS prefetch as a fallback for preconnect
-    { rel: "dns-prefetch", href: "https://fonts.googleapis.com" },
-    { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
-    { rel: "dns-prefetch", href: "https://firestore.googleapis.com" },
-    
-    // Preconnect: essential origins for early load
-    { rel: "preconnect", href: "https://fonts.googleapis.com", crossOrigin: "anonymous" },
+    // Preconnect: Essential origins early in the waterfall
+    { rel: "preconnect", href: "https://fonts.googleapis.com" },
     { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-    { rel: "preconnect", href: "https://firestore.googleapis.com" },
+    { rel: "preconnect", href: "https://www.googletagmanager.com" },
     
+    // Firestore is usually needed shortly after, but not at the very top
+    { rel: "preconnect", href: "https://firestore.googleapis.com" },
+
     // Pre-load critical assets like the logo to improve LCP
     { rel: "preload", as: "image", href: "/logo-mangro.jpg", fetchPriority: "high" as any },
     

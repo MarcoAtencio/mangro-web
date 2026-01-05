@@ -3,8 +3,8 @@ import { useState } from "react";
 
 export const meta: MetaFunction = () => {
     return [
-        { title: "User Management | MANGRO Admin" },
-        { name: "description", content: "Manage technical staff and system roles." },
+        { title: "Gestión de Usuarios y Personal | MANGRO Admin" },
+        { name: "description", content: "Administre el personal técnico, roles y permisos del sistema MANGRO S.A.C." },
     ];
 };
 import { AdminLayout } from "~/components/layout/admin-layout";

@@ -102,6 +102,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                         <NavLink
                             key={item.name}
                             to={item.href}
+                            aria-label={item.name}
                             className={({ isActive }) =>
                                 cn(
                                     "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300",
@@ -143,6 +144,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                             <NavLink
                                 key={item.name}
                                 to={item.href}
+                                aria-label={item.name}
                                 className={({ isActive }) =>
                                     cn(
                                         "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300",
@@ -169,7 +171,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                 <div className={cn(
                     "flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-all cursor-pointer",
                     collapsed && "justify-center p-2"
-                )}>
+                )} title={displayName}>
                     {photoUrl ? (
                         <img
                             src={photoUrl}
@@ -180,7 +182,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                             loading="lazy"
                         />
                     ) : (
-                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-white shadow-sm">
+                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-white shadow-sm" aria-label={initials}>
                             <span className="text-xs font-bold text-white">{initials}</span>
                         </div>
                     )}

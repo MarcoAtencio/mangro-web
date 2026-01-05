@@ -3,8 +3,8 @@ import { useState, lazy, Suspense } from "react";
 
 export const meta: MetaFunction = () => {
     return [
-        { title: "Service Management | MANGRO Admin" },
-        { name: "description", content: "Manage and schedule technical maintenance services." },
+        { title: "Gestión de Servicios y Mantenimiento | MANGRO Admin" },
+        { name: "description", content: "Programe y gestione servicios de mantenimiento técnico, instalaciones y reparaciones." },
     ];
 };
 import { AdminLayout } from "~/components/layout/admin-layout";
