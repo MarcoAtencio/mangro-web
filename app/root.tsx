@@ -71,8 +71,11 @@ export const links: Route.LinksFunction = () => [
         fetchPriority: "high" as const 
     },
     
-    // Conexión anticipada a Firestore
+    // Conexiones anticipadas a Firebase (crítico para reducir latencia de auth)
     { rel: "preconnect", href: "https://firestore.googleapis.com" },
+    { rel: "preconnect", href: "https://identitytoolkit.googleapis.com" },
+    { rel: "preconnect", href: "https://securetoken.googleapis.com" },
+    { rel: "dns-prefetch", href: "https://apis.google.com" },
 ];
 
 // ============================================================================
@@ -87,6 +90,27 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <meta name="theme-color" content="#0069B4" />
                 <title>MANGRO Admin</title>
                 <link rel="icon" href="/favicon.jpg" />
+                {/* Critical CSS inline para FCP instantáneo */}
+                <style dangerouslySetInnerHTML={{ __html: `
+                    @font-face{font-family:'Inter';font-style:normal;font-weight:100 900;font-display:swap;src:url('/fonts/inter.woff2') format('woff2')}
+                    *{box-sizing:border-box;margin:0;padding:0}
+                    html{font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+                    body{background:#f8fafc;color:#0f172a;min-height:100vh}
+                    .min-h-screen{min-height:100vh}
+                    .bg-slate-50{background:#f8fafc}
+                    .flex{display:flex}
+                    .items-center{align-items:center}
+                    .justify-center{justify-content:center}
+                    .flex-col{flex-direction:column}
+                    .gap-4{gap:1rem}
+                    .animate-pulse{animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite}
+                    .animate-bounce{animation:bounce 1s infinite}
+                    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+                    @keyframes bounce{0%,100%{transform:translateY(-25%);animation-timing-function:cubic-bezier(0.8,0,1,1)}50%{transform:translateY(0);animation-timing-function:cubic-bezier(0,0,0.2,1)}}
+                    .w-32{width:8rem}.h-12{height:3rem}.w-2{width:.5rem}.h-2{height:.5rem}
+                    .bg-slate-200{background:#e2e8f0}.bg-primary{background:#0069b4}
+                    .rounded-lg{border-radius:.5rem}.rounded-full{border-radius:9999px}
+                `}} />
                 <Meta />
                 <Links />
             </head>

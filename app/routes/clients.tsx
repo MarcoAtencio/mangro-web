@@ -1,4 +1,4 @@
-import { useLoaderData, type MetaFunction } from "react-router";
+import { type MetaFunction } from "react-router";
 import { useState, useEffect, lazy, Suspense, useMemo, useRef } from "react";
 
 export const meta: MetaFunction = () => {
@@ -7,15 +7,13 @@ export const meta: MetaFunction = () => {
         { name: "description", content: "Administre su cartera de clientes, equipos y contratos en el panel de MANGRO S.A.C." },
     ];
 };
-import { getClientsList } from "~/lib/firestore";
 
-export async function clientLoader() {
-    const clients = await getClientsList();
-    return { initialClients: clients };
-}
-
-export function HydrateFallback() {
-    return <ClientsSkeleton />;
+// ============================================================================
+// NON-BLOCKING LOADER - Retorna inmediatamente para LCP instantáneo
+// ============================================================================
+// Los datos se cargan via suscripción en tiempo real, no bloqueamos el render
+export function clientLoader() {
+    return null;
 }
 
 import { Plus } from "lucide-react";
@@ -26,7 +24,6 @@ const NewClientDialog = lazy(() => import("~/components/clients/new-client-dialo
 import { AdminLayout } from "~/components/layout/admin-layout";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { Spinner } from "~/components/ui/spinner";
 import {
     Table,
     TableBody,
@@ -55,8 +52,8 @@ import { PaginationControls } from "~/components/ui/pagination-controls";
 import { ClientsSkeleton } from "~/components/clients/clients-skeleton";
 
 export default function ClientsPage() {
-    const { initialClients } = useLoaderData() as { initialClients: Client[] };
-    const [clients, setClients] = useState<Client[]>(initialClients);
+    // Iniciar con null para detectar estado de carga
+    const [clients, setClients] = useState<Client[] | null>(null);
     const [search, setSearch] = useState("");
     const [showNewClientDialog, setShowNewClientDialog] = useState(false);
     
@@ -110,7 +107,7 @@ export default function ClientsPage() {
     const equipmentMapRef = useRef<Record<string, Equipment[]>>({});
 
     useEffect(() => {
-        if (clients.length === 0) return;
+        if (!clients || clients.length === 0) return;
 
         // IDs of current clients
         const clientIds = new Set(clients.map(c => c.id));
@@ -147,37 +144,88 @@ export default function ClientsPage() {
         });
     }, [clients]); // Still depends on clients to detect new/removed ones, but internally stable
 
+    // Mostrar skeleton mientras carga
+    if (clients === null) {
+        return <ClientsSkeleton />;
+    }
+
     // Filtering logic
-    const filteredClients = useMemo(() => {
-        return clients.filter((client) => {
-            // Search filter
-            const matchesSearch =
-                client.name.toLowerCase().includes(search.toLowerCase()) ||
-                (client.ruc && client.ruc.includes(search));
+    const filteredClients = clients.filter((client) => {
+        // Search filter
+        const matchesSearch =
+            client.name.toLowerCase().includes(search.toLowerCase()) ||
+            (client.ruc && client.ruc.includes(search));
 
-            // Stats card filter
-            const clientEquipment = equipmentByClient[client.id] || [];
-            let matchesStatsFilter = true;
+        // Stats card filter
+        const clientEquipment = equipmentByClient[client.id] || [];
+        let matchesStatsFilter = true;
 
-            if (statsFilter === "withEquipment") {
-                matchesStatsFilter = clientEquipment.length > 0;
-            } else if (statsFilter === "inMaintenance") {
-                matchesStatsFilter = clientEquipment.some((e) => e.status === "maintenance");
-            } else if (statsFilter === "withServices") {
-                matchesStatsFilter = (servicesByClient[client.id] || 0) > 0;
-            }
+        if (statsFilter === "withEquipment") {
+            matchesStatsFilter = clientEquipment.length > 0;
+        } else if (statsFilter === "inMaintenance") {
+            matchesStatsFilter = clientEquipment.some((e) => e.status === "maintenance");
+        } else if (statsFilter === "withServices") {
+            matchesStatsFilter = (servicesByClient[client.id] || 0) > 0;
+        }
 
-            return matchesSearch && matchesStatsFilter;
-        });
-    }, [clients, search, statsFilter, equipmentByClient, servicesByClient]);
+        return matchesSearch && matchesStatsFilter;
+    });
 
+    return (
+        <ClientsPageContent
+            clients={clients}
+            filteredClients={filteredClients}
+            search={search}
+            setSearch={setSearch}
+            showNewClientDialog={showNewClientDialog}
+            setShowNewClientDialog={setShowNewClientDialog}
+            equipmentStats={equipmentStats}
+            servicesByClient={servicesByClient}
+            totalServices={totalServices}
+            statsFilter={statsFilter}
+            setStatsFilter={setStatsFilter}
+            equipmentByClient={equipmentByClient}
+        />
+    );
+}
+
+// ============================================================================
+// CONTENT COMPONENT - Separado para evitar re-renders del skeleton check
+// ============================================================================
+interface ClientsPageContentProps {
+    clients: Client[];
+    filteredClients: Client[];
+    search: string;
+    setSearch: (val: string) => void;
+    showNewClientDialog: boolean;
+    setShowNewClientDialog: (val: boolean) => void;
+    equipmentStats: { total: number; inMaintenance: number };
+    servicesByClient: Record<string, number>;
+    totalServices: number;
+    statsFilter: "all" | "withEquipment" | "inMaintenance" | "withServices";
+    setStatsFilter: (val: "all" | "withEquipment" | "inMaintenance" | "withServices") => void;
+    equipmentByClient: Record<string, Equipment[]>;
+}
+
+function ClientsPageContent({
+    clients,
+    filteredClients,
+    search,
+    setSearch,
+    showNewClientDialog,
+    setShowNewClientDialog,
+    equipmentStats,
+    servicesByClient,
+    totalServices,
+    statsFilter,
+    setStatsFilter,
+    equipmentByClient,
+}: ClientsPageContentProps) {
     // Pagination
     const {
         currentPage,
         totalPages,
         setPage,
-        nextPage,
-        prevPage,
         startIndex,
         endIndex
     } = usePagination({ 
@@ -196,7 +244,6 @@ export default function ClientsPage() {
         setStatsFilter(statsFilter === filter ? "all" : filter);
         setPage(1);
     };
-
 
     const paginatedClients = useMemo(() => {
         return filteredClients.slice(startIndex, endIndex);
