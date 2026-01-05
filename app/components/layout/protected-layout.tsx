@@ -13,7 +13,7 @@ export default function ProtectedLayout() {
         }
     }, [user, loading, navigate]);
 
-    if (loading) {
+    if (loading && !user) {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center">
                 <div className="text-center">
