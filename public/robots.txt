@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+
+# Allow indexing of the login page if desired, but generally Admin panels should be private.
+# Allow: /login
