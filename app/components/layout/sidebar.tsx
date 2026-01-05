@@ -61,8 +61,10 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                     <div className="flex items-center gap-3">
                         <img
                             src="/logo-mangro.jpg"
-                            alt="MANGRO"
+                            alt="MANGRO - Expertos en climatización"
                             className="h-8 w-8 object-contain"
+                            width={32}
+                            height={32}
                         />
                         <div className="flex flex-col">
                             <span className="font-bold text-sm text-[#0069B4]">MANGRO S.A.C.</span>
@@ -74,6 +76,8 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                         src="/logo-mangro.jpg"
                         alt="MANGRO"
                         className="h-8 w-8 object-contain"
+                        width={32}
+                        height={32}
                     />
                 )}
                 {!collapsed && (
@@ -82,8 +86,9 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                         size="icon"
                         onClick={onToggle}
                         className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                     >
-                        <ChevronLeft className="h-4 w-4" />
+                        <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
                     </Button>
                 )}
             </div>
@@ -166,8 +171,10 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                     {photoUrl ? (
                         <img
                             src={photoUrl}
-                            alt={displayName}
+                            alt={`Foto de perfil de ${displayName}`}
                             className="h-9 w-9 rounded-full object-cover ring-2 ring-white shadow-sm"
+                            width={36}
+                            height={36}
                         />
                     ) : (
                         <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-white shadow-sm">
@@ -269,6 +276,7 @@ export function MobileSidebar() {
                         size="icon"
                         onClick={() => setOpen(false)}
                         className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
+                        aria-label="Close menu"
                     >
                         <ChevronLeft className="h-4 w-4" />
                     </Button>

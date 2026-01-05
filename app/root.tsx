@@ -18,13 +18,17 @@ export const links: Route.LinksFunction = () => [
     { rel: "dns-prefetch", href: "https://fonts.googleapis.com" },
     { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
     { rel: "dns-prefetch", href: "https://www.googleapis.com" },
-    // Preconnect for font loading
-    { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    // Preconnect for font loading and external SDKs
+    { rel: "preconnect", href: "https://fonts.googleapis.com", crossOrigin: "anonymous" },
     {
         rel: "preconnect",
         href: "https://fonts.gstatic.com",
         crossOrigin: "anonymous",
     },
+    { rel: "preconnect", href: "https://www.googletagmanager.com", crossOrigin: "anonymous" },
+    { rel: "preconnect", href: "https://firebase.googleapis.com", crossOrigin: "anonymous" },
+    // Pre-load critical assets like the logo to improve LCP
+    { rel: "preload", as: "image", href: "/logo-mangro.jpg" },
     // Google Font with display=swap to prevent FOIT and improve FCP
     {
         rel: "stylesheet",

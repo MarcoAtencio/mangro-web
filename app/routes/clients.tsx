@@ -38,6 +38,7 @@ import { ClientRow } from "~/components/clients/client-row";
 import { ClientCardMobile } from "~/components/clients/client-card-mobile";
 import { StatsCard } from "~/components/ui/stats-card";
 import { PaginationControls } from "~/components/ui/pagination-controls";
+import { ClientsSkeleton } from "~/components/clients/clients-skeleton";
 
 export default function ClientsPage() {
     const { clients, loading: loadingClients } = useClients();
@@ -160,6 +161,10 @@ export default function ClientsPage() {
         setPage(1);
     };
 
+    if (loadingClients) {
+        return <ClientsSkeleton />;
+    }
+
     const paginatedClients = filteredClients.slice(startIndex, endIndex);
 
     return (
@@ -214,15 +219,16 @@ export default function ClientsPage() {
                             value={search}
                             onChange={(e) => handleSearchChange(e.target.value)}
                             className="pl-9 h-9 bg-white border-slate-200 focus:border-primary transition-colors shadow-sm"
+                            aria-label="Buscar clientes por nombre o RUC"
                         />
                     </div>
                     {/* Filter Buttons */}
                     <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" className="h-9">
+                        <Button variant="outline" size="sm" className="h-9" aria-label="Abrir filtros avanzados">
                             <Filter className="h-4 w-4 mr-2" />
                             Filtros
                         </Button>
-                        <Button variant="outline" size="sm" className="h-9">
+                        <Button variant="outline" size="sm" className="h-9" aria-label="Cambiar orden de la lista">
                             <ArrowUpDown className="h-4 w-4 mr-2" />
                             Ordenar
                         </Button>

@@ -60,29 +60,32 @@ export function NewClientDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95">
+                <Button 
+                    className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95"
+                    aria-label="Registrar un nuevo cliente en el sistema"
+                >
                     <Plus className="h-4 w-4" />
-                    New Client
+                    Nuevo Cliente
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px] max-h-[85vh] overflow-y-auto">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
-                        <DialogTitle>Register New Client</DialogTitle>
+                        <DialogTitle>Registrar Nuevo Cliente</DialogTitle>
                         <DialogDescription>
-                            Enter client details to register in the system.
+                            Ingrese los detalles del cliente para registrarlo en el sistema.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-6 py-4">
                         <div className="grid gap-4">
                             <h4 className="text-sm font-medium text-muted-foreground border-b pb-1">
-                                General Information
+                                Información General
                             </h4>
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Company Name</Label>
+                                <Label htmlFor="name">Razón Social / Nombre</Label>
                                 <Input
                                     id="name"
-                                    placeholder="Company Inc."
+                                    placeholder="Empresa S.A.C."
                                     required
                                     value={formData.name}
                                     onChange={(e) =>
@@ -92,7 +95,7 @@ export function NewClientDialog() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="ruc">RUC (Tax ID)</Label>
+                                    <Label htmlFor="ruc">RUC / DNI</Label>
                                     <Input
                                         id="ruc"
                                         placeholder="20123456789"
@@ -104,10 +107,10 @@ export function NewClientDialog() {
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="phone">Phone</Label>
+                                    <Label htmlFor="phone">Teléfono</Label>
                                     <Input
                                         id="phone"
-                                        placeholder="+51 1 234 5678"
+                                        placeholder="+51 987 654 321"
                                         value={formData.phone}
                                         onChange={(e) =>
                                             setFormData({ ...formData, phone: e.target.value })
@@ -119,7 +122,7 @@ export function NewClientDialog() {
 
                         <div className="grid gap-2">
                             <h4 className="text-sm font-medium text-muted-foreground border-b pb-1">
-                                Location
+                                Ubicación
                             </h4>
                             <AddressPicker
                                 onAddressSelect={handleAddressSelect}
@@ -129,14 +132,14 @@ export function NewClientDialog() {
 
                         <div className="grid gap-4">
                             <h4 className="text-sm font-medium text-muted-foreground border-b pb-1">
-                                Contact
+                                Contacto Directo
                             </h4>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="contactName">Primary Contact</Label>
+                                    <Label htmlFor="contactName">Persona de Contacto</Label>
                                     <Input
                                         id="contactName"
-                                        placeholder="Contact Name"
+                                        placeholder="Nombre del contacto"
                                         value={formData.contactName}
                                         onChange={(e) =>
                                             setFormData({
@@ -147,11 +150,11 @@ export function NewClientDialog() {
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">Email</Label>
+                                    <Label htmlFor="email">Correo Electrónico</Label>
                                     <Input
                                         id="email"
                                         type="email"
-                                        placeholder="email@company.com"
+                                        placeholder="correo@empresa.com"
                                         value={formData.email}
                                         onChange={(e) =>
                                             setFormData({ ...formData, email: e.target.value })
@@ -163,11 +166,11 @@ export function NewClientDialog() {
                     </div>
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                            Cancel
+                            Cancelar
                         </Button>
                         <Button type="submit" disabled={loading}>
                             {loading && <Spinner className="mr-2 h-4 w-4" />}
-                            {loading ? "Saving..." : "Register Client"}
+                            {loading ? "Guardando..." : "Registrar Cliente"}
                         </Button>
                     </DialogFooter>
                 </form>

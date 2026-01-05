@@ -41,6 +41,7 @@ import { ServiceDetailDialog } from "~/components/services/service-detail-dialog
 import { ServicesTable } from "~/components/services/services-table";
 import { StatsCard } from "~/components/ui/stats-card";
 import { PaginationControls } from "~/components/ui/pagination-controls";
+import { ServicesSkeleton } from "~/components/services/services-skeleton";
 
 export default function ServicesPage() {
     // Data Hooks
@@ -132,6 +133,10 @@ export default function ServicesPage() {
         filterClient !== "all" ||
         filterStatus !== "all";
 
+    if (loadingServices) {
+        return <ServicesSkeleton />;
+    }
+
     return (
         <AdminLayout 
             title="Gestión de Servicios"
@@ -186,6 +191,7 @@ export default function ServicesPage() {
                                 value={searchQuery}
                                 onChange={(e) => handleSearchChange(e.target.value)}
                                 className="pl-9 h-9 bg-white border-slate-200 focus:border-primary transition-colors shadow-sm"
+                                aria-label="Buscar servicios por cliente, descripción o técnico"
                             />
                         </div>
 
@@ -196,7 +202,10 @@ export default function ServicesPage() {
                                 value={filterTechnician}
                                 onValueChange={(val) => handleFilterChange(setFilterTechnician, val)}
                             >
-                                <SelectTrigger className="w-[calc(50%-0.25rem)] sm:w-40 lg:w-48 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm">
+                             <SelectTrigger 
+                                className="w-[calc(50%-0.25rem)] sm:w-40 lg:w-48 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm"
+                                aria-label="Filtrar por técnico"
+                            >
                                 <div className="flex items-center gap-2 truncate">
                                     <User className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                                     <SelectValue placeholder="Técnico" />
@@ -217,7 +226,10 @@ export default function ServicesPage() {
                             value={filterClient}
                             onValueChange={(val) => handleFilterChange(setFilterClient, val)}
                         >
-                            <SelectTrigger className="w-[calc(50%-0.25rem)] sm:w-40 lg:w-48 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm">
+                            <SelectTrigger 
+                                className="w-[calc(50%-0.25rem)] sm:w-40 lg:w-48 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm"
+                                aria-label="Filtrar por cliente"
+                            >
                                 <div className="flex items-center gap-2 truncate">
                                     <Briefcase className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                                     <SelectValue placeholder="Cliente" />
@@ -238,7 +250,10 @@ export default function ServicesPage() {
                             value={filterStatus}
                             onValueChange={(val) => handleFilterChange(setFilterStatus, val)}
                         >
-                            <SelectTrigger className="w-[calc(50%-0.25rem)] sm:w-36 lg:w-40 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm">
+                            <SelectTrigger 
+                                className="w-[calc(50%-0.25rem)] sm:w-36 lg:w-40 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm"
+                                aria-label="Filtrar por estado"
+                            >
                                 <div className="flex items-center gap-2 truncate">
                                     <Filter className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                                     <SelectValue placeholder="Estado" />

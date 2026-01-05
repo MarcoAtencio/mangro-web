@@ -49,7 +49,7 @@ export default function LoginPage() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,#00A39B0d_0%,transparent_40%)]" />
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f080_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f080_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-60" />
 
-            <div className="relative w-full max-w-[400px] animate-in fade-in zoom-in-95 duration-500 will-change-transform">
+            <div className="relative w-full max-w-[400px] animate-in fade-in zoom-in-95 duration-300 will-change-transform">
                 <Card className="relative border-slate-200/60 bg-white/90 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-shadow duration-300">
                     <CardHeader className="text-center pb-2 pt-8">
                         {/* Logo */}
@@ -58,6 +58,8 @@ export default function LoginPage() {
                                 <img
                                     src="/logo-mangro.jpg"
                                     alt="MANGRO"
+                                    width="40"
+                                    height="40"
                                     className="h-10 w-auto object-contain"
                                 />
                             </div>
@@ -124,6 +126,7 @@ export default function LoginPage() {
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-md hover:bg-slate-100"
+                                        aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                                     >
                                         {showPassword ? (
                                             <EyeOff className="h-4 w-4" />

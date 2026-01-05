@@ -54,13 +54,7 @@ export function ServicesTable({
         }).format(new Date(date));
     };
 
-    if (loading) {
-        return (
-            <div className="flex justify-center py-12">
-                <Spinner className="h-8 w-8 text-primary" />
-            </div>
-        );
-    }
+    /* Loading is handled at the page level with ServicesSkeleton */
 
     return (
         <div className="overflow-x-auto">

@@ -31,19 +31,14 @@ import {
     TableRow,
 } from "~/components/ui/table";
 import { useDashboardStats } from "~/hooks/use-dashboard-stats";
+import { DashboardSkeleton } from "~/components/dashboard/dashboard-skeleton";
 
 export default function DashboardPage() {
     const navigate = useNavigate();
     const { stats, recentServices, technicians, loading } = useDashboardStats();
 
     if (loading) {
-        return (
-            <AdminLayout title="Dashboard">
-                <div className="flex items-center justify-center h-[60vh]">
-                    <Spinner className="h-8 w-8 text-primary" />
-                </div>
-            </AdminLayout>
-        );
+        return <DashboardSkeleton />;
     }
 
     return (

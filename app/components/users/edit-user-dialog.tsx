@@ -141,8 +141,10 @@ export function EditUserDialog({
                                 {user.photoUrl && !selectedFile && (
                                     <img
                                         src={user.photoUrl}
-                                        alt="Actual"
+                                        alt={`Foto de perfil de ${user.fullName}`}
                                         className="h-10 w-10 rounded-full object-cover"
+                                        width={40}
+                                        height={40}
                                     />
                                 )}
                                 <Input

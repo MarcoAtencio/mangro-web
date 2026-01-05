@@ -36,31 +36,31 @@ export function StatsCard({
         },
         green: {
             card: "from-white to-emerald-50/30 border-emerald-100 shadow-sm",
-            textTitle: "text-emerald-700/70 uppercase tracking-wider font-semibold",
+            textTitle: "text-emerald-800 uppercase tracking-wider font-bold",
             textValue: "text-emerald-900",
-            iconBg: "bg-emerald-100 text-emerald-600 shadow-inner",
-            iconColor: "text-emerald-600",
+            iconBg: "bg-emerald-100 text-emerald-700 shadow-inner",
+            iconColor: "text-emerald-700",
         },
         amber: {
             card: "from-white to-amber-50/30 border-amber-100 shadow-sm",
-            textTitle: "text-amber-700/70 uppercase tracking-wider font-semibold",
+            textTitle: "text-amber-800 uppercase tracking-wider font-bold",
             textValue: "text-amber-900",
-            iconBg: "bg-amber-100 text-amber-600 shadow-inner",
-            iconColor: "text-amber-600",
+            iconBg: "bg-amber-100 text-amber-700 shadow-inner",
+            iconColor: "text-amber-700",
         },
         blue: {
             card: "from-white to-blue-50/30 border-blue-100 shadow-sm",
-            textTitle: "text-blue-700/70 uppercase tracking-wider font-semibold",
+            textTitle: "text-blue-800 uppercase tracking-wider font-bold",
             textValue: "text-blue-900",
-            iconBg: "bg-blue-100 text-blue-600 shadow-inner",
-            iconColor: "text-blue-600",
+            iconBg: "bg-blue-100 text-blue-700 shadow-inner",
+            iconColor: "text-blue-700",
         },
         indigo: { 
              card: "from-white to-indigo-50/30 border-indigo-100 shadow-sm",
-             textTitle: "text-indigo-700/70 uppercase tracking-wider font-semibold",
+             textTitle: "text-indigo-800 uppercase tracking-wider font-bold",
              textValue: "text-indigo-900",
-             iconBg: "bg-indigo-100 text-indigo-600 shadow-inner",
-             iconColor: "text-indigo-600",
+             iconBg: "bg-indigo-100 text-indigo-700 shadow-inner",
+             iconColor: "text-indigo-700",
         },
         secondary: {
              card: "from-white to-slate-100/50 border-slate-200 shadow-sm",
@@ -91,14 +91,14 @@ export function StatsCard({
             <CardContent className="p-3 sm:p-4 lg:p-5">
                 <div className="flex items-start justify-between gap-2">
                     <div className="space-y-0.5 sm:space-y-1 min-w-0 flex-1">
-                        <p className={cn("text-[9px] sm:text-[10px] lg:text-xs truncate", styles.textTitle)}>{title}</p>
+                        <p className={cn("text-[11px] sm:text-[11px] lg:text-xs truncate", styles.textTitle)}>{title}</p>
                         <div className="flex items-baseline gap-1">
                             <p className={cn("text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight", styles.textValue)}>
                                 {value}
                             </p>
                             {trend && (
                                 <span className={cn(
-                                    "text-[9px] sm:text-[10px] font-bold px-1 sm:px-1.5 py-0.5 rounded-full",
+                                    "text-[10px] sm:text-[11px] font-bold px-1 sm:px-1.5 py-0.5 rounded-full",
                                     trend.positive !== false ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                                 )}>
                                     {trend.positive !== false ? "+" : ""}{trend.value}%

@@ -47,6 +47,7 @@ export function AdminLayout({
                                 <Link 
                                     to={backButton.href} 
                                     className="group flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
+                                    aria-label={backButton.label ? `Go back to ${backButton.label}` : "Go back"}
                                 >
                                     <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                                     {backButton.label && <span>{backButton.label}</span>}
