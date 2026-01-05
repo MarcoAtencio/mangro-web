@@ -91,7 +91,7 @@ export function ServicesTable({
                             >
                                 <div className="flex flex-col">
                                     <span>{formatDate(service.date)}</span>
-                                    <span className="text-xs text-muted-foreground">
+                                    <span className="text-xs text-slate-500 font-medium">
                                         {service.scheduledTime}
                                     </span>
                                 </div>
@@ -99,7 +99,7 @@ export function ServicesTable({
                             <TableCell>
                                 <div className="flex flex-col max-w-[150px]">
                                     <span className="font-medium text-sm truncate">{service.clientName}</span>
-                                    <span className="text-xs text-muted-foreground truncate">{service.address}</span>
+                                    <span className="text-xs text-slate-500 font-medium truncate">{service.address}</span>
                                 </div>
                             </TableCell>
                             <TableCell className="hidden md:table-cell">
@@ -107,7 +107,7 @@ export function ServicesTable({
                                     <span className="font-medium truncate">
                                         {service.equipmentSummary}
                                     </span>
-                                    <span className="text-xs text-muted-foreground truncate">
+                                    <span className="text-xs text-slate-500 font-medium truncate">
                                         {service.contactName}
                                     </span>
                                 </div>

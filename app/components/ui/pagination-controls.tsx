@@ -46,7 +46,7 @@ export function PaginationControls({
                 </Button>
                 <div className="flex items-center gap-1 px-1 sm:px-2">
                     <span className="text-xs sm:text-sm font-medium">{currentPage}</span>
-                    <span className="text-muted-foreground text-xs sm:text-sm">/</span>
+                    <span className="text-slate-500 text-xs sm:text-sm">/</span>
                     <span className="text-xs sm:text-sm font-medium">{totalPages}</span>
                 </div>
                 <Button

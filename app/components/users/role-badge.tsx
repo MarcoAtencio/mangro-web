@@ -10,17 +10,17 @@ interface RoleBadgeProps {
 const ROLE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
     "ADMIN": { 
         bg: "bg-blue-50", 
-        text: "text-blue-700", 
+        text: "text-blue-800", 
         border: "border-blue-200"
     },
     "TECHNICIAN": { 
         bg: "bg-emerald-50", 
-        text: "text-emerald-700", 
+        text: "text-emerald-800", 
         border: "border-emerald-200"
     },
     "SUPERVISOR": { 
         bg: "bg-amber-50", 
-        text: "text-amber-700", 
+        text: "text-amber-800", 
         border: "border-amber-200"
     },
 };

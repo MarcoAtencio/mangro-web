@@ -31,15 +31,15 @@ export function ClientRow({ client, servicesCount = 0, equipmentCount = 0 }: Cli
                     </div>
                     <div className="flex flex-col max-w-[250px]">
                         <span className="font-medium text-sm truncate">{client.name}</span>
-                        <span className="text-xs text-muted-foreground">RUC: {client.ruc || "N/A"}</span>
+                        <span className="text-xs text-slate-500 font-medium">RUC: {client.ruc || "N/A"}</span>
                     </div>
                 </div>
             </TableCell>
             <TableCell className="hidden sm:table-cell">
                 <div className="flex items-center gap-1.5 max-w-[200px]">
                     <MapPin className="h-3.5 w-3.5 text-red-500 shrink-0" />
-                    <span className="text-sm text-muted-foreground truncate">
-                        {client.address || "No address"}
+                    <span className="text-sm text-slate-600 font-medium truncate">
+                        {client.address || "No registrado"}
                     </span>
                 </div>
             </TableCell>
@@ -49,28 +49,28 @@ export function ClientRow({ client, servicesCount = 0, equipmentCount = 0 }: Cli
                         {client.contactName || "No contact"}
                     </span>
                     {client.phone ? (
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <span className="text-xs text-slate-500 font-medium flex items-center gap-1">
                             <Phone className="h-3 w-3" />
                             {client.phone}
                         </span>
                     ) : (
-                        <span className="text-xs text-muted-foreground">Not registered</span>
+                        <span className="text-xs text-slate-500 font-medium">No registrado</span>
                     )}
                 </div>
             </TableCell>
             <TableCell className="hidden lg:table-cell text-center">
                 <div className="inline-flex flex-col items-center">
                     <span className="text-lg font-semibold text-slate-700">{equipmentCount}</span>
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                        Equipment
+                    <span className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">
+                        Equipos
                     </span>
                 </div>
             </TableCell>
             <TableCell className="hidden lg:table-cell text-center">
                 <div className="inline-flex flex-col items-center">
                     <span className="text-lg font-semibold text-slate-700">{servicesCount}</span>
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                        Services
+                    <span className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">
+                        Servicios
                     </span>
                 </div>
             </TableCell>

@@ -16,17 +16,17 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; border: string }
     },
     "EN_PROGRESO": { 
         bg: "bg-blue-50", 
-        text: "text-blue-700", 
+        text: "text-blue-800", 
         border: "border-blue-200"
     },
     "COMPLETADO": { 
         bg: "bg-emerald-50", 
-        text: "text-emerald-700", 
+        text: "text-emerald-800", 
         border: "border-emerald-200"
     },
     "CANCELADO": { 
         bg: "bg-red-50", 
-        text: "text-red-700", 
+        text: "text-red-800", 
         border: "border-red-200"
     },
 };

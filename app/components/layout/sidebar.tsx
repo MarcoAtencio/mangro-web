@@ -276,7 +276,7 @@ export function MobileSidebar() {
                         />
                         <div className="flex flex-col">
                             <span className="font-bold text-sm text-[#0069B4]">MANGRO S.A.C.</span>
-                            <span className="text-[11px] text-slate-400">Admin Panel</span>
+                            <span className="text-[11px] text-slate-600">Admin Panel</span>
                         </div>
                     </div>
                     <Button

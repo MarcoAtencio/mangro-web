@@ -35,7 +35,7 @@ export function ClientCardMobile({ client, equipmentCount = 0 }: { client: Clien
                         </div>
                         <div className="flex flex-col gap-0.5 min-w-0">
                             <p className="font-bold text-slate-900 truncate leading-tight">{client.name}</p>
-                            <p className="text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider">
+                            <p className="text-[11px] font-mono text-slate-600 font-bold uppercase tracking-wider">
                                 RUC: {client.ruc || "N/A"}
                             </p>
                         </div>
@@ -47,23 +47,23 @@ export function ClientCardMobile({ client, equipmentCount = 0 }: { client: Clien
                         <div className="h-7 w-7 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">
                             <MapPin className="h-3.5 w-3.5 text-slate-400" />
                         </div>
-                        <span className="line-clamp-1">{client.address || "No address"}</span>
+                        <span className="line-clamp-1 font-medium text-slate-700">{client.address || "No address"}</span>
                     </div>
                     {client.contactName && (
                         <div className="flex items-center gap-2.5 text-xs text-slate-500">
                             <div className="h-7 w-7 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">
                                 <Phone className="h-3.5 w-3.5 text-slate-400" />
                             </div>
-                            <span className="truncate">{client.contactName}</span>
+                            <span className="truncate font-medium text-slate-700">{client.contactName}</span>
                         </div>
                     )}
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between">
                     <div className="flex gap-2">
-                        <Badge variant="secondary" className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border-emerald-100/50 gap-1.5 text-[10px] font-bold uppercase tracking-wider">
+                        <Badge variant="secondary" className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 border-emerald-100/50 gap-1.5 text-[10px] font-bold uppercase tracking-wider">
                             <Wrench className="h-3 w-3" />
-                            {equipmentCount} Equipment
+                            {equipmentCount} Equipos
                         </Badge>
                     </div>
                     

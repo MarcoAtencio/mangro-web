@@ -11,22 +11,22 @@ interface PriorityBadgeProps {
 const PRIORITY_STYLES: Record<string, { bg: string; text: string; border: string }> = {
     "URGENTE": { 
         bg: "bg-red-50", 
-        text: "text-red-700", 
+        text: "text-red-800", 
         border: "border-red-200"
     },
     "ALTA": { 
         bg: "bg-orange-50", 
-        text: "text-orange-700", 
+        text: "text-orange-800", 
         border: "border-orange-200"
     },
     "MEDIA": { 
         bg: "bg-amber-50", 
-        text: "text-amber-700", 
+        text: "text-amber-800", 
         border: "border-amber-200"
     },
     "BAJA": { 
         bg: "bg-teal-50", 
-        text: "text-teal-700", 
+        text: "text-teal-800", 
         border: "border-teal-200"
     },
 };

@@ -36,31 +36,31 @@ export function StatsCard({
         },
         green: {
             card: "from-white to-emerald-50/30 border-emerald-100 shadow-sm",
-            textTitle: "text-emerald-800 uppercase tracking-wider font-bold",
+            textTitle: "text-emerald-900 uppercase tracking-wider font-bold",
             textValue: "text-emerald-900",
-            iconBg: "bg-emerald-100 text-emerald-700 shadow-inner",
-            iconColor: "text-emerald-700",
+            iconBg: "bg-emerald-100 text-emerald-800 shadow-inner",
+            iconColor: "text-emerald-800",
         },
         amber: {
             card: "from-white to-amber-50/30 border-amber-100 shadow-sm",
-            textTitle: "text-amber-800 uppercase tracking-wider font-bold",
+            textTitle: "text-amber-900 uppercase tracking-wider font-bold",
             textValue: "text-amber-900",
-            iconBg: "bg-amber-100 text-amber-700 shadow-inner",
-            iconColor: "text-amber-700",
+            iconBg: "bg-amber-100 text-amber-800 shadow-inner",
+            iconColor: "text-amber-800",
         },
         blue: {
             card: "from-white to-blue-50/30 border-blue-100 shadow-sm",
-            textTitle: "text-blue-800 uppercase tracking-wider font-bold",
+            textTitle: "text-blue-900 uppercase tracking-wider font-bold",
             textValue: "text-blue-900",
-            iconBg: "bg-blue-100 text-blue-700 shadow-inner",
-            iconColor: "text-blue-700",
+            iconBg: "bg-blue-100 text-blue-800 shadow-inner",
+            iconColor: "text-blue-800",
         },
         indigo: { 
              card: "from-white to-indigo-50/30 border-indigo-100 shadow-sm",
-             textTitle: "text-indigo-800 uppercase tracking-wider font-bold",
+             textTitle: "text-indigo-900 uppercase tracking-wider font-bold",
              textValue: "text-indigo-900",
-             iconBg: "bg-indigo-100 text-indigo-700 shadow-inner",
-             iconColor: "text-indigo-700",
+             iconBg: "bg-indigo-100 text-indigo-800 shadow-inner",
+             iconColor: "text-indigo-800",
         },
         secondary: {
              card: "from-white to-slate-100/50 border-slate-200 shadow-sm",
@@ -124,7 +124,7 @@ export function StatsCard({
                     </div>
                 </div>
                 {description && (
-                    <p className="mt-2 sm:mt-3 lg:mt-4 text-[10px] sm:text-xs text-muted-foreground line-clamp-1">
+                    <p className="mt-2 sm:mt-3 lg:mt-4 text-[10px] sm:text-xs text-slate-600 font-medium line-clamp-1">
                         {description}
                     </p>
                 )}
