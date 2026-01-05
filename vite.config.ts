@@ -14,7 +14,6 @@ export default defineConfig({
                         if (id.includes('firebase') || id.includes('@firebase')) {
                             return 'firebase';
                         }
-                        
                         // Dejar todo lo demás en un solo vendor chunk para evitar problemas
                         // de orden de carga con React (useLayoutEffect error)
                         return 'vendor';
