@@ -1,4 +1,4 @@
-import type { MetaFunction } from "react-router";
+import { useLoaderData, type MetaFunction } from "react-router";
 import { useState, useEffect, lazy, Suspense } from "react";
 
 export const meta: MetaFunction = () => {
@@ -7,6 +7,13 @@ export const meta: MetaFunction = () => {
         { name: "description", content: "Administre su cartera de clientes, equipos y contratos en el panel de MANGRO S.A.C." },
     ];
 };
+import { getClientsList } from "~/lib/firestore";
+
+export async function clientLoader() {
+    const clients = await getClientsList();
+    return { initialClients: clients };
+}
+
 import { Plus } from "lucide-react";
 
 // Lazy loading the main action dialog to reduce initial bundle
@@ -33,9 +40,8 @@ import {
     ArrowUpDown,
 } from "lucide-react";
 
-import { useClients } from "~/hooks/use-clients";
 import { usePagination } from "~/hooks/use-pagination";
-import { subscribeToEquipment, type Equipment } from "~/lib/firestore";
+import { subscribeToClients, subscribeToEquipment, type Client, type Equipment } from "~/lib/firestore";
 import { subscribeToServices } from "~/lib/services"; 
 
 import { ClientRow } from "~/components/clients/client-row";
@@ -45,7 +51,8 @@ import { PaginationControls } from "~/components/ui/pagination-controls";
 import { ClientsSkeleton } from "~/components/clients/clients-skeleton";
 
 export default function ClientsPage() {
-    const { clients, loading: loadingClients } = useClients();
+    const { initialClients } = useLoaderData() as { initialClients: Client[] };
+    const [clients, setClients] = useState<Client[]>(initialClients);
     const [search, setSearch] = useState("");
     const [showNewClientDialog, setShowNewClientDialog] = useState(false);
     
@@ -63,6 +70,14 @@ export default function ClientsPage() {
         "all" | "withEquipment" | "inMaintenance" | "withServices"
     >("all");
     const [equipmentByClient, setEquipmentByClient] = useState<Record<string, Equipment[]>>({});
+
+    // Subscribe to Clients for real-time updates
+    useEffect(() => {
+        const unsubscribe = subscribeToClients((data) => {
+            setClients(data);
+        });
+        return () => unsubscribe();
+    }, []);
 
     // Subscribe to ALL services to count them per client
     useEffect(() => {
@@ -166,9 +181,6 @@ export default function ClientsPage() {
         setPage(1);
     };
 
-    if (loadingClients) {
-        return <ClientsSkeleton />;
-    }
 
     const paginatedClients = filteredClients.slice(startIndex, endIndex);
 
@@ -285,46 +297,33 @@ export default function ClientsPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {loadingClients ? (
+                                {paginatedClients.map((client) => (
+                                    <ClientRow
+                                        key={client.id}
+                                        client={client}
+                                        servicesCount={
+                                            servicesByClient[client.id] || 0
+                                        }
+                                    />
+                                ))}
+                                {paginatedClients.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="text-center py-8">
-                                            <Spinner className="h-8 w-8 mx-auto" />
-                                            <p className="text-sm text-muted-foreground mt-2">
-                                                Cargando clientes...
+                                        <TableCell
+                                            colSpan={6}
+                                            className="text-center py-8"
+                                        >
+                                            <p className="text-muted-foreground">
+                                                No se encontraron clientes
                                             </p>
                                         </TableCell>
                                     </TableRow>
-                                ) : (
-                                    <>
-                                        {paginatedClients.map((client) => (
-                                            <ClientRow
-                                                key={client.id}
-                                                client={client}
-                                                servicesCount={
-                                                    servicesByClient[client.id] || 0
-                                                }
-                                            />
-                                        ))}
-                                        {paginatedClients.length === 0 && (
-                                            <TableRow>
-                                                <TableCell
-                                                    colSpan={6}
-                                                    className="text-center py-8"
-                                                >
-                                                    <p className="text-muted-foreground">
-                                                        No se encontraron clientes
-                                                    </p>
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </>
                                 )}
                             </TableBody>
                         </Table>
                     </div>
                     
                     {/* Pagination inside gray section */}
-                    {!loadingClients && filteredClients.length > 0 && (
+                    {filteredClients.length > 0 && (
                         <PaginationControls
                             currentPage={currentPage}
                             totalPages={totalPages}
@@ -345,14 +344,7 @@ export default function ClientsPage() {
                         </span>
                     </div>
 
-                    {loadingClients ? (
-                        <div className="text-center py-8">
-                            <Spinner className="h-8 w-8 mx-auto" />
-                            <p className="text-sm text-muted-foreground mt-2">
-                                Cargando clientes...
-                            </p>
-                        </div>
-                    ) : paginatedClients.length > 0 ? (
+                    {paginatedClients.length > 0 ? (
                         paginatedClients.map((client) => (
                             <ClientCardMobile key={client.id} client={client} />
                         ))
@@ -364,7 +356,7 @@ export default function ClientsPage() {
                 </div>
                 
                 {/* Mobile Pagination */}
-                {!loadingClients && filteredClients.length > 0 && (
+                {filteredClients.length > 0 && (
                     <div className="sm:hidden text-center py-4 text-sm text-muted-foreground">
                         Mostrando {paginatedClients.length} de {filteredClients.length} clientes
                     </div>

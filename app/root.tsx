@@ -10,8 +10,14 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import { AuthProvider } from "~/lib/auth";
+import { auth } from "~/lib/firebase";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+
+export async function clientLoader() {
+    await auth.authStateReady();
+    return null;
+}
 
 export const links: Route.LinksFunction = () => [
     // Preconnect: Essential origins early in the waterfall

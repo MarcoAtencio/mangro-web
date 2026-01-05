@@ -165,6 +165,8 @@ export async function getClients(): Promise<Client[]> {
     })) as Client[];
 }
 
+export const getClientsList = getClients;
+
 export function subscribeToClients(callback: (clients: Client[]) => void): () => void {
     const unsubscribe = onSnapshot(collection(db, "companies"), (snapshot) => {
         const clients = snapshot.docs.map((doc) => ({
