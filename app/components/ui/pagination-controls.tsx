@@ -27,7 +27,7 @@ export function PaginationControls({
 
     return (
         <div className={`flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 pt-3 sm:pt-4 pb-2 px-2 sm:px-0 border-t border-slate-100 mt-3 sm:mt-4 ${className || ""}`}>
-            <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+            <div className="text-xs sm:text-sm text-slate-600 text-center sm:text-left">
                 <span className="hidden sm:inline">Mostrando {startItem} a {endItem} de </span>
                 <span className="sm:hidden">{startItem}-{endItem} / </span>
                 {totalItems} {itemName}

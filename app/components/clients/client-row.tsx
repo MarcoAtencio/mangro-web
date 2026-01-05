@@ -89,6 +89,7 @@ export function ClientRow({ client, servicesCount = 0 }: ClientRowProps) {
                             size="icon"
                             className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full"
                             onClick={() => setShowEditDialog(true)}
+                            aria-label={`Configurar cliente ${client.name}`}
                         >
                             <Settings className="h-4 w-4" />
                         </Button>

@@ -69,7 +69,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                         />
                         <div className="flex flex-col">
                             <span className="font-bold text-sm text-[#0069B4]">MANGRO S.A.C.</span>
-                            <span className="text-[11px] text-slate-400">Admin Panel</span>
+                            <span className="text-[11px] text-slate-500">Admin Panel</span>
                         </div>
                     </div>
                 ) : (
@@ -134,7 +134,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                 {/* Secondary Navigation */}
                 <div className="space-y-1">
                     {!collapsed && (
-                        <span className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">
+                        <span className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-[0.1em]">
                             SISTEMA
                         </span>
                     )}
@@ -316,7 +316,7 @@ export function MobileSidebar() {
 
                     {/* Secondary Navigation */}
                     <div className="space-y-1">
-                        <span className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">
+                        <span className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-[0.1em]">
                             SISTEMA
                         </span>
                         <div className="mt-2 space-y-1">
