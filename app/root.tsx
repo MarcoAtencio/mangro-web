@@ -8,39 +8,45 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import "./app.css";
+import "./app.css"; // Tu CSS principal con Tailwind
 import { AuthProvider } from "~/lib/auth";
 import { auth } from "~/lib/firebase";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
+// ✅ 1. LOADER CRÍTICO: Espera a que Firebase verifique la sesión en IndexedDB
+// Esto evita que la app muestre "No autenticado" por un milisegundo.
 export async function clientLoader() {
-    // We don't block the root layout rendering on auth state readiness.
-    // auth.authStateReady() blocks the initial waterfall (iframes loading).
-    // The AuthProvider handles the subscription and state management.
+    await auth.authStateReady();
     return null;
 }
 
 export const links: Route.LinksFunction = () => [
-    // Preconnect: Essential origins early in the waterfall
-    { rel: "preconnect", href: "https://fonts.googleapis.com" },
-    { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-    { rel: "preconnect", href: "https://www.googletagmanager.com" },
+    // ✅ 2. PRELOAD DE FUENTE LOCAL (Clave para LCP verde)
+    // Asegúrate de que el archivo existe en public/fonts/inter.woff2
+    { 
+        rel: "preload", 
+        href: "/fonts/inter.woff2", 
+        as: "font", 
+        type: "font/woff2", 
+        crossOrigin: "anonymous" 
+    },
+
+    // ✅ 3. Preload de imagen crítica (Tu logo)
+    // Esto ayuda a que el navegador priorice la descarga de la imagen del sidebar
+    { 
+        rel: "preload", 
+        as: "image", 
+        href: "/logo-mangro.jpg", 
+        fetchPriority: "high" as const 
+    },
     
-    // Firestore is usually needed shortly after, but not at the very top
+    // Conexiones anticipadas a servicios externos que SÍ usas
+    { rel: "preconnect", href: "https://www.googletagmanager.com" },
     { rel: "preconnect", href: "https://firestore.googleapis.com" },
 
-    // Pre-load critical assets like the logo and fonts to improve LCP
-    { rel: "preload", as: "image", href: "/logo-mangro.jpg", fetchPriority: "high" as any },
-    
-    // Google Font with display=swap and preloading the specific font files if possible
-    // Since we don't know the exact file names for Inter from Google Fonts (they change), 
-    // we use preconnect and dns-prefetch. 
-    { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
-    {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
-    },
+    // NOTA: Se eliminaron los links a fonts.googleapis.com y fonts.gstatic.com
+    // porque ahora sirves la fuente localmente.
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -49,7 +55,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <head>
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                {/* Theme color for mobile browsers - improves perceived performance */}
                 <meta name="theme-color" content="#0069B4" />
                 <title>MANGRO Admin</title>
                 <link rel="icon" href="/favicon.jpg" />
