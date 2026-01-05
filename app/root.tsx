@@ -51,44 +51,6 @@ export function HydrateFallback() {
 }
 
 // ============================================================================
-// GTM DEFER COMPONENT - Carga diferida de Google Tag Manager
-// ============================================================================
-/**
- * Componente que inyecta Google Tag Manager después de 3 segundos.
- * Esto evita que GTM compita por ancho de banda durante la carga inicial,
- * mejorando significativamente el LCP y TBT.
- */
-function GTMDefer() {
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            // Inyectar el script de GTM
-            const script = document.createElement("script");
-            script.async = true;
-            script.src = "https://www.googletagmanager.com/gtag/js?id=G-QDYONFV8EB";
-            document.head.appendChild(script);
-
-            // Inicializar gtag cuando el script cargue
-            script.onload = () => {
-                const w = window as unknown as { 
-                    dataLayer: unknown[]; 
-                    gtag: (...args: unknown[]) => void;
-                };
-                w.dataLayer = w.dataLayer || [];
-                w.gtag = function(...args: unknown[]) {
-                    w.dataLayer.push(args);
-                };
-                w.gtag("js", new Date());
-                w.gtag("config", "G-QDYONFV8EB");
-            };
-        }, 3000); // 3 segundos de delay
-
-        return () => clearTimeout(timer);
-    }, []);
-
-    return null;
-}
-
-// ============================================================================
 // LINKS - Preload de recursos críticos
 // ============================================================================
 export const links: Route.LinksFunction = () => [
@@ -109,8 +71,7 @@ export const links: Route.LinksFunction = () => [
         fetchPriority: "high" as const 
     },
     
-    // Conexiones anticipadas a servicios externos
-    { rel: "preconnect", href: "https://www.googletagmanager.com" },
+    // Conexión anticipada a Firestore
     { rel: "preconnect", href: "https://firestore.googleapis.com" },
 ];
 
@@ -147,7 +108,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
  * Implementa "Renderizado Inmediato" (Non-blocking UI):
  * - Muestra un skeleton ligero mientras Firebase verifica el estado de auth
  * - Una vez listo, renderiza la aplicación completa con AuthProvider
- * - GTM se carga de forma diferida para no afectar el rendimiento inicial
  */
 export default function App() {
     const [isAuthReady, setIsAuthReady] = useState(false);
@@ -169,13 +129,9 @@ export default function App() {
 
     // Una vez listo, renderizar la app completa
     return (
-        <>
-            <AuthProvider>
-                <Outlet />
-            </AuthProvider>
-            {/* GTM se carga 3 segundos después para no afectar LCP */}
-            <GTMDefer />
-        </>
+        <AuthProvider>
+            <Outlet />
+        </AuthProvider>
     );
 }
 
