@@ -43,15 +43,15 @@ export default function LoginPage() {
     const displayError = localError || error;
 
     return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-0 sm:p-4 relative overflow-hidden">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-0 lg:p-4 relative overflow-hidden">
             {/* Branded Background Patterns */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#0069B40d_0%,transparent_40%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,#00A39B0d_0%,transparent_40%)]" />
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f080_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f080_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-60" />
 
-            <div className="relative w-full h-full sm:h-auto sm:max-w-[400px] animate-in fade-in zoom-in-95 duration-300 will-change-transform">
-                <Card className="relative border-0 sm:border sm:border-slate-200/60 bg-white/90 backdrop-blur-xl shadow-none sm:shadow-xl hover:shadow-none sm:hover:shadow-2xl transition-shadow duration-300 min-h-screen sm:min-h-0 rounded-none sm:rounded-xl flex flex-col justify-center">
-                    <CardHeader className="text-center pb-2 pt-6 sm:pt-8">
+            <div className="relative w-full h-full lg:h-auto lg:max-w-[400px] animate-in fade-in zoom-in-95 duration-300 will-change-transform">
+                <Card className="relative border-0 lg:border lg:border-slate-200/60 bg-white/90 backdrop-blur-xl shadow-none lg:shadow-xl hover:shadow-none lg:hover:shadow-2xl transition-shadow duration-300 min-h-screen lg:min-h-0 rounded-none lg:rounded-xl flex flex-col justify-center">
+                    <CardHeader className="text-center pb-2 pt-6 lg:pt-8">
                         {/* Logo */}
                         <div className="flex justify-center mb-6">
                             <div className="p-3 bg-white rounded-2xl shadow-sm border border-slate-100 ring-1 ring-slate-50">
@@ -73,7 +73,7 @@ export default function LoginPage() {
                             Ingresa tus credenciales para continuar
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="pb-6 px-6 sm:pb-8 sm:px-8">
+                    <CardContent className="pb-6 px-6 lg:pb-8 lg:px-8">
                         <form onSubmit={handleSubmit} className="space-y-5">
                             {/* Error message */}
                             {displayError && (

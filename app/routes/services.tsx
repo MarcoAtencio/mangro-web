@@ -219,14 +219,14 @@ export default function ServicesPage() {
                         </div>
 
                         {/* Filters */}
-                        <div className="flex flex-wrap gap-2 w-full sm:w-auto items-center">
+                        <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-2 w-full sm:w-auto items-center">
                             {/* Technician Filter */}
                             <Select
                                 value={filterTechnician}
                                 onValueChange={(val) => handleFilterChange(setFilterTechnician, val)}
                             >
                              <SelectTrigger 
-                                className="w-[calc(50%-0.25rem)] sm:w-40 lg:w-48 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm"
+                                className="w-full sm:w-40 lg:w-48 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm"
                                 aria-label="Filtrar por técnico"
                             >
                                 <div className="flex items-center gap-2 truncate">
@@ -250,7 +250,7 @@ export default function ServicesPage() {
                             onValueChange={(val) => handleFilterChange(setFilterClient, val)}
                         >
                             <SelectTrigger 
-                                className="w-[calc(50%-0.25rem)] sm:w-40 lg:w-48 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm"
+                                className="w-full sm:w-40 lg:w-48 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm"
                                 aria-label="Filtrar por cliente"
                             >
                                 <div className="flex items-center gap-2 truncate">
@@ -274,7 +274,7 @@ export default function ServicesPage() {
                             onValueChange={(val) => handleFilterChange(setFilterStatus, val)}
                         >
                             <SelectTrigger 
-                                className="w-[calc(50%-0.25rem)] sm:w-36 lg:w-40 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm"
+                                className="w-full sm:w-36 lg:w-40 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm"
                                 aria-label="Filtrar por estado"
                             >
                                 <div className="flex items-center gap-2 truncate">

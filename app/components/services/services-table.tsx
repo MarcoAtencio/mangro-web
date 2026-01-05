@@ -6,11 +6,13 @@ import {
     TableHeader,
     TableRow,
 } from "~/components/ui/table";
+import { Card, CardContent } from "~/components/ui/card";
+import { Calendar, MapPin, Briefcase, User } from "lucide-react";
 import { PaginationControls } from "~/components/ui/pagination-controls";
 import { PriorityBadge } from "~/components/ui/priority-badge";
 import { StatusBadge } from "~/components/ui/status-badge";
 import { Spinner } from "~/components/ui/spinner";
-import { User } from "lucide-react";
+
 import { cn } from "~/lib/utils";
 import type { Task } from "~/lib/services";
 import type { User as UserType } from "~/lib/firestore";
@@ -43,6 +45,7 @@ export function ServicesTable({
     itemsPerPage,
     onPageChange,
     isEmpty,
+    isFiltered,
 }: ServicesTableProps) {
     
     const formatDate = (date: Date | undefined) => {
@@ -57,8 +60,70 @@ export function ServicesTable({
     /* Loading is handled at the page level with ServicesSkeleton */
 
     return (
-        <div className="overflow-x-auto">
-        <Table className="min-w-[600px]">
+        <div className="space-y-4">
+            {/* Mobile View: Cards */}
+            <div className="md:hidden flex flex-col gap-4">
+                {isEmpty ? (
+                     <div className="text-center py-8 text-muted-foreground bg-slate-50 rounded-lg border border-dashed border-slate-300">
+                        {isFiltered ? "No se encontraron servicios con los filtros seleccionados" : "No hay servicios programados"}
+                    </div>
+                ) : (
+                    services.map((service) => (
+                        <Card 
+                            key={service.id} 
+                            onClick={() => onSelectService(service)}
+                            className="active:scale-[0.98] transition-transform cursor-pointer hover:shadow-md border-l-4"
+                            style={{
+                                borderLeftColor: 
+                                    service.status === "COMPLETADO" ? "#10b981" : 
+                                    service.status === "EN_PROGRESO" ? "#3b82f6" : 
+                                    service.status === "CANCELADO" ? "#ef4444" : "#94a3b8"
+                            }}
+                        >
+                            <CardContent className="p-4 space-y-3">
+                                {/* Header: Date & Status */}
+                                <div className="flex justify-between items-start">
+                                    <div className="flex items-center text-xs font-medium text-slate-500 gap-1.5">
+                                        <Calendar className="h-3.5 w-3.5" />
+                                        <span>{formatDate(service.date)}</span>
+                                        <span className="text-slate-300">•</span>
+                                        <span>{service.scheduledTime}</span>
+                                    </div>
+                                    <StatusBadge status={service.status} />
+                                </div>
+
+                                {/* Body: Client & Equipment */}
+                                <div>
+                                    <h4 className="font-semibold text-slate-900 line-clamp-1">{service.clientName}</h4>
+                                    <div className="flex items-start gap-1.5 mt-1 text-xs text-slate-500">
+                                        <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                                        <span className="line-clamp-2">{service.address}</span>
+                                    </div>
+                                    <div className="mt-2 text-sm text-slate-700 bg-slate-50 p-2 rounded border border-slate-100 line-clamp-2">
+                                        <span className="font-medium text-xs text-slate-500 block mb-0.5">Equipo/Servicio:</span>
+                                        {service.equipmentSummary || service.description || "Sin descripción"}
+                                    </div>
+                                </div>
+
+                                {/* Footer: Technician & Priority */}
+                                <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                                        <User className="h-4 w-4 text-slate-400" />
+                                        <span className="truncate max-w-[120px]">
+                                            {technicians.find((t) => t.id === service.technicianId)?.fullName || "Sin asignar"}
+                                        </span>
+                                    </div>
+                                    <PriorityBadge priority={service.priority} />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))
+                )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden md:block overflow-x-auto rounded-md border border-slate-200">
+                <Table className="min-w-[800px]">
             <TableHeader>
                 <TableRow className="bg-slate-50/50">
                     <TableHead className="w-[90px] sm:w-[120px]">Fecha</TableHead>
@@ -141,7 +206,8 @@ export function ServicesTable({
                     </TableRow>
                 )}
             </TableBody>
-        </Table>
+                </Table>
+            </div>
         </div>
     );
 }

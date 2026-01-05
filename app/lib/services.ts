@@ -153,7 +153,7 @@ export const createService = async (taskData: CreateTaskDTO) => {
             address: taskData.clientAddress,
             clientName: taskData.clientName,
             contactName: taskData.contactName || "",
-            scheduledTime: `${taskData.startTime} - ${taskData.endTime}`,
+            scheduledTime: `${taskData.startTime || "??"} - ${taskData.endTime || "??"}`,
             technicianId: taskData.technicianId,
             description: taskData.description || "",
             equipment: taskData.equipment || [], // Store as array of objects

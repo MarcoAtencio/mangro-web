@@ -218,7 +218,65 @@ export default function TechniciansPage() {
 
                 {/* Users Table - With gray background section */}
                 <div className="flex flex-col -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 py-4 md:py-5 lg:py-6 pb-6 lg:pb-8 bg-slate-100/70 flex-1 -mb-4 md:-mb-6 lg:-mb-8 border-t border-slate-200">
-                    <div className="overflow-x-auto rounded-md border border-slate-200 bg-white shadow-sm">
+                    
+                    {/* Mobile View: Cards */}
+                    <div className="md:hidden flex flex-col gap-4 mb-6">
+                        {paginatedUsers.map((user) => (
+                            <Card key={user.id} className="shadow-sm">
+                                <CardContent className="p-4">
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex items-center gap-3">
+                                            {user.photoUrl ? (
+                                                <img
+                                                    src={user.photoUrl}
+                                                    alt={user.fullName}
+                                                    className="h-10 w-10 rounded-full object-cover border border-slate-100"
+                                                />
+                                            ) : (
+                                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                    <UserCircle className="h-6 w-6 text-primary" />
+                                                </div>
+                                            )}
+                                            <div>
+                                                <h4 className="font-semibold text-slate-900 line-clamp-1">{user.fullName || "Sin nombre"}</h4>
+                                                <RoleBadge role={user.role} />
+                                            </div>
+                                        </div>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => setEditingUser(user)}>
+                                                    <Pencil className="mr-2 h-4 w-4" /> Editar
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+
+                                    <div className="mt-4 space-y-2 pt-3 border-t border-slate-100">
+                                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                                            <Mail className="h-4 w-4 text-slate-400" />
+                                            <span className="truncate">{user.email}</span>
+                                        </div>
+                                        {user.phone && (
+                                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                                                <Phone className="h-4 w-4 text-slate-400" />
+                                                <span>{user.phone}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+
+                    {/* Desktop View: Table */}
+                    <div className="hidden md:block overflow-x-auto rounded-md border border-slate-200 bg-white shadow-sm">
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-slate-50/50">
