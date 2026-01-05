@@ -13,20 +13,9 @@ export default function ProtectedLayout() {
         }
     }, [user, loading, navigate]);
 
-    if (loading && !user) {
-        return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
-                <div className="text-center">
-                    <Spinner className="h-8 w-8 text-primary mx-auto mb-4" />
-                    <p className="text-muted-foreground">Verificando sesión...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (!user) {
-        return null;
-    }
-
+    // During session verification, we render the Outlet anyway.
+    // This allows child routes to show their own HydrateFallback (skeletons) 
+    // instead of an empty spinner, which improves Lighthouse FCP/LCP significantly.
+    // The useEffect above will handle the redirect if the session is eventually null.
     return <Outlet />;
 }

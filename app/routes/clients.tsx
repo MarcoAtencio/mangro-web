@@ -1,5 +1,5 @@
 import { useLoaderData, type MetaFunction } from "react-router";
-import { useState, useEffect, lazy, Suspense, useMemo } from "react";
+import { useState, useEffect, lazy, Suspense, useMemo, useRef } from "react";
 
 export const meta: MetaFunction = () => {
     return [
@@ -105,37 +105,47 @@ export default function ClientsPage() {
         return () => unsubscribe();
     }, []);
 
-    // Subscribe to all equipment to calculate stats
+    // Subscribe to all equipment to calculate stats - Optimized to avoid full resubscription
+    const unsubscribersRef = useRef<Record<string, () => void>>({});
+    const equipmentMapRef = useRef<Record<string, Equipment[]>>({});
+
     useEffect(() => {
         if (clients.length === 0) return;
 
-        const unsubscribers: (() => void)[] = [];
-        const equipment: Record<string, Equipment[]> = {};
-
-        clients.forEach((client) => {
-            const unsub = subscribeToEquipment(client.id, (deviceList) => {
-                equipment[client.id] = deviceList;
-
-                // Update state with current equipment map
-                setEquipmentByClient({ ...equipment });
-
-                // Recalculate totals
-                let total = 0;
-                let inMaintenance = 0;
-                Object.values(equipment).forEach((eqs) => {
-                    total += eqs.length;
-                    inMaintenance += eqs.filter((e) => e.status === "maintenance").length;
-                });
-
-                setEquipmentStats({ total, inMaintenance });
-            });
-            unsubscribers.push(unsub);
+        // IDs of current clients
+        const clientIds = new Set(clients.map(c => c.id));
+        
+        // Remove subscriptions for clients that no longer exist
+        Object.keys(unsubscribersRef.current).forEach(id => {
+            if (!clientIds.has(id)) {
+                unsubscribersRef.current[id]();
+                delete unsubscribersRef.current[id];
+                delete equipmentMapRef.current[id];
+            }
         });
 
-        return () => {
-            unsubscribers.forEach((unsub) => unsub());
-        };
-    }, [clients]);
+        // Add subscriptions for new clients
+        clients.forEach((client) => {
+            if (!unsubscribersRef.current[client.id]) {
+                unsubscribersRef.current[client.id] = subscribeToEquipment(client.id, (deviceList) => {
+                    equipmentMapRef.current[client.id] = deviceList;
+                    
+                    // Update state with a slight delay or batch if possible, but for now 
+                    // we just ensure we don't recreate all subscriptions.
+                    setEquipmentByClient(prev => ({ ...prev, [client.id]: deviceList }));
+
+                    // Recalculate totals from the ref to ensure we have the latest global state
+                    let total = 0;
+                    let inMaintenance = 0;
+                    Object.values(equipmentMapRef.current).forEach((eqs: Equipment[]) => {
+                        total += eqs.length;
+                        inMaintenance += eqs.filter((e) => e.status === "maintenance").length;
+                    });
+                    setEquipmentStats({ total, inMaintenance });
+                });
+            }
+        });
+    }, [clients]); // Still depends on clients to detect new/removed ones, but internally stable
 
     // Filtering logic
     const filteredClients = useMemo(() => {
