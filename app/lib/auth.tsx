@@ -1,8 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import {
-    signInWithEmailAndPassword,
-    signOut as firebaseSignOut,
-    sendPasswordResetEmail as firebaseSendPasswordResetEmail,
     onAuthStateChanged,
     type User,
     type AuthError,
@@ -57,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setError(null);
         setLoading(true);
         try {
+            const { signInWithEmailAndPassword } = await import("firebase/auth");
             await signInWithEmailAndPassword(auth, email, password);
         } catch (err) {
             const authError = err as AuthError;
@@ -78,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const sendPasswordResetEmail = async (email: string) => {
         try {
+            const { sendPasswordResetEmail: firebaseSendPasswordResetEmail } = await import("firebase/auth");
             await firebaseSendPasswordResetEmail(auth, email);
         } catch (err) {
             console.error("Password reset error:", err);
@@ -87,6 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const signOut = async () => {
         try {
+            const { signOut: firebaseSignOut } = await import("firebase/auth");
             await firebaseSignOut(auth);
         } catch (err) {
             console.error("Sign out error:", err);

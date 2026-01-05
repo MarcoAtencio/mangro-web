@@ -1,12 +1,10 @@
 import type { MetaFunction } from "react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
+import { Plus } from "lucide-react";
 
-export const meta: MetaFunction = () => {
-    return [
-        { title: "Client Management | MANGRO Admin" },
-        { name: "description", content: "Manage client portfolio and industrial equipment." },
-    ];
-};
+// Lazy loading the main action dialog to reduce initial bundle
+const NewClientDialog = lazy(() => import("~/components/clients/new-client-dialog").then(m => ({ default: m.NewClientDialog })));
+
 import { AdminLayout } from "~/components/layout/admin-layout";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -33,7 +31,6 @@ import { usePagination } from "~/hooks/use-pagination";
 import { subscribeToEquipment, type Equipment } from "~/lib/firestore";
 import { subscribeToServices } from "~/lib/services"; 
 
-import { NewClientDialog } from "~/components/clients/new-client-dialog";
 import { ClientRow } from "~/components/clients/client-row";
 import { ClientCardMobile } from "~/components/clients/client-card-mobile";
 import { StatsCard } from "~/components/ui/stats-card";
@@ -43,6 +40,7 @@ import { ClientsSkeleton } from "~/components/clients/clients-skeleton";
 export default function ClientsPage() {
     const { clients, loading: loadingClients } = useClients();
     const [search, setSearch] = useState("");
+    const [showNewClientDialog, setShowNewClientDialog] = useState(false);
     
     // Equipment stats state
     const [equipmentStats, setEquipmentStats] = useState<{
@@ -171,7 +169,25 @@ export default function ClientsPage() {
         <AdminLayout 
             title="Gestión de Clientes"
             subtitle="Administre su cartera de clientes y equipos"
-            headerActions={<NewClientDialog />}
+            headerActions={
+                <div className="flex items-center gap-2">
+                    <Button 
+                        onClick={() => setShowNewClientDialog(true)}
+                        className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Nuevo Cliente
+                    </Button>
+                    {showNewClientDialog && (
+                        <Suspense fallback={null}>
+                            <NewClientDialog 
+                                open={showNewClientDialog} 
+                                onOpenChange={setShowNewClientDialog} 
+                            />
+                        </Suspense>
+                    )}
+                </div>
+            }
         >
             <div className="flex flex-col gap-4 sm:gap-6 lg:gap-8 flex-1">
                 {/* Stats Cards */}

@@ -16,8 +16,23 @@ import { AddressPicker } from "~/components/ui/address-picker";
 import { createClient } from "~/lib/firestore";
 import { Plus } from "lucide-react";
 
-export function NewClientDialog() {
-    const [open, setOpen] = useState(false);
+interface NewClientDialogProps {
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+}
+
+export function NewClientDialog({ open: externalOpen, onOpenChange: externalOnOpenChange }: NewClientDialogProps) {
+    const [internalOpen, setInternalOpen] = useState(false);
+    
+    const open = externalOpen ?? internalOpen;
+    const setOpen = (val: boolean) => {
+        if (externalOnOpenChange) {
+            externalOnOpenChange(val);
+        } else {
+            setInternalOpen(val);
+        }
+    };
+    
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
