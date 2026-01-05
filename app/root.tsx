@@ -15,7 +15,9 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
 export async function clientLoader() {
-    await auth.authStateReady();
+    // We don't block the root layout rendering on auth state readiness.
+    // auth.authStateReady() blocks the initial waterfall (iframes loading).
+    // The AuthProvider handles the subscription and state management.
     return null;
 }
 

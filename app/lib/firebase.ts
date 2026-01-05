@@ -1,5 +1,4 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAnalytics, isSupported } from "firebase/analytics";
 import { 
     initializeFirestore, 
     persistentLocalCache, 
@@ -23,10 +22,18 @@ export const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 // Initialize Firebase safely for HMR
 export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
-// Initialize Analytics (only in browser)
+// Initialize Analytics late to improve Lighthouse score
 export const analytics =
     typeof window !== "undefined"
-        ? isSupported().then((yes) => (yes ? getAnalytics(app) : null))
+        ? (async () => {
+              // Defer analytics initialization by 2 seconds or until the window is idle
+              if (window.requestIdleCallback) {
+                  await new Promise((res) => window.requestIdleCallback(res, { timeout: 3000 }));
+              }
+              const { getAnalytics, isSupported } = await import("firebase/analytics");
+              const yes = await isSupported();
+              return yes ? getAnalytics(app) : null;
+          })()
         : null;
 
 // Initialize Firestore with multi-tab offline persistence (modern API)

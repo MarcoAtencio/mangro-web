@@ -61,6 +61,8 @@ export default function LoginPage() {
                                     width="40"
                                     height="40"
                                     className="h-10 w-auto object-contain"
+                                    decoding="async"
+                                    fetchPriority="high"
                                 />
                             </div>
                         </div>
@@ -136,12 +138,16 @@ export default function LoginPage() {
                                     </button>
                                 </div>
                                 <div className="flex justify-end pt-1">
-                                    <a
-                                        href="#"
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            // Handle forgot password logic or just notification
+                                            alert("Por favor, contacte al administrador para restablecer su contraseña.");
+                                        }}
                                         className="text-xs text-primary/80 hover:text-primary font-medium transition-colors hover:underline underline-offset-4"
                                     >
                                         ¿Olvidaste tu contraseña?
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
 
