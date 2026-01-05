@@ -12,9 +12,11 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Spinner } from "~/components/ui/spinner";
-import { AddressPicker } from "~/components/ui/address-picker";
 import { updateClient, deleteClient, type Client } from "~/lib/firestore";
 import { Settings, Trash2 } from "lucide-react";
+import React, { Suspense, lazy } from "react";
+
+const AddressPicker = lazy(() => import("~/components/ui/address-picker").then(m => ({ default: m.AddressPicker })));
 
 export function EditClientDialog({
     client,
@@ -149,15 +151,20 @@ export function EditClientDialog({
                             </div>
                         </div>
 
-                        {/* Section: Location */}
                         <div className="grid gap-2">
                             <h4 className="text-sm font-medium text-muted-foreground border-b pb-1">
                                 Ubicación
                             </h4>
-                            <AddressPicker
-                                onAddressSelect={handleAddressSelect}
-                                initialAddress={formData.address}
-                            />
+                            <Suspense fallback={
+                                <div className="h-[250px] w-full bg-slate-50 animate-pulse rounded-xl flex items-center justify-center border border-slate-100">
+                                    <Spinner className="h-6 w-6 text-slate-300" />
+                                </div>
+                            }>
+                                <AddressPicker
+                                    onAddressSelect={handleAddressSelect}
+                                    initialAddress={formData.address}
+                                />
+                            </Suspense>
                         </div>
 
                         {/* Section: Contact */}

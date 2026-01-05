@@ -14,22 +14,22 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
 export const links: Route.LinksFunction = () => [
-    // DNS prefetch for third-party domains
+    // DNS prefetch as a fallback for preconnect
     { rel: "dns-prefetch", href: "https://fonts.googleapis.com" },
     { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
-    { rel: "dns-prefetch", href: "https://www.googleapis.com" },
-    // Preconnect for font loading and external SDKs
+    { rel: "dns-prefetch", href: "https://www.googletagmanager.com" },
+    { rel: "dns-prefetch", href: "https://firebase.googleapis.com" },
+    
+    // Preconnect: fonts need crossOrigin, GTM/Firebase usually don't for standard scripts
     { rel: "preconnect", href: "https://fonts.googleapis.com", crossOrigin: "anonymous" },
-    {
-        rel: "preconnect",
-        href: "https://fonts.gstatic.com",
-        crossOrigin: "anonymous",
-    },
-    { rel: "preconnect", href: "https://www.googletagmanager.com", crossOrigin: "anonymous" },
-    { rel: "preconnect", href: "https://firebase.googleapis.com", crossOrigin: "anonymous" },
+    { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+    { rel: "preconnect", href: "https://www.googletagmanager.com" },
+    { rel: "preconnect", href: "https://firebase.googleapis.com" },
+    
     // Pre-load critical assets like the logo to improve LCP
-    { rel: "preload", as: "image", href: "/logo-mangro.jpg" },
-    // Google Font with display=swap to prevent FOIT and improve FCP
+    { rel: "preload", as: "image", href: "/logo-mangro.jpg", fetchPriority: "high" as any },
+    
+    // Google Font with display=swap
     {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",

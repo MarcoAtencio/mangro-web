@@ -65,6 +65,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                             className="h-8 w-8 object-contain"
                             width={32}
                             height={32}
+                            fetchPriority="high"
                         />
                         <div className="flex flex-col">
                             <span className="font-bold text-sm text-[#0069B4]">MANGRO S.A.C.</span>
@@ -78,6 +79,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                         className="h-8 w-8 object-contain"
                         width={32}
                         height={32}
+                        fetchPriority="high"
                     />
                 )}
                 {!collapsed && (
@@ -175,6 +177,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                             className="h-9 w-9 rounded-full object-cover ring-2 ring-white shadow-sm"
                             width={36}
                             height={36}
+                            loading="lazy"
                         />
                     ) : (
                         <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-white shadow-sm">
@@ -265,6 +268,7 @@ export function MobileSidebar() {
                             src="/logo-mangro.jpg"
                             alt="MANGRO"
                             className="h-8 w-8 object-contain"
+                            fetchPriority="high"
                         />
                         <div className="flex flex-col">
                             <span className="font-bold text-sm text-[#0069B4]">MANGRO S.A.C.</span>
@@ -344,8 +348,11 @@ export function MobileSidebar() {
                         {photoUrl ? (
                             <img
                                 src={photoUrl}
-                                alt={displayName}
+                                alt={`Foto de perfil de ${displayName}`}
                                 className="h-10 w-10 rounded-full object-cover ring-2 ring-white shadow-sm"
+                                width={40}
+                                height={40}
+                                loading="lazy"
                             />
                         ) : (
                             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-white shadow-sm">

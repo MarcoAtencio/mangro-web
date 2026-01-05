@@ -3,9 +3,11 @@ import { useNavigate } from "react-router";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
-import { Building2, MapPin, Phone, Wrench, ChevronRight } from "lucide-react";
+import { Building2, MapPin, Phone, Wrench, ChevronRight, Settings } from "lucide-react";
 import { subscribeToEquipment, type Client, type Equipment } from "~/lib/firestore";
-import { EditClientDialog } from "~/components/clients/edit-client-dialog";
+import React, { Suspense, lazy } from "react";
+
+const EditClientDialog = lazy(() => import("~/components/clients/edit-client-dialog").then(m => ({ default: m.EditClientDialog })));
 
 export function ClientCardMobile({ client }: { client: Client }) {
     const navigate = useNavigate();
@@ -64,14 +66,16 @@ export function ClientCardMobile({ client }: { client: Client }) {
                     </div>
                     
                     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                        <EditClientDialog 
-                            client={client}
-                            trigger={
-                                <Button size="sm" variant="ghost" className="h-8 w-8 p-0 rounded-full hover:bg-slate-100">
-                                    <ChevronRight className="h-4 w-4" />
-                                </Button>
-                            }
-                        />
+                        <Suspense fallback={<Button size="sm" variant="ghost" disabled className="h-8 w-8 p-0 rounded-full text-slate-200"><Settings className="h-4 w-4" /></Button>}>
+                            <EditClientDialog 
+                                client={client}
+                                trigger={
+                                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0 rounded-full hover:bg-slate-100">
+                                        <ChevronRight className="h-4 w-4" />
+                                    </Button>
+                                }
+                            />
+                        </Suspense>
                     </div>
                 </div>
             </CardContent>

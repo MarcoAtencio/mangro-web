@@ -4,7 +4,9 @@ import { Button } from "~/components/ui/button";
 import { TableCell, TableRow } from "~/components/ui/table";
 import { Building2, MapPin, Phone, Settings, ChevronRight } from "lucide-react";
 import { subscribeToEquipment, type Client, type Equipment } from "~/lib/firestore";
-import { EditClientDialog } from "~/components/clients/edit-client-dialog";
+import React, { Suspense, lazy } from "react";
+
+const EditClientDialog = lazy(() => import("~/components/clients/edit-client-dialog").then(m => ({ default: m.EditClientDialog })));
 
 interface ClientRowProps {
     client: Client;
@@ -80,18 +82,20 @@ export function ClientRow({ client, servicesCount = 0 }: ClientRowProps) {
             <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-1">
                     <div onClick={(e) => e.stopPropagation()}>
-                        <EditClientDialog
-                            client={client}
-                            trigger={
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full"
-                                >
-                                    <Settings className="h-4 w-4" />
-                                </Button>
-                            }
-                        />
+                        <Suspense fallback={<Button variant="ghost" size="icon" disabled className="h-8 w-8 text-slate-200"><Settings className="h-4 w-4" /></Button>}>
+                            <EditClientDialog
+                                client={client}
+                                trigger={
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full"
+                                    >
+                                        <Settings className="h-4 w-4" />
+                                    </Button>
+                                }
+                            />
+                        </Suspense>
                     </div>
                     <Button
                         variant="ghost"

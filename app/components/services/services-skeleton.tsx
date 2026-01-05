@@ -38,10 +38,10 @@ export function ServicesSkeleton() {
                     </div>
                 </div>
 
-                {/* Table Section Skeleton */}
-                <div className="flex flex-col -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 py-4 md:py-5 lg:py-6 pb-6 lg:pb-8 bg-slate-100/70 flex-1 -mb-4 md:-mb-6 lg:-mb-8 border-t border-slate-200">
+                {/* Table Section Skeleton - Matching real page classes to prevent CLS */}
+                <div className="flex flex-col -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 py-4 sm:py-5 lg:py-6 pb-6 lg:pb-8 bg-slate-100/70 flex-1 -mb-4 md:-mb-6 lg:-mb-8 border-t border-slate-200">
                     <div className="max-w-[1600px] mx-auto w-full flex-1 flex flex-col">
-                        <div className="bg-white rounded-md border border-slate-200 overflow-hidden flex-1 flex flex-col">
+                        <div className="bg-white rounded-md border border-slate-200 overflow-hidden flex-1 flex flex-col shadow-sm">
                             <div className="bg-slate-50 border-b border-slate-200 p-4">
                                 <div className="grid grid-cols-6 gap-4">
                                     {[1, 2, 3, 4, 5, 6].map((i) => (
