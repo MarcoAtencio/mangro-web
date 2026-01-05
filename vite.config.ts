@@ -15,9 +15,6 @@ export default defineConfig({
                             return 'firebase';
                         }
                         
-                        if (id.includes('lucide') || id.includes('radix') || id.includes('clsx') || id.includes('tailwind')) {
-                            return 'ui-vendor';
-                        }
                         // Dejar todo lo demás en un solo vendor chunk para evitar problemas
                         // de orden de carga con React (useLayoutEffect error)
                         return 'vendor';
