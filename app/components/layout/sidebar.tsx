@@ -268,8 +268,10 @@ export function MobileSidebar() {
                     <div className="flex items-center gap-3">
                         <img
                             src="/logo-mangro.jpg"
-                            alt="MANGRO"
+                            alt="MANGRO - Expertos en climatización"
                             className="h-8 w-8 object-contain"
+                            width={32}
+                            height={32}
                             fetchPriority="high"
                         />
                         <div className="flex flex-col">

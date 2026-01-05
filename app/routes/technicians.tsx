@@ -1,5 +1,5 @@
 import type { MetaFunction } from "react-router";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 
 export const meta: MetaFunction = () => {
     return [
@@ -39,6 +39,7 @@ import {
     Phone,
     Filter,
     ArrowUpDown,
+    Plus,
 } from "lucide-react";
 
 import { useUsers } from "~/hooks/use-users";
@@ -48,8 +49,10 @@ import { type User } from "~/lib/firestore";
 import { StatsCard } from "~/components/ui/stats-card";
 import { RoleBadge } from "~/components/users/role-badge";
 import { PaginationControls } from "~/components/ui/pagination-controls";
-import { NewUserDialog } from "~/components/users/new-user-dialog";
+// import { NewUserDialog } from "~/components/users/new-user-dialog";
+const NewUserDialog = lazy(() => import("~/components/users/new-user-dialog").then(m => ({ default: m.NewUserDialog })));
 import { EditUserDialog } from "~/components/users/edit-user-dialog";
+import { UsersSkeleton } from "~/components/users/users-skeleton";
 
 export default function TechniciansPage() {
     const { users, loading, error } = useUsers();
@@ -106,17 +109,14 @@ export default function TechniciansPage() {
         setPage(1);
     };
 
+    const [showNewUser, setShowNewUser] = useState(false);
+    
     const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
 
     if (loading) {
         return (
             <AdminLayout title="Gestión de Usuarios">
-                <div className="flex items-center justify-center h-[60vh]">
-                    <div className="text-center">
-                        <Spinner className="h-8 w-8 text-primary mx-auto mb-4" />
-                        <p className="text-muted-foreground">Cargando usuarios...</p>
-                    </div>
-                </div>
+                <UsersSkeleton />
             </AdminLayout>
         );
     }
@@ -146,7 +146,17 @@ export default function TechniciansPage() {
         <AdminLayout 
             title="Gestión de Usuarios"
             subtitle="Administre el personal técnico y roles del sistema"
-            headerActions={<NewUserDialog onSuccess={() => {}} />}
+            headerActions={
+                <Button 
+                    variant="default" 
+                    className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95 text-white" 
+                    onClick={() => setShowNewUser(true)}
+                    aria-label="Registrar nuevo usuario"
+                >
+                    <Plus className="h-4 w-4" />
+                    <span className="hidden sm:inline">Nuevo Usuario</span>
+                </Button>
+            }
         >
             <div className="flex flex-col gap-4 sm:gap-6 lg:gap-8 flex-1">
                 {/* Stats */}
@@ -190,6 +200,8 @@ export default function TechniciansPage() {
                     <div className="relative w-full sm:w-64 lg:w-80">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
+                            id="search-users"
+                            aria-label="Buscar usuarios por nombre, email o rol"
                             placeholder="Buscar usuarios por nombre, email o rol..."
                             className="pl-9 h-9 bg-white border-slate-200 focus:border-primary transition-colors shadow-sm w-full"
                             value={search}
@@ -199,11 +211,11 @@ export default function TechniciansPage() {
 
                     {/* Filters - Right side */}
                     <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" className="h-9">
+                        <Button variant="outline" size="sm" className="h-9" aria-label="Abrir filtros">
                             <Filter className="h-4 w-4 mr-2" />
                             Filtros
                         </Button>
-                        <Button variant="outline" size="sm" className="h-9">
+                        <Button variant="outline" size="sm" className="h-9" aria-label="Cambiar orden">
                             <ArrowUpDown className="h-4 w-4 mr-2" />
                             Ordenar
                         </Button>
@@ -239,8 +251,11 @@ export default function TechniciansPage() {
                                                 {user.photoUrl ? (
                                                     <img
                                                         src={user.photoUrl}
-                                                        alt={user.fullName}
+                                                        alt={`Foto de perfil de ${user.fullName}`}
                                                         className="h-10 w-10 rounded-full object-cover"
+                                                        width={40}
+                                                        height={40}
+                                                        loading="lazy"
                                                     />
                                                 ) : (
                                                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -262,7 +277,7 @@ export default function TechniciansPage() {
                                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                                 <Phone className="h-4 w-4" />
                                                 {user.phone || (
-                                                    <span className="text-muted-foreground/50 italic">
+                                                    <span className="text-muted-foreground italic">
                                                         Sin teléfono
                                                     </span>
                                                 )}
@@ -271,7 +286,7 @@ export default function TechniciansPage() {
                                         <TableCell><RoleBadge role={user.role} /></TableCell>
                                         <TableCell className="text-right">
                                             <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
+                                                <DropdownMenuTrigger asChild aria-label={`Acciones para ${user.fullName}`}>
                                                     <Button variant="ghost" size="icon">
                                                         <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
@@ -320,6 +335,11 @@ export default function TechniciansPage() {
                     )}
                 </div>
             </div>
+            {showNewUser && (
+                <Suspense fallback={null}>
+                    <NewUserDialog onSuccess={() => setShowNewUser(false)} />
+                </Suspense>
+            )}
             {editingUser && (
                 <EditUserDialog
                     user={editingUser}

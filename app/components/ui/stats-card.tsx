@@ -29,7 +29,7 @@ export function StatsCard({
     const variants = {
         default: {
             card: "from-white to-slate-50 border-slate-200/60 shadow-sm",
-            textTitle: "text-slate-500 uppercase tracking-wider font-semibold",
+            textTitle: "text-slate-600 uppercase tracking-wider font-semibold",
             textValue: "text-slate-900",
             iconBg: "bg-slate-100 text-slate-500 shadow-inner",
             iconColor: "text-slate-600",

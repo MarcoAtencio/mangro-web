@@ -39,6 +39,7 @@ export function PaginationControls({
                     onClick={() => onPageChange(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
                     className="gap-1 h-8 px-2 sm:px-3"
+                    aria-label="Página anterior"
                 >
                     <ChevronLeft className="h-4 w-4" />
                     <span className="hidden sm:inline">Anterior</span>
@@ -54,6 +55,7 @@ export function PaginationControls({
                     onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
                     className="gap-1 h-8 px-2 sm:px-3"
+                    aria-label="Próxima página"
                 >
                     <span className="hidden sm:inline">Siguiente</span>
                     <ChevronRight className="h-4 w-4" />
