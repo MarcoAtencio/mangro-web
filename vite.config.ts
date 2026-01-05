@@ -10,12 +10,19 @@ export default defineConfig({
             output: {
                 manualChunks(id) {
                     if (id.includes('node_modules')) {
-                        // Solo separamos Firebase porque es gigante y seguro de aislar
+                        // Core React libraries - very stable, separate to cache effectively
+                        if (id.includes('react') || id.includes('react-dom') || id.includes('react-router') || id.includes('remix')) {
+                            return 'react-vendor';
+                        }
+                        // Firebase - huge library, keep isolated
                         if (id.includes('firebase') || id.includes('@firebase')) {
                             return 'firebase';
                         }
-                        // Dejar todo lo demás en un solo vendor chunk para evitar problemas
-                        // de orden de carga con React (useLayoutEffect error)
+                        // Lucide icons - often large if not tree-shaken well, giving it room
+                        if (id.includes('lucide')) {
+                            return 'ui-icons';
+                        }
+                        // Everything else
                         return 'vendor';
                     }
                 }

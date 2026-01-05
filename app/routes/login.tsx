@@ -43,37 +43,37 @@ export default function LoginPage() {
     const displayError = localError || error;
 
     return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-0 sm:p-4 relative overflow-hidden">
             {/* Branded Background Patterns */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#0069B40d_0%,transparent_40%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,#00A39B0d_0%,transparent_40%)]" />
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f080_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f080_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-60" />
 
-            <div className="relative w-full max-w-[400px] animate-in fade-in zoom-in-95 duration-300 will-change-transform">
-                <Card className="relative border-slate-200/60 bg-white/90 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-shadow duration-300">
-                    <CardHeader className="text-center pb-2 pt-8">
+            <div className="relative w-full h-full sm:h-auto sm:max-w-[400px] animate-in fade-in zoom-in-95 duration-300 will-change-transform">
+                <Card className="relative border-0 sm:border sm:border-slate-200/60 bg-white/90 backdrop-blur-xl shadow-none sm:shadow-xl hover:shadow-none sm:hover:shadow-2xl transition-shadow duration-300 min-h-screen sm:min-h-0 rounded-none sm:rounded-xl flex flex-col justify-center">
+                    <CardHeader className="text-center pb-2 pt-6 sm:pt-8">
                         {/* Logo */}
                         <div className="flex justify-center mb-6">
-                            <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-100 ring-1 ring-slate-50">
+                            <div className="p-3 bg-white rounded-2xl shadow-sm border border-slate-100 ring-1 ring-slate-50">
                                 <img
                                     src="/logo-mangro.jpg"
                                     alt="MANGRO"
-                                    width="40"
-                                    height="40"
-                                    className="h-10 w-auto object-contain"
+                                    width="48"
+                                    height="48"
+                                    className="h-12 w-auto object-contain"
                                     decoding="async"
                                     fetchPriority="high"
                                 />
                             </div>
                         </div>
-                        <CardTitle className="text-xl font-bold text-primary tracking-tight">
+                        <CardTitle className="text-2xl font-bold text-primary tracking-tight">
                             Panel de Administración
                         </CardTitle>
                         <CardDescription className="text-slate-500 text-sm mt-1">
                             Ingresa tus credenciales para continuar
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="pb-8 px-8">
+                    <CardContent className="pb-6 px-6 sm:pb-8 sm:px-8">
                         <form onSubmit={handleSubmit} className="space-y-5">
                             {/* Error message */}
                             {displayError && (
@@ -91,7 +91,7 @@ export default function LoginPage() {
                                     Email Corporativo
                                 </Label>
                                 <div className="relative group">
-                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                                     <Input
                                         id="email"
                                         type="email"
@@ -99,7 +99,7 @@ export default function LoginPage() {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
-                                        className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-primary focus:ring-primary/20 transition-all duration-200 h-11"
+                                        className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-primary focus:ring-primary/20 transition-all duration-200 h-12 text-base"
                                     />
                                 </div>
                             </div>
@@ -114,7 +114,7 @@ export default function LoginPage() {
                                     </Label>
                                 </div>
                                 <div className="relative group">
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                                     <Input
                                         id="password"
                                         type={showPassword ? "text" : "password"}
@@ -122,18 +122,18 @@ export default function LoginPage() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        className="pl-10 pr-10 bg-slate-50/50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-primary focus:ring-primary/20 transition-all duration-200 h-11"
+                                        className="pl-10 pr-10 bg-slate-50/50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-primary focus:ring-primary/20 transition-all duration-200 h-12 text-base"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-md hover:bg-slate-100"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-2 rounded-md hover:bg-slate-100"
                                         aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                                     >
                                         {showPassword ? (
-                                            <EyeOff className="h-4 w-4" />
+                                            <EyeOff className="h-5 w-5" />
                                         ) : (
-                                            <Eye className="h-4 w-4" />
+                                            <Eye className="h-5 w-5" />
                                         )}
                                     </button>
                                 </div>
@@ -144,7 +144,7 @@ export default function LoginPage() {
                                             // Handle forgot password logic or just notification
                                             alert("Por favor, contacte al administrador para restablecer su contraseña.");
                                         }}
-                                        className="text-xs text-primary/80 hover:text-primary font-medium transition-colors hover:underline underline-offset-4"
+                                        className="text-xs text-primary/80 hover:text-primary font-medium transition-colors hover:underline underline-offset-4 py-1"
                                     >
                                         ¿Olvidaste tu contraseña?
                                     </button>
@@ -154,16 +154,16 @@ export default function LoginPage() {
                             <Button
                                 type="submit"
                                 disabled={isSubmitting || loading}
-                                className="w-full bg-primary hover:bg-primary/90 text-white font-medium h-11 mt-6 shadow-lg shadow-primary/20 transition-all duration-200 active:scale-[0.98] rounded-lg"
+                                className="w-full bg-primary hover:bg-primary/90 text-white font-medium h-12 mt-6 shadow-lg shadow-primary/20 transition-all duration-200 active:scale-[0.98] rounded-xl text-base"
                             >
                                 {isSubmitting ? (
                                     <>
-                                        <Spinner className="mr-2 h-4 w-4" />
+                                        <Spinner className="mr-2 h-5 w-5" />
                                         Iniciando...
                                     </>
                                 ) : (
                                     <>
-                                        <LogIn className="mr-2 h-4 w-4" />
+                                        <LogIn className="mr-2 h-5 w-5" />
                                         Iniciar Sesión
                                     </>
                                 )}

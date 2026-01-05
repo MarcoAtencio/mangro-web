@@ -74,15 +74,7 @@ export function NewClientDialog({ open: externalOpen, onOpenChange: externalOnOp
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button 
-                    className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95"
-                    aria-label="Registrar un nuevo cliente en el sistema"
-                >
-                    <Plus className="h-4 w-4" />
-                    Nuevo Cliente
-                </Button>
-            </DialogTrigger>
+
             <DialogContent className="sm:max-w-[500px] max-h-[85vh] overflow-y-auto">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>

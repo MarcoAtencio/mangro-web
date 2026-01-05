@@ -26,15 +26,15 @@ export function AdminLayout({
 
     return (
         <div className="flex min-h-screen bg-slate-50/50">
-            {/* Desktop Sidebar - visible only on lg and up (iPad Landscape/Laptop) */}
-            <div className="hidden lg:block">
+            {/* Desktop Sidebar - visible only on xl and up (Desktop) */}
+            <div className="hidden xl:block">
                 <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
             </div>
 
             <main
                 className={cn(
                     "flex-1 flex flex-col transition-all duration-300 min-h-screen",
-                    collapsed ? "lg:ml-16" : "lg:ml-64"
+                    collapsed ? "xl:ml-16" : "xl:ml-64"
                 )}
             >
                 {/* Header */}

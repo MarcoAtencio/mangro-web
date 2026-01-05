@@ -13,6 +13,14 @@ import {
 } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 import { useState } from "react";
 import { useAuth } from "~/lib/auth";
 import { useUserDisplay } from "~/hooks/use-user-display";
@@ -52,47 +60,42 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                 collapsed ? "w-16" : "w-64"
             )}
         >
+            {/* Floating Toggle Button */}
+            {onToggle && (
+                <Button
+                    onClick={onToggle}
+                    className="absolute -right-3 top-[20px] z-50 h-7 w-7 rounded-full border border-slate-200 bg-white p-0 shadow-md hover:bg-slate-50 hover:text-slate-900 text-slate-500 transition-all duration-200 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0"
+                    variant="ghost"
+                    size="icon"
+                    title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                    aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                >
+                    <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
+                </Button>
+            )}
+
             {/* Logo Section */}
             <div className={cn(
-                "flex items-center h-16 border-b border-slate-100",
-                collapsed ? "justify-center px-2" : "justify-between px-4"
+                "flex items-center h-16 border-b border-slate-100 overflow-hidden",
+                collapsed ? "justify-center px-2" : "px-4"
             )}>
-                {!collapsed ? (
-                    <div className="flex items-center gap-3">
-                        <img
-                            src="/logo-mangro.jpg"
-                            alt="MANGRO - Expertos en climatización"
-                            className="h-8 w-8 object-contain"
-                            width={32}
-                            height={32}
-                            fetchPriority="high"
-                        />
-                        <div className="flex flex-col">
-                            <span className="font-bold text-sm text-[#0069B4]">MANGRO S.A.C.</span>
-                            <span className="text-[11px] text-slate-500">Admin Panel</span>
-                        </div>
-                    </div>
-                ) : (
+                <div className="flex items-center gap-3 whitespace-nowrap">
                     <img
                         src="/logo-mangro.jpg"
                         alt="MANGRO"
-                        className="h-8 w-8 object-contain"
+                        className="h-8 w-8 object-contain shrink-0"
                         width={32}
                         height={32}
                         fetchPriority="high"
                     />
-                )}
-                {!collapsed && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={onToggle}
-                        className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
-                        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-                    >
-                        <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
-                    </Button>
-                )}
+                    <div className={cn(
+                        "flex flex-col transition-all duration-300",
+                        collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
+                    )}>
+                        <span className="font-bold text-sm text-[#0069B4]">MANGRO S.A.C.</span>
+                        <span className="text-[11px] text-slate-500">Admin Panel</span>
+                    </div>
+                </div>
             </div>
 
             {/* Main Navigation */}
@@ -112,6 +115,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                                     collapsed && "justify-center px-2"
                                 )
                             }
+                            title={collapsed ? item.name : undefined}
                         >
                             <item.icon className={cn(
                                 "h-5 w-5 flex-shrink-0 transition-all duration-300",
@@ -154,6 +158,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                                         collapsed && "justify-center px-2"
                                     )
                                 }
+                                title={collapsed ? item.name : undefined}
                             >
                                 <item.icon className={cn(
                                     "h-5 w-5 flex-shrink-0 transition-all duration-300",
@@ -167,34 +172,62 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
             </nav>
 
             {/* User Profile Section */}
-            <div className="p-3 border-t border-slate-100">
-                <div className={cn(
-                    "flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-all cursor-pointer",
-                    collapsed && "justify-center p-2"
-                )} title={displayName}>
-                    {photoUrl ? (
-                        <img
-                            src={photoUrl}
-                            alt={`Foto de perfil de ${displayName}`}
-                            className="h-9 w-9 rounded-full object-cover ring-2 ring-white shadow-sm"
-                            width={36}
-                            height={36}
-                            loading="lazy"
-                        />
-                    ) : (
-                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-white shadow-sm" aria-label={initials}>
-                            <span className="text-xs font-bold text-white">{initials}</span>
-                        </div>
-                    )}
-                    {!collapsed && (
+            <div className={cn("border-t border-slate-100 transition-all duration-300", collapsed ? "p-3" : "p-4")}>
+                {collapsed ? (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button 
+                                variant="ghost" 
+                                className="h-10 w-full p-0 rounded-xl hover:bg-slate-100 transition-colors flex items-center justify-center"
+                                title="Perfil y opciones"
+                            >
+                                {photoUrl ? (
+                                    <img
+                                        src={photoUrl}
+                                        alt={displayName}
+                                        className="h-8 w-8 rounded-full object-cover ring-2 ring-white shadow-sm"
+                                    />
+                                ) : (
+                                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-white shadow-sm">
+                                        <span className="text-xs font-bold text-white">{initials}</span>
+                                    </div>
+                                )}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="right" className="w-56" align="end" sideOffset={10}>
+                            <DropdownMenuLabel className="font-normal">
+                                <div className="flex flex-col space-y-1">
+                                    <p className="text-sm font-medium leading-none">{displayName}</p>
+                                    <p className="text-xs leading-none text-muted-foreground">{displayEmail}</p>
+                                </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleSignOut} className="text-red-600 cursor-pointer">
+                                <LogOut className="mr-2 h-4 w-4" />
+                                <span>Cerrar sesión</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                ) : (
+                    <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-50/50 border border-slate-100 shadow-sm">
+                        {photoUrl ? (
+                            <img
+                                src={photoUrl}
+                                alt={`Foto de perfil de ${displayName}`}
+                                className="h-9 w-9 rounded-full object-cover ring-2 ring-white shadow-sm"
+                                loading="lazy"
+                            />
+                        ) : (
+                            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-white shadow-sm">
+                                <span className="text-xs font-bold text-white">{initials}</span>
+                            </div>
+                        )}
                         <div className="flex flex-col min-w-0 flex-1">
                             <span className="text-sm font-semibold truncate text-slate-800">{displayName}</span>
                             <span className="text-[11px] text-slate-500 truncate">
                                 {roleName || displayEmail}
                             </span>
                         </div>
-                    )}
-                    {!collapsed && (
                         <Button
                             variant="ghost"
                             size="icon"
@@ -204,18 +237,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                         >
                             <LogOut className="h-4 w-4" />
                         </Button>
-                    )}
-                </div>
-                {collapsed && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleSignOut}
-                        className="w-full mt-2 h-9 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                        title="Cerrar sesión"
-                    >
-                        <LogOut className="h-4 w-4" />
-                    </Button>
+                    </div>
                 )}
             </div>
         </aside>
@@ -259,7 +281,7 @@ export function MobileSidebar() {
             {/* Mobile sidebar */}
             <aside
                 className={cn(
-                    "fixed inset-y-0 left-0 z-50 w-72 bg-white transition-transform duration-300 xl:hidden shadow-2xl",
+                    "fixed inset-y-0 left-0 z-50 w-72 bg-white transition-transform duration-300 xl:hidden shadow-2xl flex flex-col",
                     open ? "translate-x-0" : "-translate-x-full"
                 )}
             >
@@ -276,7 +298,7 @@ export function MobileSidebar() {
                         />
                         <div className="flex flex-col">
                             <span className="font-bold text-sm text-[#0069B4]">MANGRO S.A.C.</span>
-                            <span className="text-[11px] text-slate-600">Admin Panel</span>
+                            <span className="text-[11px] text-slate-500">Admin Panel</span>
                         </div>
                     </div>
                     <Button
@@ -347,20 +369,20 @@ export function MobileSidebar() {
                 </nav>
 
                 {/* User Profile */}
-                <div className="p-4 border-t border-slate-100">
+                <div className="p-3 border-t border-slate-100 mt-auto">
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-50/50 border border-slate-100">
                         {photoUrl ? (
                             <img
                                 src={photoUrl}
                                 alt={`Foto de perfil de ${displayName}`}
-                                className="h-10 w-10 rounded-full object-cover ring-2 ring-white shadow-sm"
-                                width={40}
-                                height={40}
+                                className="h-9 w-9 rounded-full object-cover ring-2 ring-white shadow-sm"
+                                width={36}
+                                height={36}
                                 loading="lazy"
                             />
                         ) : (
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-white shadow-sm">
-                                <span className="text-sm font-bold text-white">{initials}</span>
+                            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-white shadow-sm">
+                                <span className="text-xs font-bold text-white">{initials}</span>
                             </div>
                         )}
                         <div className="flex flex-col min-w-0 flex-1">
@@ -373,7 +395,7 @@ export function MobileSidebar() {
                             variant="ghost"
                             size="icon"
                             onClick={handleSignOut}
-                            className="h-9 w-9 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg shrink-0 transition-all"
+                            className="h-8 w-8 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg shrink-0 transition-all"
                             title="Cerrar sesión"
                         >
                             <LogOut className="h-4 w-4" />
