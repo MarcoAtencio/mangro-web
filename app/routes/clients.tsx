@@ -1,5 +1,5 @@
 import { useLoaderData, type MetaFunction } from "react-router";
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense, useMemo } from "react";
 
 export const meta: MetaFunction = () => {
     return [
@@ -12,6 +12,10 @@ import { getClientsList } from "~/lib/firestore";
 export async function clientLoader() {
     const clients = await getClientsList();
     return { initialClients: clients };
+}
+
+export function HydrateFallback() {
+    return <ClientsSkeleton />;
 }
 
 import { Plus } from "lucide-react";
@@ -134,26 +138,28 @@ export default function ClientsPage() {
     }, [clients]);
 
     // Filtering logic
-    const filteredClients = clients.filter((client) => {
-        // Search filter
-        const matchesSearch =
-            client.name.toLowerCase().includes(search.toLowerCase()) ||
-            (client.ruc && client.ruc.includes(search));
+    const filteredClients = useMemo(() => {
+        return clients.filter((client) => {
+            // Search filter
+            const matchesSearch =
+                client.name.toLowerCase().includes(search.toLowerCase()) ||
+                (client.ruc && client.ruc.includes(search));
 
-        // Stats card filter
-        const clientEquipment = equipmentByClient[client.id] || [];
-        let matchesStatsFilter = true;
+            // Stats card filter
+            const clientEquipment = equipmentByClient[client.id] || [];
+            let matchesStatsFilter = true;
 
-        if (statsFilter === "withEquipment") {
-            matchesStatsFilter = clientEquipment.length > 0;
-        } else if (statsFilter === "inMaintenance") {
-            matchesStatsFilter = clientEquipment.some((e) => e.status === "maintenance");
-        } else if (statsFilter === "withServices") {
-            matchesStatsFilter = (servicesByClient[client.id] || 0) > 0;
-        }
+            if (statsFilter === "withEquipment") {
+                matchesStatsFilter = clientEquipment.length > 0;
+            } else if (statsFilter === "inMaintenance") {
+                matchesStatsFilter = clientEquipment.some((e) => e.status === "maintenance");
+            } else if (statsFilter === "withServices") {
+                matchesStatsFilter = (servicesByClient[client.id] || 0) > 0;
+            }
 
-        return matchesSearch && matchesStatsFilter;
-    });
+            return matchesSearch && matchesStatsFilter;
+        });
+    }, [clients, search, statsFilter, equipmentByClient, servicesByClient]);
 
     // Pagination
     const {
@@ -182,7 +188,9 @@ export default function ClientsPage() {
     };
 
 
-    const paginatedClients = filteredClients.slice(startIndex, endIndex);
+    const paginatedClients = useMemo(() => {
+        return filteredClients.slice(startIndex, endIndex);
+    }, [filteredClients, startIndex, endIndex]);
 
     return (
         <AdminLayout 
@@ -304,6 +312,9 @@ export default function ClientsPage() {
                                         servicesCount={
                                             servicesByClient[client.id] || 0
                                         }
+                                        equipmentCount={
+                                            (equipmentByClient[client.id] || []).length
+                                        }
                                     />
                                 ))}
                                 {paginatedClients.length === 0 && (
@@ -346,7 +357,11 @@ export default function ClientsPage() {
 
                     {paginatedClients.length > 0 ? (
                         paginatedClients.map((client) => (
-                            <ClientCardMobile key={client.id} client={client} />
+                            <ClientCardMobile 
+                                key={client.id} 
+                                client={client} 
+                                equipmentCount={(equipmentByClient[client.id] || []).length}
+                            />
                         ))
                     ) : (
                         <div className="text-center py-8 bg-slate-50 rounded-lg border border-dashed">

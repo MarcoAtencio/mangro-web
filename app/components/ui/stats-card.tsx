@@ -29,7 +29,7 @@ export function StatsCard({
     const variants = {
         default: {
             card: "from-white to-slate-50 border-slate-200/60 shadow-sm",
-            textTitle: "text-slate-600 uppercase tracking-wider font-semibold",
+            textTitle: "text-slate-700 uppercase tracking-wider font-bold",
             textValue: "text-slate-900",
             iconBg: "bg-slate-100 text-slate-500 shadow-inner",
             iconColor: "text-slate-600",
@@ -64,10 +64,10 @@ export function StatsCard({
         },
         secondary: {
              card: "from-white to-slate-100/50 border-slate-200 shadow-sm",
-             textTitle: "text-slate-500 uppercase tracking-wider font-semibold",
+             textTitle: "text-slate-600 uppercase tracking-wider font-bold",
              textValue: "text-slate-900",
-             iconBg: "bg-slate-200/50 text-slate-600 shadow-inner",
-             iconColor: "text-slate-600",
+             iconBg: "bg-slate-200/50 text-slate-700 shadow-inner",
+             iconColor: "text-slate-700",
         }
     };
 
@@ -79,11 +79,21 @@ export function StatsCard({
                 "relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group",
                 "bg-gradient-to-br border",
                 styles.card,
-                onClick && "cursor-pointer",
+                onClick && "cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 outline-none",
                 active && "ring-2 ring-primary ring-offset-2",
                 className
             )}
             onClick={onClick}
+            role={onClick ? "button" : undefined}
+            tabIndex={onClick ? 0 : undefined}
+            aria-pressed={active}
+            aria-label={onClick ? `Filtrar por ${title}: ${value}` : undefined}
+            onKeyDown={(e) => {
+                if (onClick && (e.key === "Enter" || e.key === " ")) {
+                    e.preventDefault();
+                    onClick();
+                }
+            }}
         >
             {/* Subtle background decoration */}
             <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-current opacity-[0.03] blur-2xl group-hover:scale-150 transition-transform duration-500" />

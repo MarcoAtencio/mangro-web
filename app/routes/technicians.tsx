@@ -7,6 +7,19 @@ export const meta: MetaFunction = () => {
         { name: "description", content: "Administre el personal técnico, roles y permisos del sistema MANGRO S.A.C." },
     ];
 };
+
+import { getUsers, subscribeToUsers } from "~/lib/firestore";
+import { useEffect, useMemo } from "react";
+import { useLoaderData } from "react-router";
+
+export async function clientLoader() {
+    const users = await getUsers();
+    return { initialUsers: users };
+}
+
+export function HydrateFallback() {
+    return <UsersSkeleton />;
+}
 import { AdminLayout } from "~/components/layout/admin-layout";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
@@ -55,9 +68,15 @@ import { EditUserDialog } from "~/components/users/edit-user-dialog";
 import { UsersSkeleton } from "~/components/users/users-skeleton";
 
 export default function TechniciansPage() {
-    const { users, loading, error } = useUsers();
+    const { initialUsers } = useLoaderData() as { initialUsers: User[] };
+    const [users, setUsers] = useState<User[]>(initialUsers);
     
-    // Local state
+    useEffect(() => {
+        const unsubscribe = subscribeToUsers((data) => {
+            setUsers(data);
+        });
+        return () => unsubscribe();
+    }, []);
     const [search, setSearch] = useState("");
     const [filterRole, setFilterRole] = useState<string>("all");
     const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -66,21 +85,23 @@ export default function TechniciansPage() {
     // Note: Assuming "TECHNICIAN" is the standard role now. If legacy "TECNICO" exists, filtered logic might need adjustment or data migration.
     // For now, we filter by both if needed or stick to new convention. 
     // In firestore.ts we enforced "TECHNICIAN".
-    const technicians = users.filter((u) => u.role === "TECHNICIAN" || u.role === "TECNICO" as any);
-    const admins = users.filter((u) => u.role === "ADMIN");
-    const supervisors = users.filter((u) => u.role === "SUPERVISOR");
+    const technicians = useMemo(() => users.filter((u) => u.role === "TECHNICIAN" || u.role === "TECNICO" as any), [users]);
+    const admins = useMemo(() => users.filter((u) => u.role === "ADMIN"), [users]);
+    const supervisors = useMemo(() => users.filter((u) => u.role === "SUPERVISOR"), [users]);
 
     // Filtering
-    const filteredUsers = users.filter((user) => {
-        const matchesSearch =
-            user.fullName?.toLowerCase().includes(search.toLowerCase()) ||
-            user.email?.toLowerCase().includes(search.toLowerCase()) ||
-            user.role?.toLowerCase().includes(search.toLowerCase());
+    const filteredUsers = useMemo(() => {
+        return users.filter((user) => {
+            const matchesSearch =
+                user.fullName?.toLowerCase().includes(search.toLowerCase()) ||
+                user.email?.toLowerCase().includes(search.toLowerCase()) ||
+                user.role?.toLowerCase().includes(search.toLowerCase());
 
-        const matchesRole = filterRole === "all" || user.role === filterRole || (filterRole === "TECHNICIAN" && user.role === "TECNICO" as any);
+            const matchesRole = filterRole === "all" || user.role === filterRole || (filterRole === "TECHNICIAN" && user.role === "TECNICO" as any);
 
-        return matchesSearch && matchesRole;
-    });
+            return matchesSearch && matchesRole;
+        });
+    }, [users, search, filterRole]);
 
     // Pagination
     const {
@@ -111,36 +132,9 @@ export default function TechniciansPage() {
 
     const [showNewUser, setShowNewUser] = useState(false);
     
-    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
-
-    if (loading) {
-        return (
-            <AdminLayout title="Gestión de Usuarios">
-                <UsersSkeleton />
-            </AdminLayout>
-        );
-    }
-
-    if (error) {
-        return (
-            <AdminLayout title="Gestión de Usuarios">
-                <div className="flex items-center justify-center h-[60vh]">
-                    <Card className="max-w-md">
-                        <CardContent className="pt-6 text-center">
-                            <div className="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-                                <Shield className="h-6 w-6 text-amber-600" />
-                            </div>
-                            <h3 className="font-semibold text-lg mb-2">Acceso Restringido</h3>
-                            <p className="text-muted-foreground text-sm mb-4">{error}</p>
-                            <Button variant="outline" onClick={() => window.location.reload()}>
-                                Reintentar
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </div>
-            </AdminLayout>
-        );
-    }
+    const paginatedUsers = useMemo(() => {
+        return filteredUsers.slice(startIndex, endIndex);
+    }, [filteredUsers, startIndex, endIndex]);
 
     return (
         <AdminLayout 

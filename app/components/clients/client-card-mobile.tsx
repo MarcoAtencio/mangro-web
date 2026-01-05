@@ -9,16 +9,8 @@ import React, { Suspense, lazy } from "react";
 
 const EditClientDialog = lazy(() => import("~/components/clients/edit-client-dialog").then(m => ({ default: m.EditClientDialog })));
 
-export function ClientCardMobile({ client }: { client: Client }) {
+export function ClientCardMobile({ client, equipmentCount = 0 }: { client: Client, equipmentCount?: number }) {
     const navigate = useNavigate();
-    const [equipment, setEquipment] = useState<Equipment[]>([]);
-
-    useEffect(() => {
-        const unsubscribe = subscribeToEquipment(client.id, (data) => {
-            setEquipment(data);
-        });
-        return () => unsubscribe();
-    }, [client.id]);
 
     const [showEditDialog, setShowEditDialog] = useState(false);
 
@@ -26,6 +18,14 @@ export function ClientCardMobile({ client }: { client: Client }) {
         <Card 
             className="mb-4 shadow-sm border-slate-200/60 overflow-hidden hover:shadow-md transition-all duration-300 group active:scale-[0.98]"
             onClick={() => navigate(`/clients/${client.id}`)}
+            role="button"
+            tabIndex={0}
+            aria-label={`Ver detalles del cliente ${client.name}`}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    navigate(`/clients/${client.id}`);
+                }
+            }}
         >
             <CardContent className="p-5">
                 <div className="flex items-start justify-between">
@@ -63,7 +63,7 @@ export function ClientCardMobile({ client }: { client: Client }) {
                     <div className="flex gap-2">
                         <Badge variant="secondary" className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border-emerald-100/50 gap-1.5 text-[10px] font-bold uppercase tracking-wider">
                             <Wrench className="h-3 w-3" />
-                            {equipment.length} Equipment
+                            {equipmentCount} Equipment
                         </Badge>
                     </div>
                     
@@ -73,6 +73,7 @@ export function ClientCardMobile({ client }: { client: Client }) {
                             variant="ghost"
                             className="h-8 w-8 p-0 rounded-full hover:bg-slate-100"
                             onClick={() => setShowEditDialog(true)}
+                            aria-label={`Editar cliente ${client.name}`}
                         >
                             <ChevronRight className="h-4 w-4" />
                         </Button>

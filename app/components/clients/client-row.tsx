@@ -11,18 +11,11 @@ const EditClientDialog = lazy(() => import("~/components/clients/edit-client-dia
 interface ClientRowProps {
     client: Client;
     servicesCount?: number;
+    equipmentCount?: number;
 }
 
-export function ClientRow({ client, servicesCount = 0 }: ClientRowProps) {
+export function ClientRow({ client, servicesCount = 0, equipmentCount = 0 }: ClientRowProps) {
     const navigate = useNavigate();
-    const [equipment, setEquipment] = useState<Equipment[]>([]);
-
-    useEffect(() => {
-        const unsubscribe = subscribeToEquipment(client.id, (data) => {
-            setEquipment(data);
-        });
-        return () => unsubscribe();
-    }, [client.id]);
 
     const [showEditDialog, setShowEditDialog] = useState(false);
 
@@ -67,7 +60,7 @@ export function ClientRow({ client, servicesCount = 0 }: ClientRowProps) {
             </TableCell>
             <TableCell className="hidden lg:table-cell text-center">
                 <div className="inline-flex flex-col items-center">
-                    <span className="text-lg font-semibold text-slate-700">{equipment.length}</span>
+                    <span className="text-lg font-semibold text-slate-700">{equipmentCount}</span>
                     <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
                         Equipment
                     </span>
@@ -109,6 +102,7 @@ export function ClientRow({ client, servicesCount = 0 }: ClientRowProps) {
                         size="icon"
                         className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full"
                         aria-label={`Ver detalles de ${client.name}`}
+                        onClick={() => navigate(`/clients/${client.id}`)}
                     >
                         <ChevronRight className="h-4 w-4" />
                     </Button>

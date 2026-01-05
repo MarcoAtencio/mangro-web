@@ -28,10 +28,13 @@ export const links: Route.LinksFunction = () => [
     // Firestore is usually needed shortly after, but not at the very top
     { rel: "preconnect", href: "https://firestore.googleapis.com" },
 
-    // Pre-load critical assets like the logo to improve LCP
+    // Pre-load critical assets like the logo and fonts to improve LCP
     { rel: "preload", as: "image", href: "/logo-mangro.jpg", fetchPriority: "high" as any },
     
-    // Google Font with display=swap
+    // Google Font with display=swap and preloading the specific font files if possible
+    // Since we don't know the exact file names for Inter from Google Fonts (they change), 
+    // we use preconnect and dns-prefetch. 
+    { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
     {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
