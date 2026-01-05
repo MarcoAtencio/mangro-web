@@ -21,11 +21,24 @@ const AddressPicker = lazy(() => import("~/components/ui/address-picker").then(m
 export function EditClientDialog({
     client,
     trigger,
+    open: externalOpen,
+    onOpenChange: externalOnOpenChange,
 }: {
     client: Client;
     trigger?: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }) {
-    const [open, setOpen] = useState(false);
+    const [internalOpen, setInternalOpen] = useState(false);
+    
+    const open = externalOpen ?? internalOpen;
+    const setOpen = (val: boolean) => {
+        if (externalOnOpenChange) {
+            externalOnOpenChange(val);
+        } else {
+            setInternalOpen(val);
+        }
+    };
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",

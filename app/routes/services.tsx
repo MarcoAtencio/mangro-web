@@ -1,5 +1,5 @@
 import type { MetaFunction } from "react-router";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 
 export const meta: MetaFunction = () => {
     return [
@@ -27,6 +27,7 @@ import {
     Loader2,
     Filter,
     X,
+    Plus,
 } from "lucide-react";
 
 import { useServices } from "~/hooks/use-services";
@@ -35,9 +36,10 @@ import { useClients } from "~/hooks/use-clients";
 import { usePagination } from "~/hooks/use-pagination";
 import type { Task } from "~/lib/services";
 
-import { NewServiceDialog } from "~/components/services/new-service-dialog";
-import { ServiceDetailDialog } from "~/components/services/service-detail-dialog";
-// New Component
+// Lazy loading dialogs to reduce initial bundle size
+const NewServiceDialog = lazy(() => import("~/components/services/new-service-dialog").then(m => ({ default: m.NewServiceDialog })));
+const ServiceDetailDialog = lazy(() => import("~/components/services/service-detail-dialog").then(m => ({ default: m.ServiceDetailDialog })));
+
 import { ServicesTable } from "~/components/services/services-table";
 import { StatsCard } from "~/components/ui/stats-card";
 import { PaginationControls } from "~/components/ui/pagination-controls";
@@ -53,6 +55,7 @@ export default function ServicesPage() {
     const technicians = allUsers.filter((u) => u.role === "TECHNICIAN" || u.role === "TECNICO" as any);
     
     // UI State
+    const [showNewServiceDialog, setShowNewServiceDialog] = useState(false);
     const [selectedService, setSelectedService] = useState<Task | null>(null);
     const [detailOpen, setDetailOpen] = useState(false);
 
@@ -141,7 +144,27 @@ export default function ServicesPage() {
         <AdminLayout 
             title="Gestión de Servicios"
             subtitle="Gestione y programe servicios de mantenimiento técnico"
-            headerActions={<NewServiceDialog technicians={technicians} clients={clients} />}
+            headerActions={
+                <div className="flex items-center gap-2">
+                    <Button 
+                        onClick={() => setShowNewServiceDialog(true)}
+                        className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Nuevo Servicio
+                    </Button>
+                    {showNewServiceDialog && (
+                        <Suspense fallback={null}>
+                            <NewServiceDialog 
+                                technicians={technicians} 
+                                clients={clients} 
+                                open={true}
+                                onOpenChange={setShowNewServiceDialog}
+                            />
+                        </Suspense>
+                    )}
+                </div>
+            }
         >
             <div className="flex flex-col gap-4 sm:gap-6 lg:gap-8 flex-1">
                 {/* Stats Cards */}
@@ -333,12 +356,16 @@ export default function ServicesPage() {
                 </div>
             </div>
 
-            <ServiceDetailDialog
-                service={selectedService}
-                technician={technicians.find((t) => t.id === selectedService?.technicianId)}
-                open={detailOpen}
-                onOpenChange={setDetailOpen}
-            />
+            {detailOpen && (
+                <Suspense fallback={null}>
+                    <ServiceDetailDialog
+                        service={selectedService}
+                        technician={technicians.find((t) => t.id === selectedService?.technicianId)}
+                        open={detailOpen}
+                        onOpenChange={setDetailOpen}
+                    />
+                </Suspense>
+            )}
         </AdminLayout>
     );
 }

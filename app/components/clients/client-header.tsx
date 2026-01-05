@@ -1,7 +1,7 @@
+import { useState, Suspense, lazy } from "react";
 import { Building2, MapPin, Settings } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import type { Client } from "~/lib/firestore";
-import React, { Suspense, lazy } from "react";
 
 const EditClientDialog = lazy(() => import("~/components/clients/edit-client-dialog").then(m => ({ default: m.EditClientDialog })));
 
@@ -15,6 +15,7 @@ interface ClientHeaderProps {
  * and a configuration button to edit the client.
  */
 export function ClientHeader({ client }: ClientHeaderProps) {
+    const [showEditDialog, setShowEditDialog] = useState(false);
     return (
         <div className="flex items-start justify-between">
             <div className="flex items-start gap-5">
@@ -49,29 +50,24 @@ export function ClientHeader({ client }: ClientHeaderProps) {
                 </div>
             </div>
 
-            <Suspense fallback={
-                <Button
-                    variant="outline"
-                    disabled
-                    className="text-sm font-semibold text-slate-200 bg-white border-slate-100 shadow-sm h-9 px-3.5"
-                >
-                    <Settings className="mr-2 h-4 w-4" />
-                    Cargando...
-                </Button>
-            }>
-                <EditClientDialog
-                    client={client}
-                    trigger={
-                        <Button
-                            variant="outline"
-                            className="text-sm font-semibold text-slate-600 bg-white border-slate-200 shadow-sm hover:bg-slate-50 hover:text-slate-800 h-9 px-3.5"
-                        >
-                            <Settings className="mr-2 h-4 w-4" />
-                            Configuración
-                        </Button>
-                    }
-                />
-            </Suspense>
+            <Button
+                variant="outline"
+                className="text-sm font-semibold text-slate-600 bg-white border-slate-200 shadow-sm hover:bg-slate-50 hover:text-slate-800 h-9 px-3.5"
+                onClick={() => setShowEditDialog(true)}
+            >
+                <Settings className="mr-2 h-4 w-4" />
+                Configuración
+            </Button>
+
+            {showEditDialog && (
+                <Suspense fallback={null}>
+                    <EditClientDialog
+                        client={client}
+                        open={true}
+                        onOpenChange={setShowEditDialog}
+                    />
+                </Suspense>
+            )}
         </div>
     );
 }

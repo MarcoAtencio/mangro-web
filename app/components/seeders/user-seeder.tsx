@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { createUser, type User } from "~/lib/firestore";
 import { Loader2, Users } from "lucide-react";
+import { registerUser } from "~/lib/auth-admin";
 import { useAuth } from "~/lib/auth";
 
 const MOCK_USERS = [
@@ -16,7 +17,6 @@ const MOCK_USERS = [
 const DEFAULT_PASSWORD = "mangro-password-123";
 
 export function UserSeeder() {
-    const { registerUser } = useAuth();
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState("");
 

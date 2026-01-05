@@ -27,10 +27,28 @@ interface NewServiceDialogProps {
     technicians: User[];
     clients: Client[];
     onSuccess?: () => void;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
-export function NewServiceDialog({ technicians, clients, onSuccess }: NewServiceDialogProps) {
-    const [open, setOpen] = useState(false);
+export function NewServiceDialog({ 
+    technicians, 
+    clients, 
+    onSuccess,
+    open: externalOpen,
+    onOpenChange: externalOnOpenChange,
+}: NewServiceDialogProps) {
+    const [internalOpen, setInternalOpen] = useState(false);
+    
+    const open = externalOpen ?? internalOpen;
+    const setOpen = (val: boolean) => {
+        if (externalOnOpenChange) {
+            externalOnOpenChange(val);
+        } else {
+            setInternalOpen(val);
+        }
+    };
+    
     const [loading, setLoading] = useState(false);
     const [clientEquipment, setClientEquipment] = useState<Equipment[]>([]);
     const [loadingEquipment, setLoadingEquipment] = useState(false);

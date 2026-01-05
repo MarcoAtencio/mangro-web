@@ -13,14 +13,13 @@ import {
     DialogTrigger,
 } from "~/components/ui/dialog";
 import { Plus } from "lucide-react";
-import { useAuth } from "~/lib/auth";
 import { uploadProfileImage } from "~/lib/storage";
 import { createUser } from "~/lib/firestore";
+import { registerUser } from "~/lib/auth-admin";
 
 export function NewUserDialog({ onSuccess }: { onSuccess?: () => void }) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const { registerUser } = useAuth();
     const [formData, setFormData] = useState<{
         fullName: string;
         email: string;

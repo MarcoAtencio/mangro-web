@@ -24,6 +24,8 @@ export function ClientRow({ client, servicesCount = 0 }: ClientRowProps) {
         return () => unsubscribe();
     }, [client.id]);
 
+    const [showEditDialog, setShowEditDialog] = useState(false);
+
     return (
         <TableRow
             className="hover:bg-slate-50 cursor-pointer transition-all duration-300 hover:shadow-sm group"
@@ -82,20 +84,24 @@ export function ClientRow({ client, servicesCount = 0 }: ClientRowProps) {
             <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-1">
                     <div onClick={(e) => e.stopPropagation()}>
-                        <Suspense fallback={<Button variant="ghost" size="icon" disabled className="h-8 w-8 text-slate-200"><Settings className="h-4 w-4" /></Button>}>
-                            <EditClientDialog
-                                client={client}
-                                trigger={
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full"
-                                    >
-                                        <Settings className="h-4 w-4" />
-                                    </Button>
-                                }
-                            />
-                        </Suspense>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full"
+                            onClick={() => setShowEditDialog(true)}
+                        >
+                            <Settings className="h-4 w-4" />
+                        </Button>
+                        
+                        {showEditDialog && (
+                            <Suspense fallback={null}>
+                                <EditClientDialog
+                                    client={client}
+                                    open={true}
+                                    onOpenChange={setShowEditDialog}
+                                />
+                            </Suspense>
+                        )}
                     </div>
                     <Button
                         variant="ghost"

@@ -20,6 +20,8 @@ export function ClientCardMobile({ client }: { client: Client }) {
         return () => unsubscribe();
     }, [client.id]);
 
+    const [showEditDialog, setShowEditDialog] = useState(false);
+
     return (
         <Card 
             className="mb-4 shadow-sm border-slate-200/60 overflow-hidden hover:shadow-md transition-all duration-300 group active:scale-[0.98]"
@@ -66,16 +68,24 @@ export function ClientCardMobile({ client }: { client: Client }) {
                     </div>
                     
                     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                        <Suspense fallback={<Button size="sm" variant="ghost" disabled className="h-8 w-8 p-0 rounded-full text-slate-200"><Settings className="h-4 w-4" /></Button>}>
-                            <EditClientDialog 
-                                client={client}
-                                trigger={
-                                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0 rounded-full hover:bg-slate-100">
-                                        <ChevronRight className="h-4 w-4" />
-                                    </Button>
-                                }
-                            />
-                        </Suspense>
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0 rounded-full hover:bg-slate-100"
+                            onClick={() => setShowEditDialog(true)}
+                        >
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+
+                        {showEditDialog && (
+                            <Suspense fallback={null}>
+                                <EditClientDialog 
+                                    client={client}
+                                    open={true}
+                                    onOpenChange={setShowEditDialog}
+                                />
+                            </Suspense>
+                        )}
                     </div>
                 </div>
             </CardContent>

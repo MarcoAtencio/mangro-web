@@ -19,12 +19,14 @@ export const links: Route.LinksFunction = () => [
     { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
     { rel: "dns-prefetch", href: "https://www.googletagmanager.com" },
     { rel: "dns-prefetch", href: "https://firebase.googleapis.com" },
+    { rel: "dns-prefetch", href: "https://firestore.googleapis.com" },
     
     // Preconnect: fonts need crossOrigin, GTM/Firebase usually don't for standard scripts
     { rel: "preconnect", href: "https://fonts.googleapis.com", crossOrigin: "anonymous" },
     { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
     { rel: "preconnect", href: "https://www.googletagmanager.com" },
     { rel: "preconnect", href: "https://firebase.googleapis.com" },
+    { rel: "preconnect", href: "https://firestore.googleapis.com" },
     
     // Pre-load critical assets like the logo to improve LCP
     { rel: "preload", as: "image", href: "/logo-mangro.jpg", fetchPriority: "high" as any },
