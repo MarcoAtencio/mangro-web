@@ -3,6 +3,7 @@ import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     signOut as firebaseSignOut,
+    sendPasswordResetEmail as firebaseSendPasswordResetEmail,
     onAuthStateChanged,
     type User,
     getAuth,
@@ -11,15 +12,18 @@ import {
 } from "firebase/auth";
 import { initializeApp, getApp, getApps, deleteApp } from "firebase/app";
 import { auth, firebaseConfig } from "./firebase";
-import { getUsuarioById, type Usuario } from "./firestore";
+import { getUserById, type User as FirestoreUser } from "./firestore";
+
+
 
 interface AuthContextType {
     user: User | null;
-    userProfile: Usuario | null;
+    userProfile: FirestoreUser | null;
     loading: boolean;
     signIn: (email: string, password: string) => Promise<void>;
     registerUser: (email: string, password: string) => Promise<string>;
     signOut: () => Promise<void>;
+    sendPasswordResetEmail: (email: string) => Promise<void>;
     error: string | null;
 }
 
@@ -27,7 +31,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
-    const [userProfile, setUserProfile] = useState<Usuario | null>(null);
+    const [userProfile, setUserProfile] = useState<FirestoreUser | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -38,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (firebaseUser) {
                 // Fetch user profile from Firestore
                 try {
-                    const profile = await getUsuarioById(firebaseUser.uid);
+                    const profile = await getUserById(firebaseUser.uid);
                     setUserProfile(profile);
                 } catch (err) {
                     console.error("Error fetching user profile:", err);
@@ -111,6 +115,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const sendPasswordResetEmail = async (email: string) => {
+        try {
+            await firebaseSendPasswordResetEmail(auth, email);
+        } catch (err) {
+            console.error("Password reset error:", err);
+            throw err;
+        }
+    };
+
     const signOut = async () => {
         try {
             await firebaseSignOut(auth);
@@ -121,7 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return (
         <AuthContext.Provider
-            value={{ user, userProfile, loading, signIn, registerUser, signOut, error }}
+            value={{ user, userProfile, loading, signIn, registerUser, signOut, sendPasswordResetEmail, error }}
         >
             {children}
         </AuthContext.Provider>

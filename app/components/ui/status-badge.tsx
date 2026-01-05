@@ -1,27 +1,52 @@
 
-import { Badge } from "~/components/ui/badge";
 import { SERVICE_STATUS, type ServiceStatus } from "~/lib/constants";
+import { cn } from "~/lib/utils";
 
 interface StatusBadgeProps {
     status: string;
+    className?: string;
 }
 
-const STATUS_STYLES: Record<ServiceStatus, string> = {
-    [SERVICE_STATUS.COMPLETADO]: "bg-green-100 text-green-800 hover:bg-green-200 border-green-200",
-    [SERVICE_STATUS.EN_PROGRESO]: "bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-200",
-    [SERVICE_STATUS.PENDIENTE]: "bg-slate-100 text-slate-800 hover:bg-slate-200 border-slate-200",
-    [SERVICE_STATUS.CANCELADO]: "bg-red-100 text-red-800 hover:bg-red-200 border-red-200",
+// Estilos que combinan con el diseño minimalista de la app
+const STATUS_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+    "PENDIENTE": { 
+        bg: "bg-slate-100", 
+        text: "text-slate-600", 
+        border: "border-slate-200"
+    },
+    "EN_PROGRESO": { 
+        bg: "bg-blue-50", 
+        text: "text-blue-700", 
+        border: "border-blue-200"
+    },
+    "COMPLETADO": { 
+        bg: "bg-emerald-50", 
+        text: "text-emerald-700", 
+        border: "border-emerald-200"
+    },
+    "CANCELADO": { 
+        bg: "bg-red-50", 
+        text: "text-red-700", 
+        border: "border-red-200"
+    },
 };
 
-export function StatusBadge({ status }: StatusBadgeProps) {
-    const normalizedStatus = (status?.toUpperCase() || SERVICE_STATUS.PENDIENTE) as ServiceStatus;
-    
-    const className = STATUS_STYLES[normalizedStatus] || "bg-gray-100 text-gray-800";
+export function StatusBadge({ status, className }: StatusBadgeProps) {
+    const lookupKey = (status || "").toUpperCase().replace(/\s+/g, '_');
+    const styles = STATUS_STYLES[lookupKey] || STATUS_STYLES["PENDIENTE"];
+    const displayText = lookupKey.replace(/_/g, " ");
 
     return (
-        <Badge variant="outline" className={className}>
-            {normalizedStatus}
-        </Badge>
+        <span 
+            className={cn(
+                "inline-flex items-center justify-center px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide rounded-md border transition-colors",
+                styles.bg,
+                styles.text,
+                styles.border,
+                className
+            )}
+        >
+            {displayText}
+        </span>
     );
 }
-

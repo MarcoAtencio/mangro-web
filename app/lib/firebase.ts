@@ -1,19 +1,24 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
-import { getFirestore, enableIndexedDbPersistence } from "firebase/firestore";
+import { 
+    initializeFirestore, 
+    persistentLocalCache, 
+    persistentMultipleTabManager 
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
 export const firebaseConfig = {
-    apiKey: "AIzaSyCghkiORIiDvOOBQFdXptg64j90EqdDtkM",
-    authDomain: "mangro-app.firebaseapp.com",
-    projectId: "mangro-app",
-    storageBucket: "mangro-app.firebasestorage.app",
-    messagingSenderId: "539104559080",
-    appId: "1:539104559080:web:a4b02a85f411a9c2ddee5d",
-    measurementId: "G-QDY0NFV8EB",
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-export const googleMapsApiKey = "AIzaSyAhT8aTmSj9SMEjHnEZ5Rza4XRtWpOvuDs";
+export const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 
 // Initialize Firebase safely for HMR
 export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
@@ -24,24 +29,15 @@ export const analytics =
         ? isSupported().then((yes) => (yes ? getAnalytics(app) : null))
         : null;
 
-// Initialize Firestore with offline persistence
-export const db = getFirestore(app);
-
-// Enable offline persistence (browser only)
-if (typeof window !== "undefined") {
-    enableIndexedDbPersistence(db).catch((err) => {
-        if (err.code === "failed-precondition") {
-            console.warn(
-                "Multiple tabs open, persistence can only be enabled in one tab at a time."
-            );
-        } else if (err.code === "unimplemented") {
-            console.warn("The current browser does not support offline persistence.");
-        }
-    });
-}
+// Initialize Firestore with multi-tab offline persistence (modern API)
+export const db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+    })
+});
 
 // Initialize Auth
 export const auth = getAuth(app);
 
-import { getStorage } from "firebase/storage";
+// Initialize Storage
 export const storage = getStorage(app);

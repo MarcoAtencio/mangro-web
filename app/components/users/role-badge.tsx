@@ -1,4 +1,4 @@
-import { Shield, Users } from "lucide-react";
+import { Shield, Users, Eye } from "lucide-react";
 import { cn } from "~/lib/utils";
 
 interface RoleBadgeProps {
@@ -6,37 +6,69 @@ interface RoleBadgeProps {
     className?: string;
 }
 
-export function RoleBadge({ role, className }: RoleBadgeProps) {
-    const baseClasses =
-        "px-2.5 py-0.5 rounded-full text-xs font-semibold border flex items-center justify-center gap-1.5 w-28 shadow-sm";
+// Minimalist styles matching app design
+const ROLE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+    "ADMIN": { 
+        bg: "bg-blue-50", 
+        text: "text-blue-700", 
+        border: "border-blue-200"
+    },
+    "TECHNICIAN": { 
+        bg: "bg-emerald-50", 
+        text: "text-emerald-700", 
+        border: "border-emerald-200"
+    },
+    "SUPERVISOR": { 
+        bg: "bg-amber-50", 
+        text: "text-amber-700", 
+        border: "border-amber-200"
+    },
+};
 
-    switch (role) {
-        case "ADMIN":
-            return (
-                <div className={cn(baseClasses, "bg-blue-50 text-blue-700 border-blue-200", className)}>
-                    <Shield className="h-3.5 w-3.5" />
-                    Admin
-                </div>
-            );
-        case "TECNICO":
-            return (
-                <div className={cn(baseClasses, "bg-green-50 text-green-700 border-green-200", className)}>
-                    <Users className="h-3.5 w-3.5" />
-                    Técnico
-                </div>
-            );
-        case "SUPERVISOR":
-            return (
-                <div className={cn(baseClasses, "bg-amber-50 text-amber-700 border-amber-200", className)}>
-                    <Shield className="h-3.5 w-3.5" />
-                    Supervisor
-                </div>
-            );
-        default:
-            return (
-                <div className={cn(baseClasses, "bg-slate-50 text-slate-700 border-slate-200", className)}>
-                    {role}
-                </div>
-            );
-    }
+const ROLE_LABELS: Record<string, string> = {
+    "ADMIN": "Admin",
+    "TECHNICIAN": "Técnico",
+    "SUPERVISOR": "Supervisor",
+};
+
+const ROLE_ICONS: Record<string, React.ReactNode> = {
+    "ADMIN": <Shield className="h-3 w-3" />,
+    "TECHNICIAN": <Users className="h-3 w-3" />,
+    "SUPERVISOR": <Eye className="h-3 w-3" />,
+};
+
+export function RoleBadge({ role, className }: RoleBadgeProps) {
+    // Normalizing role to handle potentially legacy "TECNICO" data if not fully migrated, 
+    // but ideally we migrate data. For now, let's assume we map "TECNICO" to "TECHNICIAN" logic if needed,
+    // or we just display what we have. 
+    // Wait, the Firestore refactor kept "TECNICO" value?
+    // In firestore.ts: role: "ADMIN" | "TECHNICIAN" | "SUPERVISOR";
+    // So we should expect TECHNICIAN.
+    // If DB has "TECNICO", we might want to handle it.
+    
+    let normalizedRole = role?.toUpperCase() || "";
+    if (normalizedRole === "TECNICO") normalizedRole = "TECHNICIAN"; 
+
+    const styles = ROLE_STYLES[normalizedRole] || { 
+        bg: "bg-slate-50", 
+        text: "text-slate-600", 
+        border: "border-slate-200"
+    };
+    const label = ROLE_LABELS[normalizedRole] || role || "Usuario";
+    const icon = ROLE_ICONS[normalizedRole] || null;
+
+    return (
+        <div 
+            className={cn(
+                "inline-flex items-center justify-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide rounded-md border transition-colors w-24",
+                styles.bg,
+                styles.text,
+                styles.border,
+                className
+            )}
+        >
+            {icon}
+            <span>{label}</span>
+        </div>
+    );
 }

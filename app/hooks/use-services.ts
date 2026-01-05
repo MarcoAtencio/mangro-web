@@ -21,7 +21,7 @@ export function useServices() {
             (err) => {
                 console.error("Services subscription error:", err);
                 setLoading(false);
-                setError("Error al cargar servicios: " + (err.message || "Unknown error"));
+                setError("Error loading services: " + (err.message || "Unknown error"));
             }
         );
         return () => unsubscribe();

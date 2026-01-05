@@ -9,6 +9,7 @@ import {
     Menu,
     LogOut,
     Calendar,
+    ClipboardList,
 } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
@@ -17,12 +18,13 @@ import { useAuth } from "~/lib/auth";
 import { useUserDisplay } from "~/hooks/use-user-display";
 
 const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Clientes", href: "/clientes", icon: Building2 },
-    { name: "Servicios", href: "/servicios", icon: Calendar },
-    { name: "Usuarios", href: "/tecnicos", icon: Users },
-    { name: "Informes", href: "/informes", icon: FileText },
-    { name: "Configuración", href: "/configuracion", icon: Settings },
+    { name: "Panel", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Clientes", href: "/clients", icon: Building2 },
+    { name: "Servicios", href: "/services", icon: Calendar },
+    { name: "Usuarios", href: "/technicians", icon: Users },
+    { name: "Reportes", href: "/reports", icon: FileText },
+    { name: "Protocolos", href: "/templates", icon: ClipboardList },
+    { name: "Configuración", href: "/settings", icon: Settings },
 ];
 
 interface SidebarProps {
@@ -126,7 +128,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                 <div className="space-y-1">
                     {!collapsed && (
                         <span className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">
-                            Sistema
+                            SISTEMA
                         </span>
                     )}
                     <div className="mt-2 space-y-1">
@@ -303,7 +305,7 @@ export function MobileSidebar() {
                     {/* Secondary Navigation */}
                     <div className="space-y-1">
                         <span className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">
-                            Sistema
+                            SISTEMA
                         </span>
                         <div className="mt-2 space-y-1">
                             {secondaryNavigation.map((item) => (

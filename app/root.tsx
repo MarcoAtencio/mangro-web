@@ -14,12 +14,18 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
 export const links: Route.LinksFunction = () => [
+    // DNS prefetch for third-party domains
+    { rel: "dns-prefetch", href: "https://fonts.googleapis.com" },
+    { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
+    { rel: "dns-prefetch", href: "https://www.googleapis.com" },
+    // Preconnect for font loading
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
     {
         rel: "preconnect",
         href: "https://fonts.gstatic.com",
         crossOrigin: "anonymous",
     },
+    // Google Font with display=swap to prevent FOIT and improve FCP
     {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
@@ -32,6 +38,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <head>
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
+                {/* Theme color for mobile browsers - improves perceived performance */}
+                <meta name="theme-color" content="#0069B4" />
                 <title>MANGRO Admin</title>
                 <link rel="icon" href="/favicon.jpg" />
                 <Meta />

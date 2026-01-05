@@ -17,15 +17,15 @@ interface UserDisplayInfo {
 export function useUserDisplay(): UserDisplayInfo {
     const { user, userProfile } = useAuth();
 
-    const displayName = userProfile?.full_name || user?.email?.split("@")[0] || "Usuario";
+    const displayName = userProfile?.fullName || user?.email?.split("@")[0] || "Usuario";
     const displayEmail = user?.email || "";
     const initials = displayName
         .split(" ")
-        .map((n) => n[0])
+        .map((n: string) => n[0])
         .join("")
         .toUpperCase()
         .slice(0, 2);
-    const photoUrl = userProfile?.photo_url;
+    const photoUrl = userProfile?.photoUrl;
     const roleName = userProfile?.role ? USER_ROLE_LABELS[userProfile.role as UserRole] : undefined;
 
     return {

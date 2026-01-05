@@ -48,41 +48,42 @@ export default function DashboardPage() {
 
     return (
         <AdminLayout 
-            title="Dashboard" 
-            subtitle="Resumen general de operaciones y métricas clave"
+            title="Panel de Control" 
+            subtitle="Resumen de operaciones y métricas clave"
         >
             <div className="space-y-8">
                 {/* Stats Grid */}
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <StatsCard
-                        title="Informes de Hoy"
-                        value={stats.sc_informesHoy}
-                        description={`${stats.sc_informesPendientes} pendientes de revisión`}
+                        title="Informes Hoy"
+                        value={stats.reportsToday}
+                        description={`${stats.reportsPending} pendientes de revisión`}
                         icon={FileText}
-                        // trend={{ value: 12, label: "vs ayer", positive: true }} // TODO: Implement real trend calculation
+                        // trend={{ value: 12, label: "vs ayer", positive: true }} 
                     />
                     <StatsCard
                         title="Técnicos Activos"
-                        value={stats.sc_tecnicosActivos}
-                        description={`${stats.sc_tecnicosTotal} registrados`}
+                        value={stats.techniciansActive}
+                        description={`${stats.techniciansTotal} registrados`}
                         icon={Users}
                         variant="green"
                     />
                     <StatsCard
                         title="Clientes Totales"
-                        value={stats.sc_clientesTotal}
+                        value={stats.clientsTotal}
                         icon={Building2}
                         variant="secondary"
                     />
                     <StatsCard
                         title="Equipos Registrados"
-                        value={stats.sc_equiposTotal} // Currently 0 based on hook limitation
+                        value={stats.equipmentTotal} 
                         description="Con historial de mantenimiento"
                         icon={CheckCircle2}
                         variant="amber"
                     />
                 </div>
 
+                {/* Content Grid */}
                 {/* Content Grid */}
                 <div className="grid gap-6 lg:grid-cols-3">
                     {/* Recent Reports Table */}
@@ -99,7 +100,7 @@ export default function DashboardPage() {
                                     variant="outline" 
                                     size="sm" 
                                     className="hidden sm:flex h-8"
-                                    onClick={() => navigate("/servicios")}
+                                    onClick={() => navigate("/services")}
                                 >
                                     Ver todos
                                 </Button>
@@ -130,14 +131,18 @@ export default function DashboardPage() {
                                                     <TableCell className="font-medium">
                                                         {service.clientName}
                                                         <div className="md:hidden text-xs text-muted-foreground mt-1">
-                                                            {service.equipmentSummary}
+                                                            {service.equipment && service.equipment.length > 0 
+                                                                ? service.equipment.map(e => e.name).join(", ")
+                                                                : service.equipmentSummary}
                                                         </div>
                                                     </TableCell>
                                                     <TableCell className="hidden md:table-cell text-muted-foreground">
-                                                        {service.equipmentSummary}
+                                                        {service.equipment && service.equipment.length > 0 
+                                                            ? service.equipment.map(e => e.name).join(", ")
+                                                            : service.equipmentSummary}
                                                     </TableCell>
                                                     <TableCell className="hidden sm:table-cell text-muted-foreground">
-                                                        {technicians.find(t => t.id === service.technicianId)?.full_name || "Sin asignar"}
+                                                        {technicians.find(t => t.id === service.technicianId)?.fullName || "Sin asignar"}
                                                     </TableCell>
                                                     <TableCell className="text-right">
                                                         <StatusBadge status={service.status} />
@@ -147,7 +152,7 @@ export default function DashboardPage() {
                                         ) : (
                                             <TableRow>
                                                 <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                                                    No hay servicios recientes
+                                                    Sin servicios recientes
                                                 </TableCell>
                                             </TableRow>
                                         )}
@@ -182,7 +187,7 @@ export default function DashboardPage() {
                                     <TrendingUp className="h-5 w-5 text-green-600" />
                                     <div className="flex flex-col">
                                         <span className="text-xs text-green-700/70 font-medium">
-                                            Incremento mensual
+                                            Incremento Mensual
                                         </span>
                                         <span className="text-sm font-bold text-green-700">
                                             -- servicios
@@ -194,7 +199,7 @@ export default function DashboardPage() {
                                     <Clock className="h-5 w-5 text-amber-600" />
                                     <div className="flex flex-col">
                                         <span className="text-xs text-amber-700/70 font-medium">
-                                            Tiempo promedio
+                                            Tiempo Promedio
                                         </span>
                                         <span className="text-sm font-bold text-amber-700">
                                             -- hrs / tarea
@@ -209,10 +214,10 @@ export default function DashboardPage() {
                                     <AlertCircle className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform" />
                                     <div className="flex flex-col">
                                         <span className="text-xs text-blue-700/70 font-medium">
-                                            Tareas por revisar
+                                            Tareas por Revisar
                                         </span>
                                         <span className="text-sm font-bold text-blue-700">
-                                            {stats.sc_informesPendientes} pendientes
+                                            {stats.reportsPending} pendientes
                                         </span>
                                     </div>
                                 </div>

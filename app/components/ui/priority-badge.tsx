@@ -1,27 +1,51 @@
 
-import { Badge } from "~/components/ui/badge";
 import { SERVICE_PRIORITY, type ServicePriority } from "~/lib/constants";
+import { cn } from "~/lib/utils";
 
 interface PriorityBadgeProps {
-    priority: string | undefined;
+    priority: string;
+    className?: string;
 }
 
-const PRIORITY_STYLES: Record<ServicePriority, string> = {
-    [SERVICE_PRIORITY.URGENTE]: "bg-red-100 text-red-800 border-red-200",
-    [SERVICE_PRIORITY.ALTA]: "bg-red-100 text-red-800 border-red-200",
-    [SERVICE_PRIORITY.MEDIA]: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    [SERVICE_PRIORITY.BAJA]: "bg-green-100 text-green-800 border-green-200",
+// Estilos que combinan con el diseño minimalista de la app
+const PRIORITY_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+    "URGENTE": { 
+        bg: "bg-red-50", 
+        text: "text-red-700", 
+        border: "border-red-200"
+    },
+    "ALTA": { 
+        bg: "bg-orange-50", 
+        text: "text-orange-700", 
+        border: "border-orange-200"
+    },
+    "MEDIA": { 
+        bg: "bg-amber-50", 
+        text: "text-amber-700", 
+        border: "border-amber-200"
+    },
+    "BAJA": { 
+        bg: "bg-teal-50", 
+        text: "text-teal-700", 
+        border: "border-teal-200"
+    },
 };
 
-export function PriorityBadge({ priority }: PriorityBadgeProps) {
-    const normalizedPriority = (priority?.toUpperCase() || SERVICE_PRIORITY.MEDIA) as ServicePriority;
-
-    const className = PRIORITY_STYLES[normalizedPriority] || "bg-gray-100 text-gray-800";
+export function PriorityBadge({ priority, className }: PriorityBadgeProps) {
+    const lookupKey = (priority || "").toUpperCase().replace(/\s+/g, '_');
+    const styles = PRIORITY_STYLES[lookupKey] || PRIORITY_STYLES["BAJA"];
 
     return (
-        <Badge variant="outline" className={className}>
-            {normalizedPriority}
-        </Badge>
+        <span 
+            className={cn(
+                "inline-flex items-center justify-center px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide rounded-md border transition-colors",
+                styles.bg,
+                styles.text,
+                styles.border,
+                className
+            )}
+        >
+            {lookupKey}
+        </span>
     );
 }
-

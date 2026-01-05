@@ -11,6 +11,18 @@ import {
     Timestamp,
 } from "firebase/firestore";
 
+// Equipment reference - minimal data for display, ID for lookups
+export interface EquipmentRef {
+    id: string;
+    name: string;
+    checklistTemplateId?: string; // Legacy/Original reference
+    templateId?: string; // Specific template ID for this service instance
+    templateName?: string; // Specific template Name for this service instance
+}
+
+// Service type
+export type ServiceType = "PREVENTIVO" | "CORRECTIVO";
+
 // Interface matching the provided screenshot "tasks" collection
 export interface Task {
     id: string;
@@ -18,9 +30,11 @@ export interface Task {
     address: string;
     clientName: string;
     contactName: string; // User who requested or contact person? Assuming contact person at client.
-    equipmentSummary: string;
+    equipment: EquipmentRef[]; // Array of equipment references
+    equipmentSummary?: string; // Legacy field for backwards compatibility
+    serviceType: ServiceType; // Preventivo, Correctivo, Emergencia
     priority: "BAJA" | "MEDIA" | "ALTA" | "URGENTE";
-    status: "PENDIENTE" | "EN_PROGRESO" | "COMPLETADO" | "CANCELADO"; // Mapping standard statuses to capitalize as in screenshot? Screenshot shows "Completado", "Urgente"
+    status: "PENDIENTE" | "EN_PROGRESO" | "COMPLETADO" | "CANCELADO";
     scheduledTime: string; // "09:00 - 10:30"
     technicianId: string;
     description: string;
@@ -40,7 +54,7 @@ export const subscribeToServices = (
     onError: (error: Error) => void
 ) => {
     // Querying 'tasks' collection
-    const q = query(collection(db, "tasks"), orderBy("createAt", "desc"));
+    const q = query(collection(db, "services"), orderBy("createAt", "desc"));
 
     return onSnapshot(
         q,
@@ -62,7 +76,7 @@ export const subscribeToServices = (
                         : data.date
                           ? new Date(data.date)
                           : undefined,
-                    status: data.status?.toUpperCase() || "PENDIENTE",
+                    status: data.status?.toUpperCase().replace(/\s+/g, '_') || "PENDIENTE",
                 } as Task;
             });
             onUpdate(tasks);
@@ -77,9 +91,8 @@ export const subscribeToClientServices = (
     onError: (error: Error) => void
 ) => {
     const q = query(
-        collection(db, "tasks"),
-        where("companyId", "==", clientId),
-        orderBy("createAt", "desc")
+        collection(db, "services"),
+        where("companyId", "==", clientId)
     );
 
     return onSnapshot(
@@ -101,9 +114,11 @@ export const subscribeToClientServices = (
                         : data.date
                           ? new Date(data.date)
                           : undefined,
-                    status: data.status?.toUpperCase() || "PENDIENTE",
+                    status: data.status?.toUpperCase().replace(/\s+/g, '_') || "PENDIENTE",
                 } as Task;
             });
+            // Sort client-side
+            tasks.sort((a, b) => new Date(b.createAt as Date).getTime() - new Date(a.createAt as Date).getTime());
             onUpdate(tasks);
         },
         onError
@@ -120,13 +135,14 @@ export interface CreateTaskDTO {
     startTime: string;
     endTime: string;
     priority: Task["priority"];
+    serviceType: ServiceType;
     description: string;
-    equipment: string;
+    equipment: EquipmentRef[]; // Array of equipment references
 }
 
 export const createService = async (taskData: CreateTaskDTO) => {
     try {
-        const docRef = await addDoc(collection(db, "tasks"), {
+        const docRef = await addDoc(collection(db, "services"), {
             companyId: taskData.companyId || "", // Link to company/client
             address: taskData.clientAddress,
             clientName: taskData.clientName,
@@ -134,8 +150,9 @@ export const createService = async (taskData: CreateTaskDTO) => {
             scheduledTime: `${taskData.startTime} - ${taskData.endTime}`,
             technicianId: taskData.technicianId,
             description: taskData.description || "",
-            equipmentSummary: taskData.equipment || "",
+            equipment: taskData.equipment || [], // Store as array of objects
             priority: taskData.priority || "MEDIA",
+            serviceType: taskData.serviceType || "PREVENTIVO",
             status: "PENDIENTE",
 
             createAt: Timestamp.now(),
@@ -151,7 +168,7 @@ export const createService = async (taskData: CreateTaskDTO) => {
 
 export const updateServiceStatus = async (taskId: string, status: string) => {
     try {
-        const docRef = doc(db, "tasks", taskId);
+        const docRef = doc(db, "services", taskId);
         await updateDoc(docRef, {
             status: status,
             updatedAt: Timestamp.now(),
