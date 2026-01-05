@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
     isRouteErrorResponse,
     Links,
@@ -8,22 +9,90 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import "./app.css"; // Tu CSS principal con Tailwind
+import "./app.css";
 import { AuthProvider } from "~/lib/auth";
 import { auth } from "~/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
-// ✅ 1. LOADER CRÍTICO: Espera a que Firebase verifique la sesión en IndexedDB
-// Esto evita que la app muestre "No autenticado" por un milisegundo.
-export async function clientLoader() {
-    await auth.authStateReady();
+// ============================================================================
+// LOADER NO BLOQUEANTE
+// ============================================================================
+// Retorna inmediatamente sin esperar a Firebase.
+// Esto permite un First Contentful Paint (FCP) y LCP instantáneos.
+// El estado de autenticación se maneja de forma optimista en el cliente.
+export function clientLoader() {
     return null;
 }
 
+// ============================================================================
+// HYDRATE FALLBACK - Skeleton ligero para renderizado inmediato
+// ============================================================================
+/**
+ * Skeleton minimalista que se muestra mientras Firebase verifica el auth.
+ * Diseñado para ser extremadamente ligero y no afectar el LCP.
+ */
+export function HydrateFallback() {
+    return (
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+                {/* Logo placeholder - usa el mismo tamaño que el logo real */}
+                <div className="w-32 h-12 bg-slate-200 rounded-lg animate-pulse" />
+                {/* Loading indicator */}
+                <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ============================================================================
+// GTM DEFER COMPONENT - Carga diferida de Google Tag Manager
+// ============================================================================
+/**
+ * Componente que inyecta Google Tag Manager después de 3 segundos.
+ * Esto evita que GTM compita por ancho de banda durante la carga inicial,
+ * mejorando significativamente el LCP y TBT.
+ */
+function GTMDefer() {
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            // Inyectar el script de GTM
+            const script = document.createElement("script");
+            script.async = true;
+            script.src = "https://www.googletagmanager.com/gtag/js?id=G-QDYONFV8EB";
+            document.head.appendChild(script);
+
+            // Inicializar gtag cuando el script cargue
+            script.onload = () => {
+                const w = window as unknown as { 
+                    dataLayer: unknown[]; 
+                    gtag: (...args: unknown[]) => void;
+                };
+                w.dataLayer = w.dataLayer || [];
+                w.gtag = function(...args: unknown[]) {
+                    w.dataLayer.push(args);
+                };
+                w.gtag("js", new Date());
+                w.gtag("config", "G-QDYONFV8EB");
+            };
+        }, 3000); // 3 segundos de delay
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    return null;
+}
+
+// ============================================================================
+// LINKS - Preload de recursos críticos
+// ============================================================================
 export const links: Route.LinksFunction = () => [
-    // ✅ 2. PRELOAD DE FUENTE LOCAL (Clave para LCP verde)
-    // Asegúrate de que el archivo existe en public/fonts/inter.woff2
+    // Preload de fuente local (crítico para LCP)
     { 
         rel: "preload", 
         href: "/fonts/inter.woff2", 
@@ -32,8 +101,7 @@ export const links: Route.LinksFunction = () => [
         crossOrigin: "anonymous" 
     },
 
-    // ✅ 3. Preload de imagen crítica (Tu logo)
-    // Esto ayuda a que el navegador priorice la descarga de la imagen del sidebar
+    // Preload de imagen crítica (logo)
     { 
         rel: "preload", 
         as: "image", 
@@ -41,14 +109,14 @@ export const links: Route.LinksFunction = () => [
         fetchPriority: "high" as const 
     },
     
-    // Conexiones anticipadas a servicios externos que SÍ usas
+    // Conexiones anticipadas a servicios externos
     { rel: "preconnect", href: "https://www.googletagmanager.com" },
     { rel: "preconnect", href: "https://firestore.googleapis.com" },
-
-    // NOTA: Se eliminaron los links a fonts.googleapis.com y fonts.gstatic.com
-    // porque ahora sirves la fuente localmente.
 ];
 
+// ============================================================================
+// LAYOUT - Estructura base del documento HTML
+// ============================================================================
 export function Layout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="es">
@@ -72,14 +140,48 @@ export function Layout({ children }: { children: React.ReactNode }) {
     );
 }
 
+// ============================================================================
+// APP - Componente principal con Optimistic UI para Auth
+// ============================================================================
+/**
+ * Implementa "Renderizado Inmediato" (Non-blocking UI):
+ * - Muestra un skeleton ligero mientras Firebase verifica el estado de auth
+ * - Una vez listo, renderiza la aplicación completa con AuthProvider
+ * - GTM se carga de forma diferida para no afectar el rendimiento inicial
+ */
 export default function App() {
+    const [isAuthReady, setIsAuthReady] = useState(false);
+
+    useEffect(() => {
+        // Suscribirse a cambios de estado de autenticación
+        const unsubscribe = onAuthStateChanged(auth, () => {
+            // Cuando Firebase responde (usuario logueado o null), marcamos como listo
+            setIsAuthReady(true);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    // Mientras Firebase verifica el auth, mostrar skeleton
+    if (!isAuthReady) {
+        return <HydrateFallback />;
+    }
+
+    // Una vez listo, renderizar la app completa
     return (
-        <AuthProvider>
-            <Outlet />
-        </AuthProvider>
+        <>
+            <AuthProvider>
+                <Outlet />
+            </AuthProvider>
+            {/* GTM se carga 3 segundos después para no afectar LCP */}
+            <GTMDefer />
+        </>
     );
 }
 
+// ============================================================================
+// ERROR BOUNDARY
+// ============================================================================
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     let message = "Oops!";
     let details = "An unexpected error occurred.";
