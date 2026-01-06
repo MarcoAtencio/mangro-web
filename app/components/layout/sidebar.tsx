@@ -76,26 +76,18 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
 
             {/* Logo Section */}
             <div className={cn(
-                "flex items-center h-16 border-b border-slate-100 overflow-hidden",
-                collapsed ? "justify-center px-2" : "px-4"
+                "flex items-center justify-center border-b border-slate-100 transition-all duration-300",
+                collapsed ? "h-16 px-2" : "h-16 px-4"
             )}>
-                <div className="flex items-center gap-3 whitespace-nowrap">
-                    <img
-                        src="/logo-mangro.png"
-                        alt="MANGRO"
-                        className="h-8 w-8 object-contain shrink-0"
-                        width={32}
-                        height={32}
-                        fetchPriority="high"
-                    />
-                    <div className={cn(
-                        "flex flex-col transition-all duration-300",
-                        collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
-                    )}>
-                        <span className="font-bold text-sm text-[#0069B4]">MANGRO S.A.C.</span>
-                        <span className="text-[11px] text-slate-500">Admin Panel</span>
-                    </div>
-                </div>
+                <img
+                    src="/logo-mangro.png"
+                    alt="MANGRO"
+                    className={cn(
+                        "object-contain",
+                        collapsed ? "h-5 w-5" : "h-6 w-auto"
+                    )}
+                    fetchPriority="high"
+                />
             </div>
 
             {/* Main Navigation */}
@@ -286,21 +278,13 @@ export function MobileSidebar() {
                 )}
             >
                 {/* Header */}
-                <div className="flex h-16 items-center justify-between px-4 border-b border-slate-100">
-                    <div className="flex items-center gap-3">
-                        <img
-                            src="/logo-mangro.png"
-                            alt="MANGRO - Expertos en climatización"
-                            className="h-8 w-8 object-contain"
-                            width={32}
-                            height={32}
-                            fetchPriority="high"
-                        />
-                        <div className="flex flex-col">
-                            <span className="font-bold text-sm text-[#0069B4]">MANGRO S.A.C.</span>
-                            <span className="text-[11px] text-slate-500">Admin Panel</span>
-                        </div>
-                    </div>
+                <div className="flex h-16 items-center justify-between px-4 border-b border-slate-100 bg-white/50 backdrop-blur-sm">
+                    <img
+                        src="/logo-mangro.png"
+                        alt="MANGRO"
+                        className="h-6 w-auto object-contain"
+                        fetchPriority="high"
+                    />
                     <Button
                         variant="ghost"
                         size="icon"

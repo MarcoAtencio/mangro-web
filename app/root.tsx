@@ -35,17 +35,22 @@ export function clientLoader() {
  */
 export function HydrateFallback() {
     return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-            <div className="flex flex-col items-center gap-4">
-                {/* Logo placeholder - usa el mismo tamaño que el logo real */}
-                <div className="w-32 h-12 bg-slate-200 rounded-lg animate-pulse" />
-                {/* Loading indicator */}
-                <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
-                </div>
+        <div className="min-h-screen bg-gradient-to-b from-white to-slate-100 flex flex-col items-center justify-center">
+            {/* Logo with shimmer effect */}
+            <div className="relative mb-8 overflow-hidden rounded-lg">
+                <img 
+                    src="/logo-mangro.png" 
+                    alt="Mangro" 
+                    className="h-20 w-auto"
+                />
+                {/* Shimmer overlay */}
+                <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
             </div>
+            
+            {/* Subtle loading text */}
+            <p className="text-sm text-slate-400 font-medium tracking-wide">
+                Iniciando...
+            </p>
         </div>
     );
 }

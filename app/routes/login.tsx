@@ -51,30 +51,26 @@ export default function LoginPage() {
 
             <div className="relative w-full h-full lg:h-auto lg:max-w-[400px] animate-in fade-in zoom-in-95 duration-300 will-change-transform">
                 <Card className="relative border-0 lg:border lg:border-slate-200/60 bg-white/90 backdrop-blur-xl shadow-none lg:shadow-xl hover:shadow-none lg:hover:shadow-2xl transition-shadow duration-300 min-h-screen lg:min-h-0 rounded-none lg:rounded-xl flex flex-col justify-center">
-                    <CardHeader className="text-center pb-2 pt-6 lg:pt-8">
+                    <CardHeader className="text-center pb-4 pt-8 lg:pt-10">
                         {/* Logo */}
                         <div className="flex justify-center mb-6">
-                            <div className="p-3 bg-white rounded-2xl shadow-sm border border-slate-100 ring-1 ring-slate-50">
-                                <img
-                                    src="/logo-mangro.png"
-                                    alt="MANGRO"
-                                    width="48"
-                                    height="48"
-                                    className="h-12 w-auto object-contain"
-                                    decoding="async"
-                                    fetchPriority="high"
-                                />
-                            </div>
+                            <img
+                                src="/logo-mangro.png"
+                                alt="MANGRO"
+                                className="h-10 w-auto object-contain"
+                                decoding="async"
+                                fetchPriority="high"
+                            />
                         </div>
                         <CardTitle className="text-2xl font-bold text-primary tracking-tight">
                             Panel de Administración
                         </CardTitle>
-                        <CardDescription className="text-slate-500 text-sm mt-1">
+                        <CardDescription className="text-slate-500 text-sm mt-2">
                             Ingresa tus credenciales para continuar
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="pb-6 px-6 lg:pb-8 lg:px-8">
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                    <CardContent className="pb-8 px-6 lg:pb-10 lg:px-8">
+                        <form onSubmit={handleSubmit} className="space-y-6">
                             {/* Error message */}
                             {displayError && (
                                 <div className="flex items-center gap-3 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium animate-in fade-in slide-in-from-top-1 border border-red-100">

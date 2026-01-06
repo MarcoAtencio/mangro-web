@@ -260,7 +260,7 @@ function ClientsPageContent({
                         className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95"
                     >
                         <Plus className="h-4 w-4" />
-                        <span className="hidden sm:inline">Nuevo Cliente</span>
+                        <span className="hidden lg:inline">Nuevo Cliente</span>
                     </Button>
                     {showNewClientDialog && (
                         <Suspense fallback={null}>
@@ -310,25 +310,25 @@ function ClientsPageContent({
                 </div>
 
                 {/* Filters Section */}
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 lg:gap-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     {/* Search Input */}
-                    <div className="relative w-full lg:w-72">
+                    <div className="relative w-full sm:w-72">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Buscar por nombre o RUC..."
                             value={search}
                             onChange={(e) => handleSearchChange(e.target.value)}
-                            className="pl-9 h-9 bg-white border-slate-200 focus:border-primary transition-colors shadow-sm"
+                            className="pl-9 h-10 sm:h-9 bg-white border-slate-200 focus:border-primary transition-colors shadow-sm text-base sm:text-sm"
                             aria-label="Buscar clientes por nombre o RUC"
                         />
                     </div>
                     {/* Filter Buttons */}
-                    <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" className="h-9" aria-label="Abrir filtros avanzados">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <Button variant="outline" size="sm" className="flex-1 sm:flex-none h-10 sm:h-9" aria-label="Abrir filtros avanzados">
                             <Filter className="h-4 w-4 mr-2" />
                             Filtros
                         </Button>
-                        <Button variant="outline" size="sm" className="h-9" aria-label="Cambiar orden de la lista">
+                        <Button variant="outline" size="sm" className="flex-1 sm:flex-none h-10 sm:h-9" aria-label="Cambiar orden de la lista">
                             <ArrowUpDown className="h-4 w-4 mr-2" />
                             Ordenar
                         </Button>
@@ -336,7 +336,7 @@ function ClientsPageContent({
                 </div>
 
                 {/* Desktop Clients Table - With gray background section */}
-                <div className="hidden sm:flex sm:flex-col -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 py-4 sm:py-5 lg:py-6 pb-6 lg:pb-8 bg-slate-100/70 flex-1 -mb-4 md:-mb-6 lg:-mb-8 border-t border-slate-200">
+                <div className="hidden lg:flex lg:flex-col -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 py-4 sm:py-5 lg:py-6 pb-6 lg:pb-8 bg-slate-100/70 flex-1 -mb-4 md:-mb-6 lg:-mb-8 border-t border-slate-200">
                     <div className="overflow-x-auto rounded-md border border-slate-200 bg-white">
                         <Table>
                             <TableHeader>
@@ -404,8 +404,8 @@ function ClientsPageContent({
                     )}
                 </div>
 
-                {/* Mobile Clients List */}
-                <div className="sm:hidden space-y-4">
+                {/* Mobile/Tablet Clients List */}
+                <div className="lg:hidden space-y-4">
                     <div className="flex items-center justify-between pb-2">
                         <h2 className="text-lg font-semibold">Lista de Clientes</h2>
                         <span className="text-sm text-muted-foreground">
@@ -428,9 +428,9 @@ function ClientsPageContent({
                     )}
                 </div>
                 
-                {/* Mobile Pagination */}
+                {/* Mobile/Tablet Pagination */}
                 {filteredClients.length > 0 && (
-                    <div className="sm:hidden">
+                    <div className="lg:hidden">
                         <PaginationControls
                             currentPage={currentPage}
                             totalPages={totalPages}

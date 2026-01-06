@@ -148,13 +148,13 @@ export default function TechniciansPage() {
                     aria-label="Registrar nuevo usuario"
                 >
                     <Plus className="h-4 w-4" />
-                    <span className="hidden sm:inline">Nuevo Usuario</span>
+                    <span className="hidden lg:inline">Nuevo Usuario</span>
                 </Button>
             }
         >
             <div className="flex flex-col gap-4 sm:gap-6 lg:gap-8 flex-1">
                 {/* Stats */}
-                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4 lg:gap-4">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4 lg:gap-4">
                     <StatsCard
                         title="Total Usuarios"
                         value={users.length}
@@ -219,8 +219,8 @@ export default function TechniciansPage() {
                 {/* Users Table - With gray background section */}
                 <div className="flex flex-col -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 py-4 md:py-5 lg:py-6 pb-6 lg:pb-8 bg-slate-100/70 flex-1 -mb-4 md:-mb-6 lg:-mb-8 border-t border-slate-200">
                     
-                    {/* Mobile View: Cards */}
-                    <div className="md:hidden flex flex-col gap-4 mb-6">
+                    {/* Mobile/Tablet View: Cards */}
+                    <div className="lg:hidden flex flex-col gap-4 mb-6">
                         {paginatedUsers.map((user) => (
                             <Card key={user.id} className="shadow-sm">
                                 <CardContent className="p-4">
@@ -276,7 +276,7 @@ export default function TechniciansPage() {
                     </div>
 
                     {/* Desktop View: Table */}
-                    <div className="hidden md:block overflow-x-auto rounded-md border border-slate-200 bg-white shadow-sm">
+                    <div className="hidden lg:block overflow-x-auto rounded-md border border-slate-200 bg-white shadow-sm">
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-slate-50/50">

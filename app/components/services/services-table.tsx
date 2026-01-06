@@ -61,8 +61,8 @@ export function ServicesTable({
 
     return (
         <div className="space-y-4">
-            {/* Mobile View: Cards */}
-            <div className="md:hidden flex flex-col gap-4">
+            {/* Mobile/Tablet View: Cards */}
+            <div className="lg:hidden flex flex-col gap-4">
                 {isEmpty ? (
                      <div className="text-center py-8 text-muted-foreground bg-slate-50 rounded-lg border border-dashed border-slate-300">
                         {isFiltered ? "No se encontraron servicios con los filtros seleccionados" : "No hay servicios programados"}
@@ -122,7 +122,7 @@ export function ServicesTable({
             </div>
 
             {/* Desktop View: Table */}
-            <div className="hidden md:block overflow-x-auto rounded-md border border-slate-200">
+            <div className="hidden lg:block overflow-x-auto rounded-md border border-slate-200">
                 <Table className="min-w-[800px]">
             <TableHeader>
                 <TableRow className="bg-slate-50/50">

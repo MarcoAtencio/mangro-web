@@ -151,7 +151,7 @@ export default function ServicesPage() {
                         className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95"
                     >
                         <Plus className="h-4 w-4" />
-                        <span className="hidden sm:inline">Nuevo Servicio</span>
+                        <span className="hidden lg:inline">Nuevo Servicio</span>
                     </Button>
                     {showNewServiceDialog && (
                         <Suspense fallback={null}>
@@ -219,7 +219,7 @@ export default function ServicesPage() {
                         </div>
 
                         {/* Filters */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full lg:w-auto items-center">
+                        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-2 w-full items-center">
                             {/* Technician Filter */}
                             <Select
                                 value={filterTechnician}

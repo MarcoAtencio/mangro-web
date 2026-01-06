@@ -86,7 +86,7 @@ export function StatsCard({
             onClick={onClick}
             role={onClick ? "button" : undefined}
             tabIndex={onClick ? 0 : undefined}
-            aria-pressed={active}
+            aria-pressed={onClick ? active : undefined}
             aria-label={onClick ? `Filtrar por ${title}: ${value}` : undefined}
             onKeyDown={(e) => {
                 if (onClick && (e.key === "Enter" || e.key === " ")) {

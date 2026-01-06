@@ -38,7 +38,7 @@ export function AdminLayout({
                 )}
             >
                 {/* Header */}
-                <header className="sticky top-0 z-30 py-3 md:py-4 bg-slate-50 px-4 md:px-6 lg:px-8">
+                <header className="sticky top-0 z-30 py-2 sm:py-3 md:py-4 bg-slate-50 px-4 md:px-6 lg:px-8">
                     <div className="max-w-[1600px] mx-auto flex items-center justify-between w-full">
                         <div className="flex items-center gap-4">
                             <MobileSidebar />
@@ -78,7 +78,7 @@ export function AdminLayout({
                                 {title && (
                                     <div className="flex flex-col gap-0.5">
                                         <div className="flex items-center gap-3">
-                                            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                                            <h1 className="text-lg sm:text-2xl font-bold text-slate-900 tracking-tight">
                                                 {title}
                                             </h1>
                                         </div>
