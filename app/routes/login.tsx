@@ -56,7 +56,7 @@ export default function LoginPage() {
                         <div className="flex justify-center mb-6">
                             <div className="p-3 bg-white rounded-2xl shadow-sm border border-slate-100 ring-1 ring-slate-50">
                                 <img
-                                    src="/logo-mangro.jpg"
+                                    src="/logo-mangro.png"
                                     alt="MANGRO"
                                     width="48"
                                     height="48"

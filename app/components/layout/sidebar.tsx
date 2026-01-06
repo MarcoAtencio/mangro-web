@@ -81,7 +81,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
             )}>
                 <div className="flex items-center gap-3 whitespace-nowrap">
                     <img
-                        src="/logo-mangro.jpg"
+                        src="/logo-mangro.png"
                         alt="MANGRO"
                         className="h-8 w-8 object-contain shrink-0"
                         width={32}
@@ -289,7 +289,7 @@ export function MobileSidebar() {
                 <div className="flex h-16 items-center justify-between px-4 border-b border-slate-100">
                     <div className="flex items-center gap-3">
                         <img
-                            src="/logo-mangro.jpg"
+                            src="/logo-mangro.png"
                             alt="MANGRO - Expertos en climatización"
                             className="h-8 w-8 object-contain"
                             width={32}

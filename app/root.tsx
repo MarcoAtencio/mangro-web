@@ -67,7 +67,7 @@ export const links: Route.LinksFunction = () => [
     { 
         rel: "preload", 
         as: "image", 
-        href: "/logo-mangro.jpg", 
+        href: "/logo-mangro.png", 
         fetchPriority: "high" as const 
     },
     
