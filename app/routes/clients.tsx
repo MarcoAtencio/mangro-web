@@ -260,7 +260,7 @@ function ClientsPageContent({
                         className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95"
                     >
                         <Plus className="h-4 w-4" />
-                        Nuevo Cliente
+                        <span className="hidden sm:inline">Nuevo Cliente</span>
                     </Button>
                     {showNewClientDialog && (
                         <Suspense fallback={null}>
@@ -310,9 +310,9 @@ function ClientsPageContent({
                 </div>
 
                 {/* Filters Section */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 lg:gap-4">
                     {/* Search Input */}
-                    <div className="relative w-full sm:w-64 lg:w-72">
+                    <div className="relative w-full lg:w-72">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Buscar por nombre o RUC..."

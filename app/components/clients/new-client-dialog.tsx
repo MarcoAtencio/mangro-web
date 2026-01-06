@@ -75,7 +75,7 @@ export function NewClientDialog({ open: externalOpen, onOpenChange: externalOnOp
     return (
         <Dialog open={open} onOpenChange={setOpen}>
 
-            <DialogContent className="sm:max-w-[500px] max-h-[85vh] overflow-y-auto">
+            <DialogContent className="w-[95vw] sm:w-full sm:max-w-[500px] max-h-[85vh] overflow-y-auto">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
                         <DialogTitle>Registrar Nuevo Cliente</DialogTitle>
@@ -100,7 +100,7 @@ export function NewClientDialog({ open: externalOpen, onOpenChange: externalOnOp
                                     }
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="ruc">RUC / DNI</Label>
                                     <Input
@@ -141,7 +141,7 @@ export function NewClientDialog({ open: externalOpen, onOpenChange: externalOnOp
                             <h4 className="text-sm font-medium text-muted-foreground border-b pb-1">
                                 Contacto Directo
                             </h4>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="contactName">Persona de Contacto</Label>
                                     <Input
@@ -171,11 +171,11 @@ export function NewClientDialog({ open: externalOpen, onOpenChange: externalOnOp
                             </div>
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    <DialogFooter className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-2">
+                        <Button type="button" variant="outline" onClick={() => setOpen(false)} className="w-full sm:w-auto">
                             Cancelar
                         </Button>
-                        <Button type="submit" disabled={loading}>
+                        <Button type="submit" disabled={loading} className="w-full sm:w-auto">
                             {loading && <Spinner className="mr-2 h-4 w-4" />}
                             {loading ? "Guardando..." : "Registrar Cliente"}
                         </Button>

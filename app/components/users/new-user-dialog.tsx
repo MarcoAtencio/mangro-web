@@ -17,8 +17,28 @@ import { uploadProfileImage } from "~/lib/storage";
 import { createUser } from "~/lib/firestore";
 import { registerUser } from "~/lib/auth-admin";
 
-export function NewUserDialog({ onSuccess }: { onSuccess?: () => void }) {
-    const [open, setOpen] = useState(false);
+interface NewUserDialogProps {
+    onSuccess?: () => void;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+}
+
+export function NewUserDialog({ 
+    onSuccess,
+    open: externalOpen,
+    onOpenChange: externalOnOpenChange,
+}: NewUserDialogProps) {
+    const [internalOpen, setInternalOpen] = useState(false);
+    
+    const open = externalOpen ?? internalOpen;
+    const setOpen = (val: boolean) => {
+        if (externalOnOpenChange) {
+            externalOnOpenChange(val);
+        } else {
+            setInternalOpen(val);
+        }
+    };
+    
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState<{
         fullName: string;
@@ -78,12 +98,16 @@ export function NewUserDialog({ onSuccess }: { onSuccess?: () => void }) {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95">                    <Plus className="h-4 w-4" />
-                    Nuevo Usuario
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[450px]">
+            {/* Only show trigger button when NOT in controlled mode */}
+            {externalOpen === undefined && (
+                <DialogTrigger asChild>
+                    <Button className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95">
+                        <Plus className="h-4 w-4" />
+                        Nuevo Usuario
+                    </Button>
+                </DialogTrigger>
+            )}
+            <DialogContent className="w-[95vw] sm:w-full sm:max-w-[450px] max-h-[85vh] overflow-y-auto">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
                         <DialogTitle>Registrar Nuevo Usuario</DialogTitle>
@@ -172,11 +196,11 @@ export function NewUserDialog({ onSuccess }: { onSuccess?: () => void }) {
                             </select>
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    <DialogFooter className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-2">
+                        <Button type="button" variant="outline" onClick={() => setOpen(false)} className="w-full sm:w-auto">
                             Cancelar
                         </Button>
-                        <Button type="submit" disabled={loading}>
+                        <Button type="submit" disabled={loading} className="w-full sm:w-auto">
                             {loading && <Spinner className="mr-2 h-4 w-4" />}
                             {loading ? "Guardando..." : "Registrar"}
                         </Button>

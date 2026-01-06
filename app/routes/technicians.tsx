@@ -189,9 +189,9 @@ export default function TechniciansPage() {
                 </div>
 
                 {/* Filters Section */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 lg:gap-4">
                     {/* Search - Left side */}
-                    <div className="relative w-full sm:w-64 lg:w-80">
+                    <div className="relative w-full lg:w-80">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             id="search-users"
@@ -389,7 +389,11 @@ export default function TechniciansPage() {
             </div>
             {showNewUser && (
                 <Suspense fallback={null}>
-                    <NewUserDialog onSuccess={() => setShowNewUser(false)} />
+                    <NewUserDialog 
+                        open={showNewUser}
+                        onOpenChange={setShowNewUser}
+                        onSuccess={() => setShowNewUser(false)} 
+                    />
                 </Suspense>
             )}
             {editingUser && (

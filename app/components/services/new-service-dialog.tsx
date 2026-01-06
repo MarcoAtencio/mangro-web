@@ -174,12 +174,16 @@ export function NewServiceDialog({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95">                    <Plus className="h-4 w-4" />
-                    Nuevo Servicio
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] overflow-y-auto max-h-[90vh]">
+            {/* Only show trigger button when NOT in controlled mode */}
+            {externalOpen === undefined && (
+                <DialogTrigger asChild>
+                    <Button className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95">
+                        <Plus className="h-4 w-4" />
+                        Nuevo Servicio
+                    </Button>
+                </DialogTrigger>
+            )}
+            <DialogContent className="w-[95vw] sm:w-full sm:max-w-[600px] overflow-y-auto max-h-[85vh]">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
                         <DialogTitle>Programar Nuevo Servicio</DialogTitle>
@@ -189,7 +193,7 @@ export function NewServiceDialog({
                     </DialogHeader>
 
                     <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label>Cliente</Label>
                                 <Select
@@ -245,7 +249,7 @@ export function NewServiceDialog({
                             />
                         </div>
 
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div className="space-y-2">
                                 <Label>Fecha</Label>
                                 <Input
@@ -441,11 +445,11 @@ export function NewServiceDialog({
                         </div>
                     </div>
 
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    <DialogFooter className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-2">
+                        <Button type="button" variant="outline" onClick={() => setOpen(false)} className="w-full sm:w-auto">
                             Cancelar
                         </Button>
-                        <Button type="submit" disabled={loading}>
+                        <Button type="submit" disabled={loading} className="w-full sm:w-auto">
                             {loading && <Spinner className="mr-2 h-4 w-4" />}
                             Programar Servicio
                         </Button>

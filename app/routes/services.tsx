@@ -151,7 +151,7 @@ export default function ServicesPage() {
                         className="gap-2 bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95"
                     >
                         <Plus className="h-4 w-4" />
-                        Nuevo Servicio
+                        <span className="hidden sm:inline">Nuevo Servicio</span>
                     </Button>
                     {showNewServiceDialog && (
                         <Suspense fallback={null}>
@@ -203,11 +203,11 @@ export default function ServicesPage() {
                 </div>
 
                 {/* Filters Section */}
-                <div className="flex flex-col gap-3 sm:gap-4">
+                <div className="flex flex-col gap-3 md:gap-4">
                     {/* Search Row */}
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 lg:gap-4">
                         {/* Search - Left side */}
-                        <div className="relative w-full sm:w-64 lg:w-80">
+                        <div className="relative w-full lg:w-80">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                             <Input
                                 placeholder="Buscar por cliente, descripción o técnico..."
@@ -219,14 +219,14 @@ export default function ServicesPage() {
                         </div>
 
                         {/* Filters */}
-                        <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-2 w-full sm:w-auto items-center">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full lg:w-auto items-center">
                             {/* Technician Filter */}
                             <Select
                                 value={filterTechnician}
                                 onValueChange={(val) => handleFilterChange(setFilterTechnician, val)}
                             >
                              <SelectTrigger 
-                                className="w-full sm:w-40 lg:w-48 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm"
+                                className="w-full h-9 bg-white border-slate-200 shadow-sm text-xs md:text-sm"
                                 aria-label="Filtrar por técnico"
                             >
                                 <div className="flex items-center gap-2 truncate">
@@ -250,7 +250,7 @@ export default function ServicesPage() {
                             onValueChange={(val) => handleFilterChange(setFilterClient, val)}
                         >
                             <SelectTrigger 
-                                className="w-full sm:w-40 lg:w-48 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm"
+                                className="w-full h-9 bg-white border-slate-200 shadow-sm text-xs md:text-sm"
                                 aria-label="Filtrar por cliente"
                             >
                                 <div className="flex items-center gap-2 truncate">
@@ -274,7 +274,7 @@ export default function ServicesPage() {
                             onValueChange={(val) => handleFilterChange(setFilterStatus, val)}
                         >
                             <SelectTrigger 
-                                className="w-full sm:w-36 lg:w-40 h-9 bg-white border-slate-200 shadow-sm text-xs sm:text-sm"
+                                className="w-full h-9 bg-white border-slate-200 shadow-sm text-xs md:text-sm"
                                 aria-label="Filtrar por estado"
                             >
                                 <div className="flex items-center gap-2 truncate">
